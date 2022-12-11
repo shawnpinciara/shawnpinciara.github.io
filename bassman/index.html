@@ -11,6 +11,7 @@
 
 <body>
 <p id="pi">aa</p>
+<button id="resume-button">Resume audio context</button>
 </body>
 <script type="module">
     import { PitchDetector } from "https://esm.sh/pitchy@4";
@@ -34,14 +35,18 @@
         //     Math.round(pitch * 10) / 10
         // } Hz`;
         $("#pi").text(Math.round(pitch * 10) / 10);
-        document.getElementById("clarity").textContent = `${Math.round(
-            clarity * 100
-        )} %`;
+        // document.getElementById("clarity").textContent = `${Math.round(
+        //     clarity * 100
+        // )} %`;
         window.setTimeout(
             () => updatePitch(analyserNode, detector, input, sampleRate),
             100
         );
     }
+
+    $("#resume-button").click(function() {
+        audioContext.resume();
+    });
 
 </script>
 </html>
