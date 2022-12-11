@@ -6,6 +6,7 @@
     <meta name="keywords" content="html tutorial template">
     <meta charset="utf-8">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" integrity="sha512-jduERlz7En1IUZR54bqzpNI64AbffZWR//KJgF71SJ8D8/liKFZ+s1RxmUmB+bhCnIfzebdZsULwOrbVB5f3nQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 </head>
 
@@ -15,8 +16,23 @@
 </body>
 <script type="module">
     import { PitchDetector } from "https://esm.sh/pitchy@4";
+    var audioContext;
+    var synth;
+    var pit;
     $( document ).ready(function() {
-        const audioContext = new window.AudioContext();
+        //create a synth and connect it to the main output (your speakers)
+    //synth = new Tone.Synth().toDestination();
+    synth = new Tone.MonoSynth({
+	oscillator: {
+		type: "sine"
+	}
+}).toDestination();
+    
+    Tone.start();
+
+    //play a middle 'C' for the duration of an 8th note
+    
+        audioContext = new window.AudioContext();
         const analyserNode = audioContext.createAnalyser();
         navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
             audioContext.createMediaStreamSource(stream).connect(analyserNode);
@@ -34,7 +50,13 @@
         // document.getElementById("pitch").textContent = `${
         //     Math.round(pitch * 10) / 10
         // } Hz`;
-        $("#pi").text(Math.round(pitch * 10) / 10);
+        pit = Math.round(pitch * 10) / 10;
+        $("#pi").text(pit);
+        if (pit>80 && pit<1000) {
+            synth.triggerAttackRelease(pit/2, 0.01);
+            
+        }
+        
         // document.getElementById("clarity").textContent = `${Math.round(
         //     clarity * 100
         // )} %`;
@@ -46,6 +68,7 @@
 
     $("#resume-button").click(function() {
         audioContext.resume();
+        synth.triggerAttackRelease(133.5, 0.01);
     });
 
 </script>
