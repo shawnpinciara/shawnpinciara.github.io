@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>p5js fullscreen template</title>
+</head>
+<style type="text/css">
+	canvas {
+		position: fixed; 
+		top: 0; left: 0; 
+		z-index: 1; 
+		}
+		#content{
+			position: relative; 
+			z-index: 2; 
+		}
+</style>
+<body>
+<div id = "content"></div>
+</body>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.4/p5.min.js"></script>
+<script type="text/javascript">
+
+function preload(){
+	svg1 = loadImage("1.svg");
+    svg2 = loadImage("2.svg");
+    svg3 = loadImage("3.svg");
+    svg12 = loadImage("12.svg");
+    svg121 = loadImage("121.svg");
+
+}
+function setup() { 
+
+	createCanvas(windowWidth, windowHeight);
+    ww = windowWidth;
+    wh = windowHeight;
+    x = ww/2-160;
+    y = wh/2-160;
+    
+
+}
+toShow = [];
+function draw() {
+    background(252, 249, 222);
+    textSize(32);
+    text('Press a,s,e to write glyphs and backspace to delete last.', 10, 30);
+    imageMode(CORNER);
+    for (i=0;i<toShow.length;i++) {
+        if (toShow[i] == 1) {
+            image(svg1, x, y);
+        } else if (toShow[i] == 2) {
+            image(svg2, x, y);
+        } else if (toShow[i] == 3) {
+            image(svg3, x+160, y+200);
+        } else if (toShow[i] == 12) {
+            image(svg12, x, y);
+        } else if (toShow[i] == 121) {
+            image(svg121, x, y);
+        }
+
+    }
+     
+}
+
+function windowResized() {
+	resizeCanvas(windowWidth, windowHeight);
+}
+
+function keyTyped() {
+    //x+=30;
+        if (key === 'a') {
+            if(!toShow.includes(1) && !toShow.includes(12) && !toShow.includes(121)) { toShow.push(1); }
+        } else if (key === 's') {
+            if(!toShow.includes(2) && !toShow.includes(121)) { 
+                if (toShow[toShow.length -1 ] == 1) {
+                    toShow.pop();
+                    toShow.push(12);
+                }else if (toShow[toShow.length -1 ] == 12) {
+                    toShow.pop();
+                    toShow.push(121);
+                } else {
+                    toShow.push(2);
+                }
+            }
+        } else if (key === 'e') {
+            if(!toShow.includes(3)) {toShow.push(3);}
+        }
+    console.log(toShow)
+}
+
+function keyPressed() {
+  if (keyCode === BACKSPACE) {
+    toShow.pop();
+    //x-=30;
+  }
+}
+
+</script>
+</html>
