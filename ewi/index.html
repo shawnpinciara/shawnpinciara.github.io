@@ -55,11 +55,13 @@
     function keyPressed() {
         if (key=='z') {
             octave++
+            sendNote();
             console.log(octave)
         }
 
         if (key=='x') {
             octave--
+            sendNote();
             console.log(octave)
         }
 
@@ -136,7 +138,7 @@
 
     function sendNote() {
         if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 0) {
-                synth.triggerAttack("C4");
+                synth.triggerAttack("C"+octave);
             } else if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 1) {
                 synth.triggerAttack("D"+octave);
             } else if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 1 && keysarr[3] == 1) {
