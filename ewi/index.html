@@ -26,7 +26,8 @@
     var index = 0;
     let value = 0;
     let keysarr = [0,0,0,0];
-    var synth = new Tone.PolySynth().toDestination();
+    var octave = 4;
+    var synth = new Tone.MonoSynth().toDestination();
     //let bg = color(255,255,255);
     function setup() {
         xs = windowWidth;
@@ -52,83 +53,120 @@
     // }
 
     function keyPressed() {
+        if (key=='z') {
+            octave++
+            console.log(octave)
+        }
+
+        if (key=='x') {
+            octave--
+            console.log(octave)
+        }
+
         if (key=='q') {
-            keysarr[0] = 1;  
+            keysarr[0] = 1; 
+            sendNote();
+ 
         }
 
         if (key=='w') {
             keysarr[1] = 1;
+            sendNote();
+
         }
 
         if (key=='e') {
             keysarr[2] = 1;
+            sendNote();
+
         }
 
         if (key=='r') {
             keysarr[3] = 1;
+            sendNote();
+
+        }
+        if (key=='l') {
+            sendNote();
         }
         console.log(keysarr);
 
-        if (key=='i') {
-            
-            if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 0) {
-                synth.triggerAttack("C4");
-            } else if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 1) {
-                synth.triggerAttack("D4");
-            } else if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 1 && keysarr[3] == 1) {
-                synth.triggerAttack("E4");
-            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 0) {
-                synth.triggerAttack("F4");
-            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 1) {
-                synth.triggerAttack("G4");
-            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 0 && keysarr[3] == 1) {
-                synth.triggerAttack("A4");
-            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 0 && keysarr[3] == 0) {
-                synth.triggerAttack("B4");
-            } else if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 1 && keysarr[3] == 0) {
-                synth.triggerAttack("C5");
-            }
+        
+        // MI5 |#|100| DO5 VIII
+        //     |.|010| SI VII
+        // LA# |#|101| LA VI
+        // SOL#|#|111| SOL V
+        // FA# |#|110| FA IV
+        //     |.|011| MI III 
+        // RE# |#|001| RE II 
+        // DO# |#|000| DO I
 
-            //SHARP NOTES:
-            if (keysarr[0] == 1 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 0) {
-                synth.triggerAttack("C#4");
-            } else if (keysarr[0] == 1 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 1) {
-                synth.triggerAttack("D#4");
-            } else if (keysarr[0] == 1 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 0) {
-                synth.triggerAttack("F#4");
-            } else if (keysarr[0] == 1 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 1) {
-                synth.triggerAttack("G#4");
-            } else if (keysarr[0] == 1 && keysarr[1] == 1 && keysarr[2] == 0 && keysarr[3] == 1) {
-                synth.triggerAttack("A#4");
-            } else if (keysarr[0] == 1 && keysarr[1] == 0 && keysarr[2] == 1 && keysarr[3] == 0) {
-                synth.triggerAttack("C#5");
-            }
-            
-        }
+
+        
     }
 
     function keyReleased() {
         if (key=='q') {
             keysarr[0] = 0;
+            sendNote();
         }
 
         if (key=='w') {
             keysarr[1] = 0;
+            sendNote();
         }
 
         if (key=='e') {
             keysarr[2] = 0;
+            sendNote();
         }
 
         if (key=='r') {
             keysarr[3] = 0;
+            sendNote();
         }
         // console.log(keysarr);
 
-        if (key=='i') {
-            synth.releaseAll();
+        if (key=='c') {
+            synth.triggerRelease();
         }
+        
 
+    }
+
+    function sendNote() {
+        if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 0) {
+                synth.triggerAttack("C4");
+            } else if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 1) {
+                synth.triggerAttack("D"+octave);
+            } else if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 1 && keysarr[3] == 1) {
+                synth.triggerAttack("E"+octave);
+            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 0) {
+                synth.triggerAttack("F"+octave);
+            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 1) {
+                synth.triggerAttack("G"+octave);
+            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 0 && keysarr[3] == 1) {
+                synth.triggerAttack("A"+octave);
+            } else if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 1 && keysarr[3] == 0) {
+                synth.triggerAttack("B"+octave);
+            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 0 && keysarr[3] == 0) {
+                synth.triggerAttack("C"+(octave+1));
+            }
+
+            //SHARP NOTES:
+            if (keysarr[0] == 1 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 0) {
+                synth.triggerAttack("C#"+octave);
+            } else if (keysarr[0] == 1 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 1) {
+                synth.triggerAttack("D#"+octave);
+            } else if (keysarr[0] == 1 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 0) {
+                synth.triggerAttack("F#"+octave);
+            } else if (keysarr[0] == 1 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 1) {
+                synth.triggerAttack("G#"+octave);
+            } else if (keysarr[0] == 1 && keysarr[1] == 1 && keysarr[2] == 0 && keysarr[3] == 1) {
+                synth.triggerAttack("E"+(octave+1));
+            } else if (keysarr[0] == 1 && keysarr[1] == 0 && keysarr[2] == 1 && keysarr[3] == 0) {
+                // synth.triggerAttack("");
+            }
     }
 
 
@@ -146,9 +184,8 @@
         // } else {
         //     keysarr[0] = 0;
         // }
-        textSize(50);
-        text("[q,w,e,r] per i 4 tasti (con r piu vicino a te)", 100, 200);
-        text("'i' per suonare la nota (come se soffiassi)", 100, 300);
+        textSize(40);
+        text("[q,w,e,r] per i 4 tasti (con r piu vicino a te) \n [z,x] per cambiare ottava \n [c] per far smettere di suonare", 100, 200,1000,1800);
     }
 
     
