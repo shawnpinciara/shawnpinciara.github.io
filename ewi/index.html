@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>bassman</title>
+    <meta name="description" content="Our first page">
+    <meta name="keywords" content="html tutorial template">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.min.js" integrity="sha512-WJXVjqeINVpi5XXJ2jn0BSCfp0y80IKrYh731gLRnkAS9TKc5KNt/OfLtu+fCueqdWniouJ1ubM+VI/hbo7POQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" integrity="sha512-jduERlz7En1IUZR54bqzpNI64AbffZWR//KJgF71SJ8D8/liKFZ+s1RxmUmB+bhCnIfzebdZsULwOrbVB5f3nQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+    <p id="pi">Value: </p>
+<button id="resume-button">Resume audio context</button>
+
+<div class="canvas">
+    <main></main>
+</div>
+</body>
+<script>
+    var mouthWidth = 600;
+    var multiplier = 0.5;
+    var index = 0;
+    let value = 0;
+    let keysarr = [0,0,0,0];
+    var synth = new Tone.PolySynth().toDestination();
+    //let bg = color(255,255,255);
+    function setup() {
+        xs = windowWidth;
+        ys = windowHeight;
+        canvas = createCanvas(windowWidth, windowHeight);
+        // canvas.mouseClicked(clickOnCanvas);
+
+    }
+
+    
+
+    // function mousePressed() {
+    //     if (mouseY < ys/4) {
+    //         value = 0;
+    //         console.log("hey")
+    //     } else if (mouseY < ys/4 *2)  {
+    //         value = 50;
+    //     } else if (mouseY < ys/4 *3)  {
+    //         value = 125;
+    //     } else if (mouseY < ys/4 *4)  {
+    //         value = 255;
+    //     }
+    // }
+
+    function keyPressed() {
+        if (key=='q') {
+            keysarr[0] = 1;  
+        }
+
+        if (key=='w') {
+            keysarr[1] = 1;
+        }
+
+        if (key=='e') {
+            keysarr[2] = 1;
+        }
+
+        if (key=='r') {
+            keysarr[3] = 1;
+        }
+        console.log(keysarr);
+
+        if (key=='i') {
+            
+            if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 0) {
+                synth.triggerAttack("C4");
+            } else if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 1) {
+                synth.triggerAttack("D4");
+            } else if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 1 && keysarr[3] == 1) {
+                synth.triggerAttack("E4");
+            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 0) {
+                synth.triggerAttack("F4");
+            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 1) {
+                synth.triggerAttack("G4");
+            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 0 && keysarr[3] == 1) {
+                synth.triggerAttack("A4");
+            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 0 && keysarr[3] == 0) {
+                synth.triggerAttack("B4");
+            } else if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 1 && keysarr[3] == 0) {
+                synth.triggerAttack("C5");
+            }
+
+            //SHARP NOTES:
+            if (keysarr[0] == 1 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 0) {
+                synth.triggerAttack("C#4");
+            } else if (keysarr[0] == 1 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 1) {
+                synth.triggerAttack("D#4");
+            } else if (keysarr[0] == 1 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 0) {
+                synth.triggerAttack("F#4");
+            } else if (keysarr[0] == 1 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 1) {
+                synth.triggerAttack("G#4");
+            } else if (keysarr[0] == 1 && keysarr[1] == 1 && keysarr[2] == 0 && keysarr[3] == 1) {
+                synth.triggerAttack("A#4");
+            } else if (keysarr[0] == 1 && keysarr[1] == 0 && keysarr[2] == 1 && keysarr[3] == 0) {
+                synth.triggerAttack("C#5");
+            }
+            
+        }
+    }
+
+    function keyReleased() {
+        if (key=='q') {
+            keysarr[0] = 0;
+        }
+
+        if (key=='w') {
+            keysarr[1] = 0;
+        }
+
+        if (key=='e') {
+            keysarr[2] = 0;
+        }
+
+        if (key=='r') {
+            keysarr[3] = 0;
+        }
+        // console.log(keysarr);
+
+        if (key=='i') {
+            synth.releaseAll();
+        }
+
+    }
+
+
+
+    function draw() {
+        // rect(25, 25, 100, 100);
+        
+        fill(0,0,0);
+        // noStroke();
+        // fill(value);
+        // rect(0, 0, xs/2, ys/4);
+        // if (keyIsDown('a')) {
+        //     keysarr[0] = 1;
+        //     console.log(1)
+        // } else {
+        //     keysarr[0] = 0;
+        // }
+        textSize(50);
+        text("[q,w,e,r] per i 4 tasti (con r piu vicino a te)", 100, 200);
+        text("'i' per suonare la nota (come se soffiassi)", 100, 300);
+    }
+
+    
+</script>
+
+<script type="module">
+    import { PitchDetector } from "https://esm.sh/pitchy@4";
+    var audioContext;
+    var synth;
+    var pit;
+    
+
+    // $( document ).ready(function() {
+    //     //create a synth and connect it to the main output (your speakers)
+    // synth = make_Pianoetta().instrument
+    
+    // console.log(synth)
+    
+    // keyboard.down(note => {   
+        
+    //     // convert MIDI velocity to gain
+    //     var velToGain = map(note.velocity, 0, 127, 0, 1)
+    //     synth.triggerAttack(note.frequency, Tone.now(), velToGain)
+    // });
+
+    // keyboard.up(note => synth.triggerRelease());
+    // synth = new Tone.Synth().toDestination();
+    // synth = new Tone.MonoSynth({
+	// oscillator: {
+	// 	type: "sine"
+	// }
+    // }).toDestination();
+
+    // synth = new Tone.Oscillator(200,"sine").toDestination();
+    
+    // Tone.start();
+
+    // synth.triggerAttackRelease("C4","8n");
+
+    //play a middle 'C' for the duration of an 8th note
+    
+    // audioContext = new window.AudioContext();
+        // const analyserNode = audioContext.createAnalyser();
+        // navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+        //     audioContext.createMediaStreamSource(stream).connect(analyserNode);
+        //     const detector = PitchDetector.forFloat32Array(analyserNode.fftSize);
+        //     const input = new Float32Array(detector.inputLength);
+        //     updatePitch(analyserNode, detector, input, audioContext.sampleRate);
+        // });
+    // });
+
+
+    // function updatePitch(analyserNode, detector, input, sampleRate) {
+    //     analyserNode.getFloatTimeDomainData(input);
+    //     const [pitch, clarity] = detector.findPitch(input, sampleRate);
+
+    //     // document.getElementById("pitch").textContent = `${
+    //     //     Math.round(pitch * 10) / 10
+    //     // } Hz`;
+    //     pit = Math.round(pitch * 10) / 10;
+    //     $("#pi").text(pit);
+    //     if (pit>80 && pit<1000 && clarity * 100>78) {
+    //         // synth.triggerAttackRelease(pit*multiplier, 0.01);
+    //         mouthWidth = pit*2;
+    //         // synth.frequency = pit*multiplier;
+    //         synth.set({
+    //             frequency: pit*multiplier,
+    //         });
+    //         synth.start("+0.2");
+            
+    //     } else {
+    //         synth.stop();
+    //     }
+        
+    //     // document.getElementById("clarity").textContent = `${Math.round(
+    //     //     clarity * 100
+    //     // )} %`;
+    //     window.setTimeout(
+    //         () => updatePitch(analyserNode, detector, input, sampleRate),
+    //         100
+    //     );
+    // }
+
+    // $("#resume-button").click(function() {
+    //     Tone.start();
+    //     audioContext.resume();
+    //     //synth.triggerAttackRelease(133.5, 0.01);
+    // });
+</script>
+
+</html>
