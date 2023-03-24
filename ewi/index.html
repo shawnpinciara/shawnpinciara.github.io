@@ -26,6 +26,16 @@
     var index = 0;
     let value = 0;
     let keysarr = [0,0,0,0];
+
+
+    let nota =  0b0000;
+    let mask1 = 0b1000;
+    let mask2 = 0b0100;
+    let mask3 = 0b0010;
+    let mask4 = 0b0001;
+    let note = ['C','D','B','E','C','A','F','G','C#','D#','','','E','A#','F#','G#']
+    let ottavaSopra = false;
+
     var octave = 4;
     var synth = new Tone.MonoSynth().toDestination();
     //let bg = color(255,255,255);
@@ -53,83 +63,108 @@
     // }
 
     function keyPressed() {
-        if (key=='z') {
+        if (key=='v') {
             octave++
             sendNote();
             console.log(octave)
         }
 
-        if (key=='x') {
+        if (key=='c') {
             octave--
             sendNote();
             console.log(octave)
         }
 
         if (key=='q') {
-            keysarr[0] = 1; 
+            nota = nota | mask1;
+            // keysarr[0] = 1; 
             sendNote();
  
         }
 
         if (key=='w') {
-            keysarr[1] = 1;
+            nota = nota | mask2;
+            // keysarr[1] = 1;
             sendNote();
 
         }
 
         if (key=='e') {
-            keysarr[2] = 1;
+            nota = nota | mask3;
+            // keysarr[2] = 1;
             sendNote();
 
         }
 
         if (key=='r') {
-            keysarr[3] = 1;
+            nota = nota | mask4;
+            console.log(nota)
+            // keysarr[3] = 1;
             sendNote();
 
         }
         if (key=='l') {
             sendNote();
         }
+
+        
         console.log(keysarr);
 
         
-        // MI5 |#|100| DO5 VIII
-        //     |.|010| SI VII
-        // LA# |#|101| LA VI
-        // SOL#|#|111| SOL V
-        // FA# |#|110| FA IV
-        //     |.|011| MI III 
-        // RE# |#|001| RE II 
-        // DO# |#|000| DO I
+        //12 MI5 |1|100| DO5 VIII   4
+        //10     |.|010| SI VII     2
+        //13 LA# |1|101| LA VI      5    
+        //15 SOL#|1|111| SOL V      7   
+        //14 FA# |1|110| FA IV      6   
+        //11     |.|011| MI III     3
+        //9  RE# |1|001| RE II      1
+        //8  DO# |1|000| DO I       0
 
 
         
     }
 
+
     function keyReleased() {
+        if (key=='v') {
+            octave--
+            sendNote();
+            console.log(octave)
+        }
+
+        if (key=='c') {
+            octave++
+            sendNote();
+            console.log(octave)
+        }
+
         if (key=='q') {
-            keysarr[0] = 0;
+            nota = nota - mask1;
+            // keysarr[0] = 0;
             sendNote();
         }
 
         if (key=='w') {
-            keysarr[1] = 0;
+            nota = nota - mask2;
+            // keysarr[1] = 0;
             sendNote();
         }
 
         if (key=='e') {
-            keysarr[2] = 0;
+            nota = nota - mask3;
+            //keysarr[2] = 0;
             sendNote();
         }
 
         if (key=='r') {
-            keysarr[3] = 0;
+            nota = nota - mask4;
+            console.log(nota)
+            //keysarr[3] = 0;
             sendNote();
         }
         // console.log(keysarr);
 
-        if (key=='c') {
+        if (key=='z') {
             synth.triggerRelease();
         }
         
@@ -137,38 +172,18 @@
     }
 
     function sendNote() {
-        if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 0) {
-                synth.triggerAttack("C"+octave);
-            } else if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 1) {
-                synth.triggerAttack("D"+octave);
-            } else if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 1 && keysarr[3] == 1) {
-                synth.triggerAttack("E"+octave);
-            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 0) {
-                synth.triggerAttack("F"+octave);
-            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 1) {
-                synth.triggerAttack("G"+octave);
-            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 0 && keysarr[3] == 1) {
-                synth.triggerAttack("A"+octave);
-            } else if (keysarr[0] == 0 && keysarr[1] == 0 && keysarr[2] == 1 && keysarr[3] == 0) {
-                synth.triggerAttack("B"+octave);
-            } else if (keysarr[0] == 0 && keysarr[1] == 1 && keysarr[2] == 0 && keysarr[3] == 0) {
-                synth.triggerAttack("C"+(octave+1));
-            }
-
-            //SHARP NOTES:
-            if (keysarr[0] == 1 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 0) {
-                synth.triggerAttack("C#"+octave);
-            } else if (keysarr[0] == 1 && keysarr[1] == 0 && keysarr[2] == 0 && keysarr[3] == 1) {
-                synth.triggerAttack("D#"+octave);
-            } else if (keysarr[0] == 1 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 0) {
-                synth.triggerAttack("F#"+octave);
-            } else if (keysarr[0] == 1 && keysarr[1] == 1 && keysarr[2] == 1 && keysarr[3] == 1) {
-                synth.triggerAttack("G#"+octave);
-            } else if (keysarr[0] == 1 && keysarr[1] == 1 && keysarr[2] == 0 && keysarr[3] == 1) {
-                synth.triggerAttack("E"+(octave+1));
-            } else if (keysarr[0] == 1 && keysarr[1] == 0 && keysarr[2] == 1 && keysarr[3] == 0) {
-                // synth.triggerAttack("");
-            }
+        // console.log(nota);
+        // console.log(note[parseInt(nota)]+octave);
+        if (ottavaSopra) {
+            octave--;
+            ottavaSopra = false;
+        }
+        if (nota == 0b0100 || nota == 0b1100) {
+            octave++;
+            ottavaSopra = true;
+        }
+ 
+        synth.triggerAttack(note[parseInt(nota)]+octave);
     }
 
 
