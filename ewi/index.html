@@ -128,18 +128,22 @@
         //CHIAVE
         if (key=='p') {
             chiave = chiave | mask1; 
+            sendNote();
         }
 
         if (key=='o') {
             chiave = chiave | mask2;
+            sendNote();
         }
 
         if (key=='i') {
             chiave = chiave | mask3;
+            sendNote();
         }
 
         if (key=='u') {
             chiave = chiave | mask4;
+            sendNote();
         }
 
         if (key=='l') {
@@ -189,18 +193,22 @@
         //CHIAVE
         if (key=='p') {
             chiave = chiave - mask1;
+            sendNote();
         }
 
         if (key=='o') {
             chiave = chiave - mask2;
+            sendNote();
         }
 
         if (key=='i') {
             chiave = chiave - mask3;
+            sendNote();
         }
 
         if (key=='u') {
             chiave = chiave - mask4;
+            sendNote();
         }
         // console.log(keysarr);
 
@@ -225,11 +233,11 @@
             ottavaSopra = true;
         }
 
-        synth.triggerAttack(scale[noteIndex[parseInt(nota)]+parseInt(chiave)-1]+octave);
+        synth.triggerAttack(scale[noteIndex[parseInt(nota)]+noteIndex[parseInt(chiave)]-2]+octave);
     }
 
     function logg() {
-        console.log("Ottava: "+octave+"\nChiave: " + scale[parseInt(chiave)] + "\n" + "Nota: " + scale[noteIndex[parseInt(nota)]+parseInt(chiave)-1]+octave);
+        console.log("Chiave: " + scale[noteIndex[parseInt(chiave)]-2] + "\n" + "Nota: " + scale[noteIndex[parseInt(nota)]+noteIndex[parseInt(chiave)]-2]+octave);
         
     }
 
