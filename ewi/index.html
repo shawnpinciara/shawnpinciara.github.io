@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>bassman</title>
-    <meta name="description" content="Our first page">
+    <title>EWI</title>
+    <meta name="description" content="EWI">
     <meta name="keywords" content="html tutorial template">
     <meta charset="utf-8">
     <link rel="stylesheet" href="style.css">
@@ -29,23 +29,44 @@
 
 
     let nota =  0b0000;
+    let chiave = 0b0000;
     let mask1 = 0b1000;
     let mask2 = 0b0100;
     let mask3 = 0b0010;
     let mask4 = 0b0001;
     let note = ['C','D','B','E','C','A','F','G','C#','D#','','','E','A#','F#','G#']
+    let noteIndex = [1,3,12,5,1,10,6,8,2,4,'','',5,11,7,9];
+    let scale = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B','C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
     let ottavaSopra = false;
-
+    //scale[noteIndex[parseInt(nota)]+parseInt(chiave)]
+    //note[parseInt(nota)
     var octave = 4;
     var synth = new Tone.MonoSynth().toDestination();
     //let bg = color(255,255,255);
+    let img;
+    
+    function preload() {
+        img = loadImage('keyboardl.png');
+    }
     function setup() {
         xs = windowWidth;
         ys = windowHeight;
         canvas = createCanvas(windowWidth, windowHeight);
+        image(img, 50, 50);
         // canvas.mouseClicked(clickOnCanvas);
 
     }
+
+    //http://127.0.0.1:5500/ewi/index.html
+
+        //12 MI5 |1|100| DO5 VIII   4
+        //10     |.|010| SI VII     2
+        //13 LA# |1|101| LA VI      5    
+        //15 SOL#|1|111| SOL V      7   
+        //14 FA# |1|110| FA IV      6   
+        //11     |.|011| MI III     3
+        //9  RE# |1|001| RE II      1
+        //8  DO# |1|000| DO I       0
 
     
 
@@ -63,18 +84,19 @@
     // }
 
     function keyPressed() {
+
+        //OTTAVE
         if (key=='v') {
             octave++
             sendNote();
-            console.log(octave)
         }
 
         if (key=='c') {
             octave--
             sendNote();
-            console.log(octave)
         }
 
+        //NOTE
         if (key=='q') {
             nota = nota | mask1;
             // keysarr[0] = 1; 
@@ -98,46 +120,48 @@
 
         if (key=='r') {
             nota = nota | mask4;
-            console.log(nota)
             // keysarr[3] = 1;
             sendNote();
 
         }
+
+        //CHIAVE
+        if (key=='p') {
+            chiave = chiave | mask1; 
+        }
+
+        if (key=='o') {
+            chiave = chiave | mask2;
+        }
+
+        if (key=='i') {
+            chiave = chiave | mask3;
+        }
+
+        if (key=='u') {
+            chiave = chiave | mask4;
+        }
+
         if (key=='l') {
             sendNote();
         }
-
-        
-        console.log(keysarr);
-
-        
-        //12 MI5 |1|100| DO5 VIII   4
-        //10     |.|010| SI VII     2
-        //13 LA# |1|101| LA VI      5    
-        //15 SOL#|1|111| SOL V      7   
-        //14 FA# |1|110| FA IV      6   
-        //11     |.|011| MI III     3
-        //9  RE# |1|001| RE II      1
-        //8  DO# |1|000| DO I       0
-
-
-        
+        logg();
     }
 
 
     function keyReleased() {
+        //OTTAVE
         if (key=='v') {
             octave--
             sendNote();
-            console.log(octave)
         }
 
         if (key=='c') {
             octave++
             sendNote();
-            console.log(octave)
         }
 
+        //NOTE
         if (key=='q') {
             nota = nota - mask1;
             // keysarr[0] = 0;
@@ -158,15 +182,33 @@
 
         if (key=='r') {
             nota = nota - mask4;
-            console.log(nota)
             //keysarr[3] = 0;
             sendNote();
         }
+
+        //CHIAVE
+        if (key=='p') {
+            chiave = chiave - mask1;
+        }
+
+        if (key=='o') {
+            chiave = chiave - mask2;
+        }
+
+        if (key=='i') {
+            chiave = chiave - mask3;
+        }
+
+        if (key=='u') {
+            chiave = chiave - mask4;
+        }
         // console.log(keysarr);
 
-        if (key=='z') {
+        if (key=='x') {
             synth.triggerRelease();
         }
+
+        logg();
         
 
     }
@@ -182,8 +224,13 @@
             octave++;
             ottavaSopra = true;
         }
- 
-        synth.triggerAttack(note[parseInt(nota)]+octave);
+
+        synth.triggerAttack(scale[noteIndex[parseInt(nota)]+parseInt(chiave)-1]+octave);
+    }
+
+    function logg() {
+        console.log("Ottava: "+octave+"\nChiave: " + scale[parseInt(chiave)] + "\n" + "Nota: " + scale[noteIndex[parseInt(nota)]+parseInt(chiave)-1]+octave);
+        
     }
 
 
@@ -191,7 +238,7 @@
     function draw() {
         // rect(25, 25, 100, 100);
         
-        fill(0,0,0);
+        // fill(0,0,0);
         // noStroke();
         // fill(value);
         // rect(0, 0, xs/2, ys/4);
@@ -201,8 +248,8 @@
         // } else {
         //     keysarr[0] = 0;
         // }
-        textSize(40);
-        text("[q,w,e,r] per i 4 tasti (con r piu vicino a te) \n [z,x] per cambiare ottava \n [c] per far smettere di suonare", 100, 200,1000,1800);
+    //     textSize(40);
+    //     text("[q,w,e,r] per i 4 tasti (con r piu vicino a te) \n [z,x] per cambiare ottava \n [c] per far smettere di suonare", 100, 200,1000,1800);
     }
 
     
