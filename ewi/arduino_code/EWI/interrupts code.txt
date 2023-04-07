@@ -1,0 +1,39 @@
+//setup:
+
+// attachInterrupt(digitalPinToInterrupt(touchRead(32)), pressSxButton1, RISING);
+  // attachInterrupt(digitalPinToInterrupt(touchRead(32)), releaseSxButton1, FALLING);
+  // attachInterrupt(digitalPinToInterrupt(touchRead(4)), pressSxButton2, RISING);
+  // attachInterrupt(digitalPinToInterrupt(touchRead(2)), pressSxButton3, RISING);
+  // attachInterrupt(digitalPinToInterrupt(touchRead(15)), pressSxButton4, RISING);
+
+
+
+
+
+
+
+
+void pressSxButton1() {
+  nota = nota | mask1; 
+  MIDI.sendNoteOn(scale[noteIndex[int(nota)]+noteIndex[int(chiave)]-2]+octave, velocity, 1);  // Send a MIDI note on message
+}
+
+void releaseSxButton1() {
+  nota = nota & mask1; 
+  MIDI.sendNoteOn(scale[noteIndex[int(nota)]+noteIndex[int(chiave)]-2]+octave, velocity, 1);  // Send a MIDI note on message
+}
+
+void pressSxButton2() {
+  nota = nota | mask3; 
+  MIDI.sendNoteOn(scale[noteIndex[int(nota)]+noteIndex[int(chiave)]-2]+octave, velocity, 1);  // Send a MIDI note on message
+}
+
+void pressSxButton3() {
+  nota = nota | mask2; 
+  MIDI.sendNoteOn(scale[noteIndex[int(nota)]+noteIndex[int(chiave)]-2]+octave, velocity, 1);  // Send a MIDI note on message
+}
+
+void pressSxButton4() {
+  nota = nota | mask1; 
+  MIDI.sendNoteOn(scale[noteIndex[int(nota)]+noteIndex[int(chiave)]-2]+octave, velocity, 1);  // Send a MIDI note on message
+}
