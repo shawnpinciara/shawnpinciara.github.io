@@ -17,11 +17,18 @@ const int noteArray[16] = {0,2,11,4,12,9,5,7,1,3,0,0,16,10,6,8};
 char scale[] = {'C','C#','D','D#','E','F','F#','G','G#','A','A#','B','C','C#','D','D#','E','F','F#','G','G#','A','A#','B'};
 // boolean ottavaSopra = false;
 int octave = 5;
-int velocity = 127;
+int velocity = 60;
 int threshold = 30;
-uint8_t currentNote = 0;
-uint8_t lastNote = 120;
-uint8_t mpr121 = 0;
+const uint16_t mask_key = 0b0000000011110000;
+const uint16_t mask_note = 0b0000000000001111;
+const uint16_t mask_octave = 0b0000111100000000;
+uint16_t currentNote = 0;
+uint16_t lastNote = 120;
+uint16_t currentKey = 0;
+uint16_t lastKey = 0;
+uint16_t currentOctave = 0;
+uint16_t lastOctave = 0;
+uint16_t mpr121 = 0;
 Adafruit_MPR121 mpr = Adafruit_MPR121();
 BLEMIDI_CREATE_INSTANCE("EWI",MIDI);
 
@@ -46,17 +53,23 @@ void setup() {
 }
 
 void loop() {
-
-  currentNote = mpr.touched(); //nota corrente cioè lavore letto dal sensore
+  mpr121 = mpr.touched(); //valore letto da sensore (12 bit: 00000000000)
+  currentNote = mpr121 & mask_note; //maschera per leggere solo le note
+  currentKey = (mpr121 & mask_key)>>4;
+  currentOctave = (mpr121 & mask_octave)>>8;
   if (currentNote != lastNote) { //se il valore letto da sensore è diverso da quello letto in precedenza
     //fai smettere di suonare la nota precedente (perchè siamo in monofonia)
-    MIDI.sendNoteOff((octave*12)+noteArray[lastNote],velocity,1);
+    MIDI.sendNoteOff(((currentOctave+octave)*12)+(noteArray[lastNote]+noteArray[currentKey]),velocity,1);
     //aggiorna valore di nota precedente
     lastNote = currentNote;
     //inizia a suonare la nota premuta
-    MIDI.sendNoteOn((octave*12)+noteArray[currentNote], velocity, 1);  // Send a MIDI note 
-    Serial.println(scale[currentNote]); //log
+    MIDI.sendNoteOn(((currentOctave+octave)*12)+(noteArray[currentNote]+noteArray[currentKey]), velocity, 1);  // Send a MIDI note 
+    Serial.println(currentKey); //log
+  } else {
+    //TODO: inviare segnale midi per cambio di velocity/volume??
   }
   //delay(500);
     
 }
+
+
