@@ -18,12 +18,13 @@ char scale[] = {'C','C#','D','D#','E','F','F#','G','G#','A','A#','B','C','C#','D
 // boolean ottavaSopra = false;
 int octave = 5;
 int velocity = 60;
-int threshold = 30;
+int threshold = 300;
+int breath = 0;
 const uint16_t mask_key = 0b0000000011110000;
 const uint16_t mask_note = 0b0000000000001111;
 const uint16_t mask_octave = 0b0000111100000000;
 uint16_t currentNote = 0;
-uint16_t lastNote = 120;
+uint16_t lastNote = 0b0111111111111111;
 uint16_t currentKey = 0;
 uint16_t lastKey = 0;
 uint16_t currentOctave = 0;
@@ -53,21 +54,31 @@ void setup() {
 }
 
 void loop() {
-  mpr121 = mpr.touched(); //valore letto da sensore (12 bit: 00000000000)
-  currentNote = mpr121 & mask_note; //maschera per leggere solo le note
-  currentKey = (mpr121 & mask_key)>>4;
-  currentOctave = (mpr121 & mask_octave)>>8;
-  if (currentNote != lastNote) { //se il valore letto da sensore è diverso da quello letto in precedenza
-    //fai smettere di suonare la nota precedente (perchè siamo in monofonia)
-    MIDI.sendNoteOff(((currentOctave+octave)*12)+(noteArray[lastNote]+noteArray[currentKey]),velocity,1);
-    //aggiorna valore di nota precedente
-    lastNote = currentNote;
-    //inizia a suonare la nota premuta
-    MIDI.sendNoteOn(((currentOctave+octave)*12)+(noteArray[currentNote]+noteArray[currentKey]), velocity, 1);  // Send a MIDI note 
-    Serial.println(currentKey); //log
+
+
+  breath = analogRead(32);
+  
+  if (breath > threshold) {
+    mpr121 = mpr.touched(); //valore letto da sensore (12 bit: 00000000000)
+    currentNote = mpr121 & mask_note; //maschera per leggere solo le note
+    currentKey = (mpr121 & mask_key)>>4;
+    currentOctave = (mpr121 & mask_octave)>>8;
+    if (currentNote != lastNote) { //se il valore letto da sensore è diverso da quello letto in precedenza
+      //fai smettere di suonare la nota precedente (perchè siamo in monofonia)
+      MIDI.sendNoteOff(((currentOctave+octave)*12)+(noteArray[lastNote]+noteArray[currentKey]),velocity,1);
+      //aggiorna valore di nota precedente
+      lastNote = currentNote;
+      //inizia a suonare la nota premuta
+      MIDI.sendNoteOn(((currentOctave+octave)*12)+(noteArray[currentNote]+noteArray[currentKey]), velocity, 1);  // Send a MIDI note 
+      Serial.println(currentKey); //log
+    } else {
+      //TODO: inviare segnale midi per cambio di velocity/volume??
+    }
   } else {
-    //TODO: inviare segnale midi per cambio di velocity/volume??
+    lastNote = 0b0111111111111111;
+    MIDI.sendNoteOff(((currentOctave+octave)*12)+(noteArray[lastNote]+noteArray[currentKey]),velocity,1);
   }
+  
   //delay(500);
     
 }
