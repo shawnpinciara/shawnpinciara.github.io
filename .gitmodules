@@ -1,3 +1,0 @@
-[submodule "blog/themes/gruvbox"]
-	path = blog/themes/gruvbox
-	url = https://github.com/schnerring/hugo-theme-gruvbox

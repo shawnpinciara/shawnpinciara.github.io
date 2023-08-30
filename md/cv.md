@@ -1,8 +1,3 @@
----
-layout: page
-title: CV
-permalink: /cv/
----
 # Intro:
 Fresh of the new millenium, born in the 2000, I have always had a _curious_ approch on things, and that’s where both my path in the academic career and artistic career started.
 
