@@ -9,9 +9,9 @@ ForEach($file in $files) {
 }
 
 #pandoc convert md to htm using the template
-
-(Get-ChildItem -Path $path | Where-Object {$_.Extension -eq '.md'}).BaseName | ForEach-Object {
-    pandoc -s --toc --template=easy-pandoc-templates/html/elegant_bootstrap_menu.html -M title:$_ $file -o ($_ + '.html')
-}
+#
+#(Get-ChildItem -Path $path | Where-Object {$_.Extension -eq '.md'}).BaseName | ForEach-Object {
+#    pandoc -s --toc --template=easy-pandoc-templates/html/elegant_bootstrap_menu.html -M title:$_ $file -o ../($_ + '.html')
+#}
 
 #TODO: move all htmls to parent folder

@@ -7,6 +7,7 @@ html {
   overflow-y: scroll;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
+  background-color: #b8ebf2;
 }
 
 body {
@@ -14,7 +15,7 @@ body {
   font-family: Georgia, Palatino, 'Palatino Linotype', Times, 'Times New Roman', serif;
   font-size: 12px;
   line-height: 1.8;
-  background: #fefefe;
+  background-color: #b8ebf2;
 }
 
 a {
@@ -253,12 +254,12 @@ table td {
 
 @media only screen and (min-width: 480px) {
   body {
-    font-size: 14px;
+    font-size: 18px;
   }
 }
 @media only screen and (min-width: 768px) {
   body {
-    font-size: 16px;
+    font-size: 25px;
   }
 }
 @media print {
