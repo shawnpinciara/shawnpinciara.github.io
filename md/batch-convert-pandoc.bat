@@ -42,7 +42,7 @@
 ::setlocal enabledelayedexpansion
 
 :: MAIN
-FOR /r "." %%i IN (*.md) DO pandoc -s --toc --template=easy-pandoc-templates/html/elegant_bootstrap_menu.html "%%~fi" -o "%%~dpni.html"
+FOR /r "." %%i IN (*.md) DO pandoc -s --toc --template=easy-pandoc-templates/html/sp.html "%%~fi" -o "%%~dpni.html"
 
 :: End with a pause so user can copy any text from screen.
 ECHO. Done. Press any key to terminate program

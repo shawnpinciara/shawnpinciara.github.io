@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>bassman</title>
+    <meta name="description" content="Our first page">
+    <meta name="keywords" content="html tutorial template">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.min.js" integrity="sha512-WJXVjqeINVpi5XXJ2jn0BSCfp0y80IKrYh731gLRnkAS9TKc5KNt/OfLtu+fCueqdWniouJ1ubM+VI/hbo7POQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" integrity="sha512-jduERlz7En1IUZR54bqzpNI64AbffZWR//KJgF71SJ8D8/liKFZ+s1RxmUmB+bhCnIfzebdZsULwOrbVB5f3nQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+    <p id="pi">Value: </p>
+<button id="resume-button">Resume audio context</button>
+
+<div class="canvas">
+    <main></main>
+</div>
+</body>
+<script>
+    var mouthWidth = 600;
+    var multiplier = 0.5;
+    var index = 0;
+    //let bg = color(255,255,255);
+    function setup() {
+        canvas = createCanvas(windowWidth, windowHeight);
+        canvas.mouseClicked(clickOnCanvas);
+        //myCanvas.parent("p5jscanvas");
+    }
+
+    function clickOnCanvas() {
+        if (index==0) {
+            multiplier = 0.5;
+            index++;
+            //bg = color(39, 44, 46);
+        } else if (index==1) {
+            multiplier = 1.5;
+            index++;
+            //bg = color(71, 160, 204);
+        } else if (index==2) {
+            multiplier = 1;
+            index =0;
+            //bg = color(240, 182, 209);
+        }
+
+    }
+
+    function draw() {
+        
+        if (index==0) {
+            background(39, 44, 46);
+        } else if (index==1) {
+            background(71, 160, 204);
+            //bg = color(71, 160, 204);
+        } else if (index==2) {
+            background(240, 182, 209);
+            //bg = color(240, 182, 209);
+        }
+        fill(255,255,255);
+        noStroke();
+        rect(windowWidth*1/6, windowHeight/5, 350, 195);
+        rect(windowWidth*3/6, windowHeight/5+20, 430, 230);
+        rect(windowWidth/2 - mouthWidth/2, windowHeight*3/5+20, mouthWidth, 150);
+    }
+
+    
+</script>
+
+<script type="module">
+    import { PitchDetector } from "https://esm.sh/pitchy@4";
+    var audioContext;
+    var synth;
+    var pit;
+    
+
+    $( document ).ready(function() {
+        //create a synth and connect it to the main output (your speakers)
+    //synth = new Tone.Synth().toDestination();
+    // synth = new Tone.MonoSynth({
+	// oscillator: {
+	// 	type: "sine"
+	// }
+    // }).toDestination();
+
+    synth = new Tone.Oscillator(200,"sine").toDestination();
+    
+    Tone.start();
+
+    //play a middle 'C' for the duration of an 8th note
+    
+        audioContext = new window.AudioContext();
+        const analyserNode = audioContext.createAnalyser();
+        navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+            audioContext.createMediaStreamSource(stream).connect(analyserNode);
+            const detector = PitchDetector.forFloat32Array(analyserNode.fftSize);
+            const input = new Float32Array(detector.inputLength);
+            updatePitch(analyserNode, detector, input, audioContext.sampleRate);
+        });
+    });
+
+
+    function updatePitch(analyserNode, detector, input, sampleRate) {
+        analyserNode.getFloatTimeDomainData(input);
+        const [pitch, clarity] = detector.findPitch(input, sampleRate);
+
+        // document.getElementById("pitch").textContent = `${
+        //     Math.round(pitch * 10) / 10
+        // } Hz`;
+        pit = Math.round(pitch * 10) / 10;
+        $("#pi").text(pit);
+        if (pit>80 && pit<1000 && clarity * 100>78) {
+            // synth.triggerAttackRelease(pit*multiplier, 0.01);
+            mouthWidth = pit*2;
+            // synth.frequency = pit*multiplier;
+            synth.set({
+                frequency: pit*multiplier,
+            });
+            synth.start("+0.2");
+            
+        } else {
+            synth.stop();
+        }
+        
+        // document.getElementById("clarity").textContent = `${Math.round(
+        //     clarity * 100
+        // )} %`;
+        window.setTimeout(
+            () => updatePitch(analyserNode, detector, input, sampleRate),
+            100
+        );
+    }
+
+    $("#resume-button").click(function() {
+        Tone.start();
+        audioContext.resume();
+        //synth.triggerAttackRelease(133.5, 0.01);
+    });
+</script>
+
+</html>
