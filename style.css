@@ -71,7 +71,7 @@
         padding-right: 0rem;
         color: var(--maincolor);
     }
-    
+
     .black {
         color: black;
         padding-left: 0rem;
@@ -407,6 +407,10 @@
         .content {
             flex-direction: column;
             width: 80%;
+        }
+        .content_home {
+            padding-top:10rem;
+            width: 90%;
         }
 
         .content_entropy {
