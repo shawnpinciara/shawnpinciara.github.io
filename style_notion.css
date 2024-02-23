@@ -23,7 +23,9 @@ h4 {
 
 .block-color-gray_background {
 	background: azure;
-    border-radius:3px;
+    border-radius:5px;
+    padding: 1rem;
+    padding-left: 1rem;
     outline: 2px dotted #154c79;
 
 }
