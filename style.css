@@ -4,11 +4,6 @@
     --secondarycolor: #554c79;
     --black:rgb(34, 34, 34);
     --white: azure;
-    --learn:url("./src/2.jpg");
-    --home:url("./src/testaclavecolori2.png");
-    --ste:url("./src/ste2.jpg");
-    --cyr: url("./src/cyr.png");
-    --credevopeggio: url("./src/credevopeggio.jpg");
     }
     
     html, body {
@@ -211,11 +206,33 @@
         margin: auto;
     }
 
-    .shawn_image {
+    .dewi_layout {
         border-radius: 1rem;
         margin-right: 2rem;
         margin-left: 1rem;
-        background-image: var(--cyr);
+        background-image: url('./src/dewi/dewi_layout.png');
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: relative;
+    }
+
+    .dewi_pentatonic {
+        border-radius: 1rem;
+        margin-right: 2rem;
+        margin-left: 1rem;
+        background-image: url('./src/dewi/dewi_pentatonic.png');
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: relative;
+    }
+
+    .dewi_design {
+        border-radius: 1rem;
+        margin-right: 2rem;
+        margin-left: 1rem;
+        background-image: url('./src/dewi/dewi_design.png');
         background-position: center top;
         background-repeat: no-repeat;
         background-size: cover;

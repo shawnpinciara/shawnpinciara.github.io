@@ -1,0 +1,29 @@
+:root {
+    --maincolor: #154c79;
+    --secondarycolor: #554c79;
+    --black:rgb(34, 34, 34);
+    --white: azure;
+    }
+
+html,
+body {
+    scroll-behavior: smooth;
+    background-color: azure;
+    scrollbar-width: none;  /* Firefox */
+}
+
+p,
+h1,
+h2,
+h3,
+li,
+h4 {
+    color: var(--maincolor);
+}
+
+.block-color-gray_background {
+	background: azure;
+    border-radius:3px;
+    outline: 2px dotted #154c79;
+
+}
