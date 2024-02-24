@@ -3,7 +3,9 @@
     --secondarycolor: #554c79;
     --black:rgb(34, 34, 34);
     --white: azure;
-    }
+}
+
+/* <link rel="stylesheet" href="../style_notion.css"> */  
 
 html,
 body {
@@ -27,5 +29,39 @@ h4 {
     padding: 1rem;
     padding-left: 1rem;
     outline: 2px dotted #154c79;
+
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+    flex-wrap: wrap;
+    /* flex-direction: column; */
+    
+}
+
+
+@media only screen and (max-width: 1000px) {
+
+h1
+h2,
+h3,
+h4 {
+    font-size: 2rem;
+    padding-left: 2rem;
+}
+
+.page-title {
+	font-size: 4rem;
+    padding-left: 2rem;
+}
+
+p,
+ul,
+li {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    font-size: 1.2rem;
+}
 
 }
