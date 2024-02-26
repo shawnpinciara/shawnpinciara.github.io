@@ -19,8 +19,18 @@ h1,
 h2,
 h3,
 li,
+blockquote,
+th,
+td,
 h4 {
     color: var(--maincolor);
+}
+
+p {
+    font-size: 1.2rem;
+}
+h1{
+    font-size: 4rem;
 }
 
 .block-color-gray_background {

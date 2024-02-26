@@ -1,0 +1,686 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>THE QUICK AND DIRTY GUIDE TO JAPANESE modified by Shawn</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style><link rel="stylesheet" href="../style_notion.css"></head><body><article id="42dd2f26-a135-46b2-8bf8-fed72381f1d1" class="page sans"><header><h1 class="page-title">THE QUICK AND DIRTY GUIDE TO JAPANESE modified by Shawn</h1><p class="page-description"></p></header><div class="page-body"><hr id="de2e8b44-6277-45d6-96fa-c63bec520b48"/><p id="13691db7-7801-429b-8764-079fad0a8b48" class=""><code>by Tad Perry</code></p><figure id="ce3a2e70-562a-498b-bb7b-694e50e430c6"><a href="http://rut.org/~wmaton/www/pub/jap.guide.txt" class="bookmark source"><div class="bookmark-info"><div class="bookmark-text"><div class="bookmark-title"></div></div><div class="bookmark-href">http://rut.org/~wmaton/www/pub/jap.guide.txt</div></div></a></figure><p id="91506919-054c-4e0c-98c2-6e90662814b1" class="">Modified by <a href="https://www.notion.so/THE-QUICK-AND-DIRTY-GUIDE-TO-JAPANESE-modified-by-Shawn-42dd2f26a13546b28bf8fed72381f1d1?pvs=21">Shawn Pinciara</a> for better reading.</p><hr id="b0bb83b7-9cc7-4468-a98f-82128bf9d3a3"/><h1 id="c190a848-49bd-4485-9803-ff3c0e269a57" class="">INDEX:</h1><ul id="067ea69a-4788-45d7-8741-8a8e417e83d4" class="bulleted-list"><li style="list-style-type:disc">PREFACE</li></ul><ul id="04a6ff2b-b3ef-4d74-b6dd-4875404e0d74" class="bulleted-list"><li style="list-style-type:disc">WORD ORDER</li></ul><ul id="cd561ba8-80f3-49cb-afb9-92fe57787758" class="bulleted-list"><li style="list-style-type:disc">PARTICLES</li></ul><ul id="817fc547-de35-45ee-8358-5033d556577f" class="bulleted-list"><li style="list-style-type:disc">DELETIONS</li></ul><ul id="2fcc88c5-338a-4439-8897-b228f3cd97ce" class="bulleted-list"><li style="list-style-type:disc">VERB CONJUGATIONS</li></ul><ul id="4f23f30c-e6f3-4b93-a029-eeb8cc9f0329" class="bulleted-list"><li style="list-style-type:disc">ADJECTIVES</li></ul><h1 id="a708d99b-6e04-4bcc-88cb-deb68c04ed18" class="">PREFACE:</h1><p id="51498d79-24e2-47c2-b56b-1bdba33090d5" class="">Many students of Japanese just want to communicate. Sure, they want to<br/>say things correctly as often as possible, but they also want to get<br/>into the language quickly and start mixing it up early. This QUICK AND<br/>DIRTY GUIDE TO JAPANESE was meant to help you do just that. It makes<br/>no pretense of being complete, but tries to pack the most <br/><em>useful<br/>information<br/></em> necessary to achieve the <em>goal of using Japanese</em> in the<br/><br/><em>shortest possible space</em>. This article covers four basic things: word<br/>order, particles, how to deletions work, and verb conjugation.  That<br/>pretty much covers what you need to know to make a Japanese sentence<br/>that sounds more or less natural.<br/></p><p id="961e39bf-f91a-4dae-8b1b-8247324711f9" class="">What you need is very <span style="border-bottom:0.05em solid">brief grammatical rules</span> that are presented<br/>clearly so you don&#x27;t get confused. Memorize the grammar! I&#x27;ve reduced<br/>it to the absolute lowest common denominator so that it&#x27;s not<br/>overwhelming but it still needs to be memorized.<br/></p><p id="cebea659-a003-4cc2-9428-df95d4faf562" class="">After you get the rules down pat, you need a <span style="border-bottom:0.05em solid">vocabulary</span>. Again this is<br/>just a matter of memorization. For nouns you can look in a dictionary<br/>or ask a native speaker. They almost never inflect (in any true<br/>meaning of the word) and are therefore easy to remember and<br/>manipulate. For verbs, it is usually possible to derive all<br/>inflections (you must know the rules for inflection though) after<br/>memorizing just one form. Sometimes you need to know two forms. You&#x27;ll<br/>learn more about this later in this guide.<br/></p><p id="a609d68f-a798-48d7-8057-fb6eb543823a" class="">As for rules on <span style="border-bottom:0.05em solid">inflecting verbs and adjectives</span>, I&#x27;ve tried to put<br/>together the most compact rules conceivable for allowing you to<br/>manipulate every verb you ever encounter and hopefully you can take it<br/>from there. The less mental overhead for remembering how to do<br/>inflect, the less painful it will be for you. But it still requires a<br/>certain amount of memorization. After you know the conjugation rules<br/>pat, you can add new verbs to your vocabulary almost as easily as<br/>nouns: look in a dictionary or ask a native speaker.<br/></p><p id="492a1ead-d295-47e9-8259-287661da4e7b" class="">Now that you have a bunch of nouns and a bunch of verbs and adjectives<br/>(that you can inflect), you need to know how to piece them together.<br/>That&#x27;s where <br/><span style="border-bottom:0.05em solid">word order, particles and deletions</span> come in.  Remember,<br/>this is a <br/><em>Quick and Dirty</em> guide so don&#x27;t expect these<br/>generalizations to <br/><em>always</em> work, just expect them to work in as many<br/>cases as possible based on what I know, and trust me that you&#x27;ll at<br/>least be understood if your pronunciation is acceptable.<br/></p><p id="017ca12b-6e05-4859-9d16-a55c6762ecc9" class="">Now, in compiling this guide, I noticed that the descriptions are<br/>pretty comprehensive. So why aren&#x27;t these things presented this way in<br/>class?  There are several reasons. First of all, I assume you are<br/>intelligent and motivated enough to use the information yourself. No<br/>drills, no tests.  I present a fact exactly ONCE and move on. So pay<br/>attention. <br/></p><blockquote id="378a9482-dcf0-4141-8ee2-04d01e6e3222" class="">Also, an educational institution obviously has a financial<br/>stake in dragging out your language learning as long as possible (and<br/>confusing you along the way), now doesn&#x27;t it? They also feel<br/>obligated, since you are paying them, to teach you every little detail<br/>so you feel like you&#x27;re getting your money&#x27;s worth. But in this guide<br/>I don&#x27;t go into ever detail and exception. That&#x27;s why correspondence<br/>with the author with comments such as: &quot;You made generalization X, but<br/>forgot to mention exceptions Y and Z.&quot; won&#x27;t be appreciated very<br/>much. This is a <br/><em>quick and dirty</em> guide, remember?  So be forewarned<br/>that there are exceptions. Even so, I have tried to be as accurate as<br/>possible, but compactness takes precedence over detail. Got it? Okay,<br/>let&#x27;s go.<br/></blockquote><p id="2e90ae11-ff3f-4159-942d-e8790decac0a" class="">
+</p><hr id="31c07c94-3977-4cba-a986-85d4c7a8ab66"/><h1 id="24b15ce2-72b1-4271-a050-01b34166c651" class="">WORD ORDER:</h1><p id="3959ba95-279c-4d43-83f4-f762f7630ba8" class="">Before talking about particles let&#x27;s get into word order. In general,<br/>standard word order for Japanese when using an action verb is as shown<br/>below. SUBJECTs are put in brackets to stress that they are very often<br/>deleted.<br/></p><h2 id="cfaebb79-bd4f-4c37-9109-496d3daa0dc6" class="">[SUBJECT]+TIME+PLACE/IMPLEMENT+INDIRECT OBJECT+OBJECT+ACTION VERB</h2><p id="b2b80089-1100-4320-b159-07b77b083846" class="">&quot;[Watashi wa] ashita gakkou de sensei ni prezento o agemasu.&quot;<br/>(&quot;[I&#x27;m] going to give a present to [my] teacher tomorrow.&quot;)<br/></p><p id="a369233e-f4b4-497f-bb39-79891071b2de" class="">For an existence verb it is:</p><h2 id="b9966d0c-2186-4b7b-96b3-dfe70f698f0a" class="">[SUBJECT]+TIME+LOCATION+EXISTENCE VERB</h2><p id="8384945e-b119-42a2-befe-4010b221332f" class="">&quot;Takahashi wa ima honsha ni <a href="https://www.tofugu.com/japanese-grammar/iru-aru/">iru</a>.&quot; (<a href="https://www.tofugu.com/japanese-grammar/iru-aru/">SEE: IRU AND ARU</a>)<br/>(&quot;Takahasi is in the main office right now.&quot;)<br/></p><p id="18961a2b-a48e-4dfe-badf-7a03cba2168e" class="">For a motion verb it is:</p><h2 id="04c73272-96f7-4ac6-ae6a-271a75794b82" class="">[SUBJECT]+TIME+ORIGIN+ROUTE+DESTINATION+MOTION VERB</h2><p id="bc910cc9-b669-4436-a11e-9b1a74f6ef62" class="">&quot;[Watashi wa] ashita paatii ni iku.&quot;<br/>(&quot;[I&#x27;m] going to a party tomorrow.&quot;)<br/></p><p id="1038c3bf-8e19-48d7-931f-db9834da9378" class="">IMPORTANT: Word order before the verb and the particles that nouns<br/>take depend on the verb type: action, existence or motion.<br/></p><p id="1e94d163-31ba-492a-9f7d-5cccfd789d9c" class="">
+</p><hr id="03d90f5d-702f-4145-b32a-6ce7af55ab51"/><p id="f7e55925-ea48-4eff-a2c6-e892cad52a9a" class="">
+</p><h1 id="6c969982-1666-4964-b242-a0846e7f4e03" class="">PARTICLES:</h1><h2 id="79914191-206b-4c99-b6e5-320ef4943cd6" class="">SUBJECT</h2><p id="dd855182-ce2c-407e-a5da-6e053e859fd2" class="">In general, if a new subject is introduced where another had<br/>been previously understood, signal the change by placing &quot;wa&quot; after<br/>the subject. If a subject is understood, but for some reason not<br/>deleted (that&#x27;s rare) use &quot;<br/><span style="border-bottom:0.05em solid">ga</span>&quot; or nothing. Often you can move a<br/>subject out after the verb when things start piling up before the<br/>verb.  Like: &quot;Ashita boku ga kooen de utau.&quot; (I&#x27;m singing at the park<br/>tomorrow.) often becomes: &quot;Ashita kooen de utau, boku.&quot; For more on<br/>SUBJECTs, see the longer description in the next section, &quot;Subjects<br/>and Deletion&quot;. Knowing how to delete is a key to sounding natural.<br/></p><h2 id="56f1446d-72f9-4178-929c-2550d7046dec" class="">TIME</h2><p id="df3859c0-50a5-4559-bae2-d7d930a5bb59" class="">A time word or time phrase is usually followed by &quot;<span style="border-bottom:0.05em solid">ni</span>&quot;. In general,<br/>use &quot;ni&quot; for specific points in time or specific spans of time. So<br/>&quot;jyuu gatsu [ni]&quot; (October), &quot;san gatsu mikka [ni]&quot; (March 3rd) take<br/>&quot;ni&quot;. A word like &quot;ashita&quot; (tomorrow) that can only be understood by<br/>context (it changes depending on when you say it). These types of<br/>words are called &quot;deictic&quot; time words and don&#x27;t take &quot;ni&quot;.  &quot;Ashita<br/>iku&quot; (&quot;I&#x27;m going tomorrow.&quot;), but: &quot;sanji ni iku&quot; (&quot;I&#x27;m going at 3.&quot;)<br/>Even if you have trouble making the distinction between these two<br/>types of time words, don&#x27;t worry: Japanese people can understand what<br/>you mean even if you get it backwards.<br/></p><h2 id="e3e2df0f-aa1f-422d-9f5b-1e3c65308a7e" class="">PLACE/IMPLEMENT</h2><p id="143ef817-37cd-496b-97e2-0655c3c9f1e1" class="">By PLACE, I mean the location that a volitional <em>action</em> occurrs. If<br/>you&#x27;re eating at home, that&#x27;s &quot;ouchi <br/><span style="border-bottom:0.05em solid">de </span>shokuji suru&quot;. By implement, I<br/>mean a tool or item you use to perform an action. If you&#x27;re eating<br/>with chopsticks, that&#x27;s &quot;ohasi de taberu&quot;. The place you do something<br/>or the thing you use to do something takes &quot;de&quot;. If you&#x27;re going<br/>somewhere by car, you say &quot;kuruma de iku&quot;. It&#x27;s not that hard to<br/>understand really.<br/></p><h2 id="d191e088-9c4e-4ece-bc1a-8d0a4691b877" class="">DESTINATION</h2><p id="a9ba3627-d843-45d9-8651-4a48647d0d14" class="">In Japanese, a DESTINATION is not an indirect object. You must think<br/>of it as a destination belonging to a verb of motion.  Verbs of motion<br/>that give a DESTINATION, or ones of existence that tell the LOCATION<br/>of something take &quot;<br/><span style="border-bottom:0.05em solid">ni</span>&quot;. (DESTINATIONs can also take &quot;he&quot;.) Try to<br/>distinguish PLACE from LOCATION by thinking of it this way: PLACE is<br/>WHERE SOMETHING IS DONE, LOCATION is WHERE SOMETHING OR SOMEONE<br/>EXISTS.<br/></p><h2 id="01118a74-0ac1-47ed-8ba1-857c12f63553" class="">ORIGIN and ROUTE</h2><p id="24ee06a3-2272-4c0f-af4f-6d8bbce7a800" class="">Use &quot;<span style="border-bottom:0.05em solid">kara</span>&quot; (&quot;from&quot;) after an ORIGIN and &quot;<span style="border-bottom:0.05em solid">o</span>&quot; after a ROUTE. &quot;Gakkoo<br/>kara, kooen o totte, ouchi ni kaeru.&quot;  (Lit. &quot;I&#x27;m going home from<br/>school through the park.&quot;) There&#x27;s usually an intermediate verb in<br/>this type of usage. This covers the seemingly odd construction in<br/>Japanese of &quot;mado wo magaru&quot;. You see you turn <br/><em>through</em> the corner.<br/>It&#x27;s not the ORIGIN. It&#x27;s not the DESTINATION. It&#x27;s along the way.<br/>Therefore it&#x27;s the ROUTE you take. Therefore, you need &quot;wo&quot;<br/></p><h2 id="481e12f8-c767-4328-b265-70eb352c752d" class="">OBJECT</h2><p id="4f9d354f-4bae-482c-994c-d0ac72d480cb" class="">Objects are followed by &quot;<span style="border-bottom:0.05em solid">o</span>&quot; or nothing. &quot;Hon o yonde iru&quot; (I&#x27;m<br/>reading a book.) This is a really simple one in most cases.  I really<br/>don&#x27;t know many Japanese learners who can&#x27;t understand this concept.<br/></p><h2 id="b99e271e-7570-46fe-8b6f-f82da11670ba" class="">INDIRECT OBJECT</h2><p id="60c71f39-4790-42a2-b468-462590c05411" class="">Indirect objects are followed by &quot;<span style="border-bottom:0.05em solid">ni</span>&quot;. By INDIRECT OBJECT, I mean a<br/>sort of secondary object that some verbs take. &quot;Kono hon o anata ni<br/>ageru.&quot; (&quot;I&#x27;m going to give this book to you.&quot;) You have &quot;this book&quot;<br/>and you have &quot;to you&quot;. The &quot;this book&quot; part is the OBJECT. The &quot;to<br/>you&quot; part is the INDIRECT OBJECT. &quot;o&quot; and &quot;ni&quot; are used to<br/>distinguish these two. In English, a preposition tends to come before<br/>the indirect object. (Like the &quot;to&quot; before &quot;you&quot; in this example.)<br/>This is the one that in Japanese needs to take &quot;ni&quot;.<br/></p><h2 id="ce667ec5-3908-4d19-80bc-9c88a24a7cfb" class="">VERB</h2><p id="040e8700-0b46-42fd-b46f-e486e1300398" class="">Even a verb can take particles. You can use &quot;yo&quot; for exclamations and<br/>&quot;ka&quot; for questions. Most people find this easy. But the real problem<br/>with verbs is that they need to be <br/><span style="border-bottom:0.05em solid">inflected</span>. There&#x27;s a big section at<br/>the end of this guide that gives the rules on how to inflect Japanese<br/>verbs. Useful colloquial English equivalents of what those inflections<br/>mean are also given.<br/></p><h2 id="d0ed008c-b259-4b04-ae1b-7090b5fb8372" class="">IMPORTANT:</h2><p id="70bc1487-5679-423e-ad9a-9e0fbfdc3d52" class="">To boil this section down, remember it this way:</p><table id="a43afa68-7769-437f-8690-df71659a4162" class="simple-table"><thead class="simple-table-header"><tr id="b32cb764-fa61-4df2-9544-9687c16a8dcf"><th id="O}ef" class="simple-table-header-color simple-table-header">Type</th><th id="YlXQ" class="simple-table-header-color simple-table-header">To add</th><th id="AIS`" class="simple-table-header-color simple-table-header" style="width:516px">Infos</th></tr></thead><tbody><tr id="39dd9278-dbb0-432a-a547-97db7f2ea70b"><td id="O}ef" class="">SUBJECT</td><td id="YlXQ" class="">+wa/ga</td><td id="AIS`" class="" style="width:516px">(Delete subject if possible, show changes with &quot;wa&quot;.)</td></tr><tr id="db835e19-147e-47d9-8e4a-c469976be7b3"><td id="O}ef" class="">TIME</td><td id="YlXQ" class="">+ni</td><td id="AIS`" class="" style="width:516px"> (Use nothing if it&#x27;s a deictic time word.)</td></tr><tr id="267211e1-067e-4acf-b12e-6603ffb09e97"><td id="O}ef" class="">PLACE/IMPLEMENT</td><td id="YlXQ" class="">+de</td><td id="AIS`" class="" style="width:516px">(A place where you <em>do</em> something or a thing you use.)</td></tr><tr id="c64fd047-ff01-4d20-910b-31a192fca7b7"><td id="O}ef" class="">LOCATION</td><td id="YlXQ" class="">+ni</td><td id="AIS`" class="" style="width:516px">(A location where someone or something <em>is</em>.)</td></tr><tr id="63086dc2-d4aa-4cd0-a84f-8c58f779489a"><td id="O}ef" class="">ORIGIN</td><td id="YlXQ" class="">+kara</td><td id="AIS`" class="" style="width:516px"></td></tr><tr id="e4ef9dbe-03d1-4606-90c3-fa8eed44fc77"><td id="O}ef" class="">ROUTE</td><td id="YlXQ" class="">+o</td><td id="AIS`" class="" style="width:516px">(Part of the path you follow to get somewhere.)</td></tr><tr id="0d4da700-8fbc-4dfa-aeb0-db83c05b0eb2"><td id="O}ef" class="">DESTINATION</td><td id="YlXQ" class="">+ni/he</td><td id="AIS`" class="" style="width:516px">(Use &quot;ni&quot; over &quot;he&quot; but be aware that both are okay.)</td></tr><tr id="6855c4ed-e372-4df5-a343-889a0c658a4f"><td id="O}ef" class="">INDIRECT OBJECT</td><td id="YlXQ" class="">+ni</td><td id="AIS`" class="" style="width:516px">(Use this if you&#x27;re out of choices. It&#x27;s often right!)</td></tr><tr id="51ba3374-46a3-416d-b584-3c0ac7664778"><td id="O}ef" class="">DIRECT OBJECT</td><td id="YlXQ" class="">+o</td><td id="AIS`" class="" style="width:516px"></td></tr></tbody></table><p id="609fbd1a-0138-468b-93ca-e904e72e8795" class="">After understanding the descriptions given earlier, these nine lines<br/>are the key to knowing what particle to use 90% of the time. Even if<br/>these rules cause you to make a mistake you&#x27;re definitely being<br/>understood.<br/></p><p id="eab716f7-224a-4efe-bab4-233bcd9fdc7d" class="">
+</p><hr id="7fd9e693-01cb-402a-b4a2-527e1d8cf770"/><h1 id="cc8665d7-54c5-4611-8d6b-431441277aa2" class="">DELETIONS:</h1><p id="170ae39c-d8b1-4913-a399-d16882d600bd" class="">Usually, you don&#x27;t have to worry about whether to use wa or ga,<br/>because most subjects can usually be deleted. &quot;You can&#x27;t get something<br/>wrong, if you leave it out in the first place.&quot; That&#x27;s my philosophy.<br/>So we&#x27;ll work on the parts of sentences that you can delete, starting<br/>with subjects.<br/></p><p id="db4e7bc8-d2c7-4c3c-94c4-08d765fb629c" class="">If you turn to a Japanese and suddenly make a statement:</p><p id="ccfecf44-0710-4d68-9491-a87dc8a0faec" class="">&quot;Ashita paatii ni iku.&quot;<br/>(&quot;[I&#x27;m] going to the party tomorrow.&quot;)<br/></p><p id="3e8777ae-1b0c-469f-b6dc-665b5884d5ff" class="">The listener will <em>naturally</em> assume the subject is you. So don&#x27;t<br/>bother supplying any subject. To do so, in fact, is not natural; a<br/>Japanese wouldn&#x27;t normally do it.<br/></p><p id="8b2eca17-064c-4418-9a80-59f57af1e8b6" class="">If you turn to a Japanese and suddenly ask a question:</p><p id="f7f61a18-7ea8-4933-9f46-c80b1378e549" class="">&quot;Ashita paatii ni iku?&quot;<br/>(&quot;[Are you] going to the party tomorrow?&quot;)<br/></p><p id="9b882b9e-a998-4e43-a6a1-a6fe6a8ab8f7" class="">The listener will assume the subject is himself or herself. Easy! Most<br/>one-on-one conversations where you or the listener is the subject<br/><br/><em>don&#x27;t need an explicit subject</em>. No chance of screwing up wa/ga here.</p><p id="3de3b083-5422-4797-8ceb-c0f881d03dc4" class="">If you suddenly turn to a Japanese and want to make a statement or ask<br/>a question about some other person altogether, use &quot;wa&quot; after that<br/>person&#x27;s name or title the first time you mention that person:<br/></p><p id="e88e2e35-b994-4ab3-84d4-381bf4bfa00c" class="">&quot;Shachoo wa, ashita paatii ni iku?&quot;<br/>(&quot;Is the shachoo going to the party tomorrow?&quot;)<br/></p><p id="7d7dbb3c-e3b6-42dd-98fb-53965939e767" class="">Let&#x27;s just say the &quot;wa&quot; introduces a change in subject. This time it<br/>signals a change from the default &quot;you the listener&quot; to the &quot;shachoo&quot;.<br/>After you establish that you&#x27;re talking about the president you can<br/>go back to dropping subjects again:<br/></p><p id="69a2df8f-6f7c-4e4c-9812-19d8caf8c081" class="">&quot;Sono ato wa, kaeru ka na?&quot;<br/>(&quot;Is he going home after that?&quot;--again some vagueness added with<br/>&quot;ka na&quot; (&quot;I wonder&quot;). Don&#x27;t be too forward making assumptions<br/>about other people. This trick also stops the listener from<br/>thinking the question is back to being about themself. There&#x27;s a<br/>strong tendency for questions to erase understood info and you<br/>have to signal that things are unchanged. Usually you play with<br/>the verb a little bit to get this across. Note that the change in<br/>time being talked about was also signaled with a &quot;wa&quot;.)<br/></p><p id="f656f349-f51a-49b2-b9a6-f6c535845cc2" class="">Note that this tendency to delete in Japanese parallels the point<br/>where an English native speaker would use plain pronouns like, I, you,<br/>he, she, they. When you start a comment about yourself, you use &quot;I&quot;<br/>(Japanese people delete). When you ask about the listener, you use<br/>&quot;you&quot; (Japanese people delete). When you&#x27;ve first established someone<br/>and then keep going with that person, you use &quot;he&quot; or &quot;she&quot; (Japanese<br/>people delete). See?  Simple. So don&#x27;t go around using &quot;watakushi&quot;,<br/>&quot;anata&quot;, &quot;kare&quot; and &quot;kanojo&quot; all the time. Okay? Use them the first<br/>time only and then get rid of them.<br/></p><h2 id="b9c14cb5-f7bc-4f38-bae9-5d0363b846d2" class="">Deleting other Established Info (particle wa)</h2><p id="1ec22c7a-20c2-4677-a213-d5261640dfea" class="">Just like with subjects, any info that&#x27;s been established can be<br/>deleted, and any changes in established info can be signalled using<br/>&quot;wa&quot;:<br/></p><p id="d8f3a692-635b-4fc9-b572-d27618c01995" class="">&quot;Ashita paatii ni iku?&quot;<br/>(&quot;[Are you] going to the party tomorrow?&quot;)<br/></p><p id="ffd6a81b-87c1-487a-93f2-297abb6d1ed4" class="">&quot;Un, anata wa?&quot;<br/>(&quot;Yeah, how about you?&quot;--info about &quot;paatii ni&quot; and &quot;iku&quot; unchanged,<br/>therefore deleted. Subject changed to original questioner, so the<br/>change is signaled with &quot;wa&quot;.)<br/></p><p id="40ed21f7-29e5-42f9-beef-6ed10191ba9c" class="">&quot;Un-n, ikanai&quot;<br/>(&quot;No, I&#x27;m not going.&quot;--info about &quot;paatii ni&quot; still deleted, &quot;iku&quot;<br/>comes back as &quot;ikanai&quot; because it has changed form.)<br/></p><p id="c013b06f-721e-44c3-9424-038ab4ed2c81" class="">&quot;Sono ato no eiga wa?&quot;<br/>(&quot;How about the movie afterwards?&quot;--the established info &quot;paatii&quot;<br/>changed to &quot;eiga&quot; so we use &quot;wa&quot; to establish the change in<br/>understood information. Understood info that <br/><em>hasn&#x27;t</em> changed is<br/>still left out, like the subject &quot;boku&quot; and the action &quot;iku&quot;.)<br/></p><p id="af9d0ae6-ab3d-49c2-8384-6439b1626fb1" class="">&quot;Un-n, ikanai.&quot;</p><p id="854a40bc-6c97-424e-8bb4-dd49f1359982" class="">This is pretty much how deletions work whether it be subjects or<br/>something else. In general, always go for deletions if possible. This<br/>section also serves the purpose of giving you a feel for &quot;wa&quot;.<br/></p><h2 id="31b464ef-9e7b-414f-b6ab-fce4b5984602" class="">Particle Ga</h2><p id="71eb1a44-4ff4-48bb-8973-f20951e51b5d" class="">In general, you don&#x27;t need it. In the instances where you do, you<br/>can slowly build a feel for it. Basically, you need it in situations<br/>where you&#x27;re not expressing a change in subject, but where you want<br/>to state the subject even though it is established info. Usually,<br/>this is to add emphasis or avoid ambiguity.<br/></p><p id="cc3afca2-d17d-4353-9476-4933afdd37ff" class="">&quot;Shacho wa, ashita paatii ni iku?&quot;<br/>(&quot;Is the shachoo going to the party tomorrow?&quot;)<br/></p><p id="4a06bc28-cbf5-47f5-8c4d-c6d288a96ddd" class="">&quot;Un-n, ikanai mitai.&quot;<br/>(&quot;No, it doesn&#x27;t look like it.&quot;--throw in a &quot;mitai&quot; because you<br/>don&#x27;t wan&#x27;t to act too sure of the actions of others in Japanese.<br/>We&#x27;re not really covering that though, it&#x27;s just a side note.)<br/></p><p id="89f9f7df-f463-4a14-86ec-ab857ae5f3f5" class="">&quot;Nande?&quot;<br/>(&quot;Why not?&quot;)<br/></p><p id="275fbc6b-a46d-470c-b444-d6a827d21f8f" class="">&quot;Sore ga wakaranai&quot;<br/>(&quot;I don&#x27;t know why not.&quot;--there&#x27;s no real ambiguity in this case,<br/>and &quot;wakaranai&quot; alone would have worked, but it is a case where<br/>you&#x27;re not changing an understood subject to another, you&#x27;re<br/>restating the understood subject as such for some emphasis. If<br/>you&#x27;re stating an established subject, for whatever reason, use<br/>&quot;ga&quot;. But you could&#x27;ve deleted, and if you were following my<br/>philosophy you would have. This one sentence also helps dispell<br/>the huge MYTH that &quot;wa&quot; is for negative sentences. Wipe that myth<br/>from your mind. As a mental exercise, stop and think about why<br/>negative sentences and changes in subject often go hand in hand. In<br/>that you&#x27;re admitting other possible subjects that might be<br/>construed at that point, but you need to point out the subject that<br/><br/><em>you&#x27;re</em> talking about to avoid confusion. When you can get your<br/>head around this concept, you will have come to understand &quot;wa&quot;<br/>and &quot;ga&quot;.)<br/></p><h2 id="c02d707e-041b-4fb0-9c3c-74ba489f724c" class="">Particle Mo</h2><p id="3e71f7e3-299f-4835-8da2-5154ad6103d4" class="">Use mo when you&#x27;re adding more info on a list of established info. It<br/>may be used alone when marking subjects and objects, and can follow<br/>other particles (like ni, de, and he). Put it this way: if &quot;wa&quot; clears<br/>the understood info and replaces it, &quot;mo&quot; adds extra info on top of<br/>what&#x27;s already there without clearing out anything.<br/></p><p id="561638fb-6053-49ca-b851-2a5a7a0966e3" class="">&quot;Ashita paatii ni iku?&quot;<br/>(&quot;[Are you] going to the party tomorrow?&quot;)<br/></p><p id="fa038651-0c6f-4cbf-a134-b60c76ed727d" class="">&quot;Un, iku yo. Kimi wa?&quot;<br/>(&quot;Yeah, I&#x27;m going. Are you?&quot;--note what was deleted and why.<br/>Look at deletions in the English, too. See any similarities?)<br/></p><p id="e0be1136-fbab-4e34-b5ac-b778e07af474" class="">&quot;Boku mo iku.&quot;<br/>(&quot;I&#x27;m going too.&quot;--add yourself to the understood subject.)<br/></p><p id="5df7543d-257f-49ab-b4c8-21ecb6bd767c" class="">Mo is easy, so we won&#x27;t waste any more time with it. Just trying to be<br/>complete and it only took a few lines to do.<br/></p><p id="cd1d37b6-a49a-468e-a3f1-cab890bfca8f" class="">
+</p><hr id="6d32a9b2-14f0-459e-a449-413e47d09c85"/><h1 id="1c680d37-dc0e-4eba-8d20-905e467bb9bc" class="">VERB CONJUGATIONS:</h1><p id="1e8e34ef-4502-42c3-a5ab-2a2cf933281e" class="">Another thing that many Japanese learners need is an easy method of<br/>arriving at all the verb conjugations and a highly reduced set of<br/>rules for how to get them right on the different types of verbs.<br/>That&#x27;s easy enough really because there are only three major verb<br/>types: -ru verbs, -u verbs, and -aru verbs (a polite type not much<br/>used except for &quot;gozaru/gozaimasu&quot;). People really hate Eleanor Jorden<br/>for this kind of naming, but in language learning you take what&#x27;s easy<br/>and go with it; there&#x27;s no need to worry about theoretical linguistics<br/>here. Also note that I changed romanization styles at this point to<br/>one that makes the changes in verbs appear much more uniform.<br/></p><p id="1b39ab20-115e-43b4-8813-3ec07d41497e" class="">Ru verbs are those that end in -ru like taberu and ireru. There is<br/>always an &quot;i&quot; or an &quot;e&quot; before &quot;ru&quot;. &quot;-u&quot; verbs end in u, ku, gu, bu,<br/>mu, nu, su, tu, or [a,i,u,e,o]+ru. See the overlap? It&#x27;s where &quot;i&quot; or<br/>&quot;e&quot; comes before &quot;ru&quot;. Luckily, an ambiguous verb is <br/><em>usually</em> a -ru<br/>verb. But to be sure, you should memorize two forms for all &quot;e+ru&quot; and<br/>&quot;i+ru&quot; verbs (e.g. ireru/irete and hairu/haitte), so you can keep them<br/>straight. So here&#x27;s the process of picking up a new verb. You look in<br/>the dictionary or ask a native speaker.<br/></p><blockquote id="10dd4268-a21f-40a0-a51c-9936a14485df" class="">Q. How do you say &quot;kick&quot;?<br/>A. &quot;keru&quot;<br/></blockquote><p id="44186d67-8d99-41e8-818a-a16e1bf172cd" class="">If it had ended in u, ku, gu, bu, mu, nu, su or tu that would be all<br/>the information you need to come up with every inflection. But this<br/>one is &quot;e+ru&quot; so you need to know if it&#x27;s a -ru verb or an -u verb.<br/>Check by asking for another form.<br/></p><blockquote id="bada9911-e3e8-4fbe-84cf-c96395c62601" class="">Q. Do you say &quot;kemasu&quot; or &quot;kerimasu&quot;?<br/>A. You say &quot;kerimasu&quot;.<br/></blockquote><p id="463ecff9-b9ed-4dae-9f9e-7290fdbd0cf6" class="">Well, now you know it&#x27;s an -u verb. If you drop -ru to add -masu,<br/>that&#x27;s always a -ru verb. If you change -u to -i that&#x27;s always an -u<br/>verb. Once you know which it is you can make all the inflections you<br/>need just from knowing &quot;keru&quot;.<br/></p><h2 id="e1f81f17-6d70-478b-b679-3c7ff18b2d87" class="">Ru Verbs</h2><p id="1e06db19-7925-44db-9210-edf2c9bba26b" class="">For these verbs, everything is done by dropping or replacing -ru with<br/>something else.  Just remember the different uses of each conjugation.<br/></p><p id="30875fba-5bff-46f9-bca6-df6d5dcae940" class="">
+</p><table id="e37471b1-0b21-47ea-8130-b47f2514d4dd" class="simple-table"><thead class="simple-table-header"><tr id="a6745632-8572-4e72-9059-20439697087f"><th id="@jxs" class="simple-table-header-color simple-table-header">Extensions added CASUAL</th><th id="W&lt;jF" class="simple-table-header-color simple-table-header">Extensions added <span style="border-bottom:0.05em solid">POLITE</span></th><th id="?F~p" class="simple-table-header-color simple-table-header">Meaning</th><th id="KrLu" class="simple-table-header-color simple-table-header" style="width:385px">Example</th></tr></thead><tbody><tr id="29c2aec4-4701-476f-b788-b81e4a88cc82"><td id="@jxs" class="">-ta</td><td id="W&lt;jF" class="">-mashita</td><td id="?F~p" class="">past</td><td id="KrLu" class="" style="width:385px"></td></tr><tr id="cd5efdc7-03b9-4d54-8b87-1eaa04d5decb"><td id="@jxs" class="">-nai</td><td id="W&lt;jF" class="">-masen</td><td id="?F~p" class="">negative</td><td id="KrLu" class="" style="width:385px"></td></tr><tr id="50b6970f-cf63-45e9-a1b8-0a623e24bdf2"><td id="@jxs" class="">-te</td><td id="W&lt;jF" class="">-te imasu</td><td id="?F~p" class="">AND</td><td id="KrLu" class="" style="width:385px">Croissant o tabe<span style="border-bottom:0.05em solid">te</span>, copi o nomimasu = (I) eat a croissant AND drink a coffee</td></tr><tr id="74d7af16-99ca-468d-9e20-41794f7a9ebd"><td id="@jxs" class="">-te iru</td><td id="W&lt;jF" class="">-te imasu</td><td id="?F~p" class="">ing form</td><td id="KrLu" class="" style="width:385px">i’m writing a letter</td></tr><tr id="a23ace80-f566-451d-bc82-754345779553"><td id="@jxs" class="">-yoo</td><td id="W&lt;jF" class="">-mashoo</td><td id="?F~p" class="">let’s…</td><td id="KrLu" class="" style="width:385px">ikimash<span style="border-bottom:0.05em solid">yoo</span> = let’s go! </td></tr><tr id="e90fedc1-41cd-4a24-a88d-65bcf5c36e33"><td id="@jxs" class="">-na</td><td id="W&lt;jF" class="">-nasai</td><td id="?F~p" class="">please…</td><td id="KrLu" class="" style="width:385px">machinasai = please wait! (Similar to “matte kudasai” using the same verb)</td></tr><tr id="ddd171e8-0e6e-43dc-8d1e-631ba9fd836a"><td id="@jxs" class="">-yasui</td><td id="W&lt;jF" class=""></td><td id="?F~p" class="">easy to…</td><td id="KrLu" class="" style="width:385px">Kore wa tabe<span style="border-bottom:0.05em solid">yasui </span>= this is easy to eat</td></tr><tr id="b92ccca0-a44f-4436-a86f-afc143afcc2b"><td id="@jxs" class="">-tara</td><td id="W&lt;jF" class="">-mashitara</td><td id="?F~p" class="">if…</td><td id="KrLu" class="" style="width:385px"></td></tr><tr id="d6bf1dbc-3bd7-4b20-83d5-8187375f6d8f"><td id="@jxs" class="">-tari</td><td id="W&lt;jF" class=""></td><td id="?F~p" class="">do things like…</td><td id="KrLu" class="" style="width:385px"></td></tr><tr id="ed4bb510-8ec6-405d-a495-f58d5f74e333"><td id="@jxs" class="">-reba</td><td id="W&lt;jF" class=""></td><td id="?F~p" class="">if…</td><td id="KrLu" class="" style="width:385px"></td></tr><tr id="2adbd8d1-a1e5-4b07-bfdc-9be551f9f57c"><td id="@jxs" class="">-ro</td><td id="W&lt;jF" class="">-te kudasai</td><td id="?F~p" class="">rude orders</td><td id="KrLu" class="" style="width:385px"></td></tr><tr id="939beccc-8391-4df4-8b92-24f9b8fbb1ee"><td id="@jxs" class="">-rareru</td><td id="W&lt;jF" class="">-raremasu</td><td id="?F~p" class="">can</td><td id="KrLu" class="" style="width:385px"></td></tr><tr id="146f15c3-6008-45f1-a9d2-fcffad3728ea"><td id="@jxs" class="">-saseru</td><td id="W&lt;jF" class=""></td><td id="?F~p" class="">make someone do</td><td id="KrLu" class="" style="width:385px"></td></tr><tr id="d000f463-c519-4cf8-b6d5-853a9476735c"><td id="@jxs" class="">-rareru</td><td id="W&lt;jF" class=""></td><td id="?F~p" class="">was …+ed</td><td id="KrLu" class="" style="width:385px"></td></tr><tr id="16165514-cb1e-403e-b986-23e3d6d23bfa"><td id="@jxs" class="">-saserareru</td><td id="W&lt;jF" class=""></td><td id="?F~p" class="">be made to…</td><td id="KrLu" class="" style="width:385px"></td></tr></tbody></table><p id="f78a3acd-2369-4da8-9b1e-53145b69f01d" class="">
+</p><p id="8ec4719b-4e46-4bad-9505-fc8da0528e30" class="">drop -ru to add extensions like -masu (polite), -yasui (easy to):    tabe+X<br/>(&quot;Tabeyasui&quot;. This is easy to eat.)<br/></p><p id="f9b15e46-e935-4fa4-9b8c-cde88d115e25" class="">replace with &quot;-te&quot; for gerund:          tabete<br/>(The gerund form is for &quot;and&quot;-ing verbs (eat and go, &quot;tabete iku&quot;) and<br/>also for simple orders: Eat that. &quot;Are tabete&quot;.)<br/></p><p id="766a8b51-8e12-4719-a343-5dcfdb8cbd06" class="">replace with &quot;-ta&quot; for past tense:      tabeta<br/>(I ate it.)<br/></p><p id="4132b383-206d-477c-b776-2f83060ac596" class="">replace with &quot;-tara&quot; for meaning &quot;if&quot;:  tabetara<br/>(If I/someone eats. often has the feel of &quot;once&quot;. once it happens, then...)<br/></p><p id="214e1922-4b49-4746-842e-15aa99dfed48" class="">replace with &quot;-tari&quot; for meaning &quot;do things like&quot;:  tabetari<br/>(I did things like eating--&quot;tabetari sita&quot;. not really used much)<br/></p><p id="beffa92c-7ac0-4b31-8aab-1676820dbebd" class="">replace with &quot;-reba&quot; for another &quot;if&quot;:  tabereba<br/>(If I/someone eats. Much more like an &quot;if&quot; than &quot;-tara&quot; but don&#x27;t worry<br/>to much about the difference, they&#x27;re pretty much interchangeable.)<br/></p><p id="3f7576ff-1234-47fa-9e2b-24e28e8dbd52" class="">replace with &quot;-yoo&quot; for &quot;let&#x27;s&quot;:        tabeyoo<br/>(Let&#x27;s eat.)<br/></p><p id="bd817aa3-a386-49c1-8a16-6fd16c483bb1" class="">replace with &quot;-ro&quot; for rude orders:     tabero<br/>(Eat dammit!)<br/></p><p id="713f2f10-fa1e-47ec-a133-96af8a341313" class="">replace with &quot;-nai&quot; for negative:       tabenai<br/>(Note that to order someone <br/><em>not</em> to do something you add &quot;de&quot; here.<br/>Don&#x27;t eat that! &quot;Are tabenai de yo!&quot;)<br/></p><p id="ef82560a-ce33-4a9d-b62d-1d300a28fda7" class="">replace with &quot;-rareru&quot; for &quot;can&quot;:       taberareru &lt;- these are now -ru verbs<br/>(I can&#x27;t eat this! &quot;kore taberarenai yo!&quot; Good in cafeteria&#x27;s.)<br/></p><p id="1439d21e-e506-4de9-af7a-98d6bf042f9d" class="">replace with &quot;-saseru&quot; for &quot;make (someone) do&quot;: tabesaseru &lt;- now a -ru verb<br/>(&quot;Kore tabesasenai de yo!&quot; Don&#x27;t make me eat this. A negative request<br/>equal in level to &quot;tabete&quot; is &quot;nai&quot; plus &quot;de&quot;, remember?)<br/></p><p id="f8f4c4d9-f2c7-4927-a19a-d6ce9019f0c9" class="">replace with &quot;-rareru&quot; for passive &quot;was X-ed&quot;:  taberareru &lt;- now a -ru verb<br/>(Looks exactly like &quot;can&quot; for this type verb. &quot;Raion ni taberareta.&quot;<br/>I was eaten by a lion. Use &quot;ni&quot; for &quot;by&quot; to show the agent of a passive verb.)<br/></p><p id="d6d33634-b908-4366-ba26-15f19a93620a" class="">replace with &quot;-rareru&quot; for potential &quot;can do X&quot;:  taberareru &lt;- now a -ru verb<br/>(Looks exactly like passive for this type verb. &quot;natto taberaru?&quot;<br/>Can you eat natto? Get used to this question!!)<br/></p><p id="dda2790d-46b2-484d-92c4-48149399d88e" class="">replace with &quot;-saserareru&quot; for &quot;be made to&quot;:    tabesaserareru &lt;- a -ru verb<br/>(This follows from just putting two separate types above together.<br/>My mom made me eat chicken. &quot;Okaasan ni chikin wo tabesaserareta.&quot;<br/>Putting it in passive makes you seem like you didn&#x27;t want to and you<br/>feel sorry for yourself.)<br/></p><p id="74223472-3c36-457e-b05b-34b95ea87089" class="">“-nasai”: please.. (polite form)</p><p id="dc7fa45c-1470-4bda-82cc-5df038c273bf" class="">ex: tabenasai = please eat</p><p id="afcdefba-028d-4360-a23a-fcd5428d0d45" class="">machinasai = please wait</p><h2 id="1c621368-3308-433f-93a7-5091b6c1084e" class="">U Verbs</h2><p id="3eef6e07-35f7-41e4-80dd-1c131084cb6d" class="">RU verbs are by far the easiest to conjugate: you drop -ru and add<br/>something else. Simple. -U verbs aren&#x27;t that easy but almost.<br/>Typically you drop -u and add something else. The problem is that<br/>there might be a phonetic change (such as when ha becomes pa, or ta<br/>becomes da) for some of the types. See -ru verbs above for simple<br/>English examples of what the conjunctions mean. This part will cover<br/>the conjunction rules for -u verbals only.<br/></p><p id="bec5c725-4a5a-4918-a043-23112394827a" class="">Remember, there are some -u verbs that end in -ru. Real -ru verbs<br/>(where -ru gets dropped) always end in &quot;iru&quot; or &quot;eru&quot;. Anything else,<br/>like &quot;aru&quot;/be located, &quot;oru&quot;/break and &quot;uru&quot;/sell, must be an -u verb.<br/>For &quot;iru&quot; and &quot;eru&quot; you need to know two forms to be sure. If you see<br/>one that ends in &quot;iru&quot; or &quot;eru&quot;, and -u changes to add -masu, or the<br/>&quot;t&quot; doubles to get a gerund (hairu-&gt;haitte), then you&#x27;re dealing with<br/>an -u verb. Otherwise, it&#x27;s a -ru verb.<br/></p><p id="5bdaae15-14c3-49ee-a747-d3f3e417e40c" class="">There are other verbs that end in -ru that aren&#x27;t either type.  These<br/>are always super-polite oddball verbs like gozaru/gozaimasu and<br/>nasaru/nasaimasu. You can effectively forget about these because they<br/>are only a handful and you can see them coming a mile away.  Usually,<br/>just assume anything ending &quot;aru&quot;, &quot;uru&quot; or &quot;oru&quot; is an -u verb.)<br/></p><p id="2d6a4b73-06b6-41ca-9048-fdf0af1853d3" class="">IMPORTANT: Except for &quot;iru/eru&quot; verbs, every other type of verb<br/>can be identified by hearing only one form.<br/></p><p id="45621daf-b1d7-4f1f-afd1-5545a2090045" class="">Including -u verbs which might happen to end in -ru, these are all the<br/>types there are:<br/></p><p id="b6b2e0bd-f7a0-4d4a-8dc6-adcbdd6c8be0" class="">-su</p><p id="4b05efe4-e24d-4d23-871f-b51a8e63c2cc" class="">-ku (these two types conjugate similarly)<br/>-gu<br/></p><p id="0c3f34c1-ccea-4036-8e97-9a59c7486b76" class="">-bu (these three types conjugate similarly)<br/>-mu<br/>-nu<br/></p><p id="81f08b2b-864d-4847-ac1d-a9249b85740d" class="">-ru (these three types conjugate similarly)<br/>-tu<br/>-vowel+u<br/></p><p id="66d814f6-4f87-49f4-993b-a150b9b43eda" class="">-su is the only one that is well-behaved. That is, -u will change to<br/>-a, -i, -e or -o depending on the conjugation with no odd behavior to<br/>remember.<br/></p><p id="48a105e5-6bef-43aa-9688-d7984887c5c8" class="">Here are the replacements:</p><h3 id="9c43f586-81a5-4170-a9eb-bda37f29299b" class="">Present form:</h3><p id="9c234f23-106c-4f34-bb87-3dc6ee8745b1" class="">replace -u with -i to add extensions like &quot;-masu&quot;, &quot;-yasui&quot;, etc.<br/>(works straight across, no phonetic changes in any of the types)<br/></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="8dc8c231-b1c4-453f-b7fc-e7228f5c7f05"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">hanasu -&gt; hanasi (talk)<br/>kiku   -&gt; kiki   (walk)<br/>oyogu  -&gt; oyogi  (swim)<br/>yobu   -&gt; yobi   (call)<br/>nomu   -&gt; nomi   (drink)<br/>shinu   -&gt; sini   (die)<br/>tukuru -&gt; tukuri (make)<br/>matsu   -&gt; machi   (wait)<br/>harau  -&gt; harai  (pay)<br/></div></figure><h3 id="9b5227ff-b9ac-46bb-ab00-fd663423d15f" class="">-Te form:</h3><p id="7a0df3f7-642b-41b5-bb0e-d6235fb89bc6" class="">Replace -u with -ite for do &quot;X and Y&quot; and for simple commands.<br/>(types not strictly following the rule, but acting similarly, are grouped)<br/></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="25d8699e-a327-44ee-98c4-135b4e92115c"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">hanasu -&gt; hanasite (talk)<br/>kiku   -&gt; kiite   (walk)    (replace entire -ku, be sure to use -ite)<br/>oyogu  -&gt; oyoi<br/><span style="border-bottom:0.05em solid">d</span>e  (swim)    (replace entire -gu, be sure to use -ide)<br/>yobu   -&gt; yon<br/><span style="border-bottom:0.05em solid">d</span>e    (call)   (replace entire -bu, be sure to use -nde)<br/>nomu   -&gt; no<br/><span style="border-bottom:0.05em solid">nd</span>e    (drink)  (replace entire -mu, be sure to use -nde)<br/>shinu   -&gt; sin<br/><span style="border-bottom:0.05em solid">d</span>e    (die)    (replace entire -nu, be sure to use -nde)<br/>tukuru -&gt; tuku<br/><span style="border-bottom:0.05em solid">tt</span>e  (make)   (replace entire -ru, be sure to use -tte)<br/>matsu   -&gt; ma<br/><span style="border-bottom:0.05em solid">tt</span>e    (wait)   (replace entire -tu, be sure to use -tte)<br/>harau  -&gt; hara<br/><span style="border-bottom:0.05em solid">tt</span>e  (pay)    (replace -u, be sure to use -tte)</div></figure><h3 id="3c5ec0a3-f8ea-45bb-ad51-b10b92649d57" class="">Past form:</h3><p id="3e02327f-d53c-4ba8-ba63-04d3dc21b18f" class="">Replace -u with -ita for past tense.<br/>(types not strictly following the rule, but acting similarly, are grouped)<br/></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="dced0850-85b2-4da5-a15c-fea68a247987"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">hanasu -&gt; hanasita (talk)<br/>kiku   -&gt; kiita   (walk)    (replace entire -ku, be sure to use -ita)<br/>oyogu  -&gt; oyoida  (swim)    (replace entire -gu, be sure to use -ida)<br/>yobu   -&gt; yonda    (call)   (replace entire -bu, be sure to use -nda)<br/>nomu   -&gt; nonda    (drink)  (replace entire -mu, be sure to use -nda)<br/>shinu   -&gt; sinda    (die)    (replace entire -nu, be sure to use -nda)<br/>tukuru -&gt; tukutta  (make)   (replace entire -ru, be sure to use -tta)<br/>matsu   -&gt; matta    (wait)   (replace entire -tu, be sure to use -tta)<br/>harau  -&gt; haratta  (pay)    (replace -u, be sure to use -tta)<br/></div></figure><p id="38a4450c-0aed-4af0-a58e-79159b797077" class="">(In fact, I query search and replaced &quot;e&quot; with &quot;a&quot; on the gerunds to<br/>arrive at the past tense. This is good to know because the rule<br/>breakers are now breaking the rules in a predictable fashion.)<br/></p><p id="731b5533-797d-4ef5-a484-fabd54140847" class="">Replace -u with -itara for &quot;if&quot;. (Or, just add &quot;ra&quot; to the past.)<br/>(types not strictly following the rule, but acting similarly, are grouped)<br/></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="031fddb0-ce13-4283-a973-38daf0649038"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">hanasu -&gt; hanasitara (talk)<br/>kiku   -&gt; kiitara   (walk)    (replace entire -ku, be sure to use -itara)<br/>oyogu  -&gt; oyoidara  (swim)    (replace entire -gu, be sure to use -idara)<br/>yobu   -&gt; yondara    (call)   (replace entire -bu, be sure to use -ndara)<br/>nomu   -&gt; nondara    (drink)  (replace entire -mu, be sure to use -ndara)<br/>shinu   -&gt; sindara    (die)    (replace entire -nu, be sure to use -ndara)<br/>tukuru -&gt; tukuttara  (make)   (replace entire -ru, be sure to use -ttara)<br/>matsu   -&gt; mattara    (wait)   (replace entire -tu, be sure to use -ttara)<br/>harau  -&gt; harattara  (pay)    (replace -u, be sure to use -ttara)<br/></div></figure><p id="892a3dc5-2e2d-45d8-a322-084400a8371a" class="">Replace -u with -itari for &quot;do things like X&quot;. (Or just add &quot;ri&quot; to past.)<br/>(types not strictly following the rule, but acting similarly, are grouped)<br/></p><p id="66e8fb9a-2b43-4857-82ae-cd52954f3db4" class="">hanasu -&gt; hanasitari (talk)</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="4efba7dc-a06d-48a1-b474-1682d24338d4"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">kiku   -&gt; kiitari   (walk)    (replace entire -ku, be sure to use -itari)<br/>oyogu  -&gt; oyoidari  (swim)    (replace entire -gu, be sure to use -idari)<br/>yobu   -&gt; yondari    (call)   (replace entire -bu, be sure to use -ndari)<br/>nomu   -&gt; nondari    (drink)  (replace entire -mu, be sure to use -ndari)<br/>sinu   -&gt; sindari    (die)    (replace entire -nu, be sure to use -ndari)<br/>tukuru -&gt; tukuttari  (make)   (replace entire -ru, be sure to use -ttari)<br/>matu   -&gt; mattari    (wait)   (replace entire -tu, be sure to use -ttari)<br/>harau  -&gt; harattari  (pay)    (replace -u, be sure to use -ttari)<br/></div></figure><p id="5784a9af-1564-4bf9-8139-8b63af69e4c3" class="">Replace -u with -eba for &quot;if&quot;<br/>(works straight across, no phonetic changes in any of the types)<br/></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="61b9a222-77ea-4a94-870d-9a389af0964e"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">hanasu -&gt; hanaseba (talk)<br/>kiku   -&gt; kikeba   (walk)<br/>oyogu  -&gt; oyogeba  (swim)<br/>yobu   -&gt; yobeba   (call)<br/>nomu   -&gt; nomeba   (drink)<br/>sinu   -&gt; sineba   (die)<br/>tukuru -&gt; tukureba (make)<br/>matu   -&gt; mateba   (wait)<br/>harau  -&gt; haraeba  (pay)<br/></div></figure><p id="c6aad03c-5e10-4c0f-9220-559b3efa3fad" class="">Replace -u with -oo for &quot;let&#x27;s do X&quot;.<br/>(works straight across, no phonetic changes in any of the types)<br/></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="88e10e43-55f7-4527-b6b9-f9feeed23f24"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">hanasu -&gt; hanasoo (talk)<br/>kiku   -&gt; kikoo   (walk)<br/>oyogu  -&gt; oyogoo  (swim)<br/>yobu   -&gt; yoboo   (call)<br/>nomu   -&gt; nomoo   (drink)<br/>sinu   -&gt; sinoo   (die)<br/>tukuru -&gt; tukuroo (make)<br/>matu   -&gt; matoo   (wait)<br/>harau  -&gt; haraoo  (pay)<br/></div></figure><p id="7e6574a8-500e-4067-af3a-e8d83fcfddc4" class="">Replace -u with -e for rude orders &quot;do X dammit&quot;.<br/>(works straight across, no phonetic changes in any of the types)<br/></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="37b15198-06f1-4f33-a582-94eca938f803"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">hanasu -&gt; hanase (talk)<br/>kiku   -&gt; kike   (walk)<br/>oyogu  -&gt; oyoge  (swim)<br/>yobu   -&gt; yobe   (call)<br/>nomu   -&gt; nome   (drink)<br/>sinu   -&gt; sine   (die)<br/>tukuru -&gt; tukure (make)<br/>matu   -&gt; mate   (wait)<br/>harau  -&gt; harae  (pay)<br/></div></figure><p id="fa787146-88ce-4484-875f-c86f53ad69c1" class="">Replace -u with -anai for negative. (This is now an adjective.)<br/>(works straight across, only one phonetic change in one type)<br/></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="03b3f903-e164-46c9-9693-236a3e374b9a"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">hanasu -&gt; hanasanai (talk)<br/>kiku   -&gt; kikanai   (walk)<br/>oyogu  -&gt; oyoganai  (swim)<br/>yobu   -&gt; yobanai   (call)<br/>nomu   -&gt; nomanai   (drink)<br/>sinu   -&gt; sinanai   (die)<br/>tukuru -&gt; tukuranai (make)<br/>matu   -&gt; matanai   (wait)<br/>harau  -&gt; harawanai (pay)    (stick a wa in there, not just an &quot;a&quot;. Makes<br/>it easier to say, too. Lucky us!)<br/></div></figure><p id="639eeff7-fdec-4631-bd1d-7e9fd98aa6e6" class="">Replace -u with -eru for &quot;can do X&quot;. This is now a -ru verb.<br/>(works straight across, no phonetic changes in any of the types)<br/></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="f21d6488-8e26-4833-9264-d90577c27c0e"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">hanasu -&gt; hanaseru (talk)<br/>kiku   -&gt; kikeru   (walk)<br/>oyogu  -&gt; oyogeru  (swim)<br/>yobu   -&gt; yoberu   (call)<br/>nomu   -&gt; nomeru   (drink)<br/>sinu   -&gt; sineru   (die)<br/>tukuru -&gt; tukureru (make)<br/>matu   -&gt; materu   (wait)<br/>harau  -&gt; haraeru  (pay)<br/></div></figure><p id="b8b0139b-09e3-4d7f-8a0f-4750d99ed625" class="">Replace -u with -aseru for &quot;make (someone) do X&quot;. This is now a -ru verb.<br/>(works straight across, only one phonetic change in one of the types)<br/></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="747ecefb-1faf-419a-a07b-b04df300d653"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">hanasu -&gt; hanasaseru (talk)<br/>kiku   -&gt; kikaseru   (walk)<br/>oyogu  -&gt; oyogaseru  (swim)<br/>yobu   -&gt; yobaseru   (call)<br/>nomu   -&gt; nomaseru   (drink)<br/>sinu   -&gt; sinaseru   (die)<br/>tukuru -&gt; tukuraseru (make)<br/>matu   -&gt; mataseru   (wait)<br/>harau  -&gt; harawaseru (pay)  (Don&#x27;t forget to throw a wa in there!)<br/></div></figure><p id="4af1d873-f54e-4926-9b89-a19e2fde8df5" class="">Replace -u with -areru for &quot;X is done (often to someone)&quot;. This is now<br/>a -ru verb. (works straight across, only one phonetic change in one of<br/>the types)<br/></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="c7690bba-c222-4460-90dd-dcd3afb64722"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">hanasu -&gt; hanasareru (talk)<br/>kiku   -&gt; kikareru   (walk)<br/>oyogu  -&gt; oyogareru  (swim)<br/>yobu   -&gt; yobareru   (call)<br/>nomu   -&gt; nomareru   (drink)<br/>sinu   -&gt; sinareru   (die)<br/>tukuru -&gt; tukurareru (make)<br/>matu   -&gt; matareru   (wait)<br/>harau  -&gt; harawareru (pay)  (Don&#x27;t forget to throw a wa in there!)<br/></div></figure><p id="5a441ff9-cb5c-4310-8095-0397fd60a39f" class="">Replace -u with -aserareru for &quot;be made to do X by someone&quot;. Same<br/>result as just doing the two conjunctions separately but is taught<br/>in most books as a specific conjunction. This is now a -ru verb.<br/>(works straight across, only one phonetic change in one of the types)<br/></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="a20c7b80-88de-48a1-8692-3d91c3215d85"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">hanasu -&gt; hanasaserareru (talk)<br/>kiku   -&gt; kikaserareru   (walk)<br/>oyogu  -&gt; oyogaserareru  (swim)<br/>yobu   -&gt; yobaserareru   (call)<br/>nomu   -&gt; nomaserareru   (drink)<br/>sinu   -&gt; sinaserareru   (die)<br/>tukuru -&gt; tukuraserareru (make)<br/>matu   -&gt; mataserareru   (wait)<br/>harau  -&gt; harawaserareru (pay)  (Don&#x27;t forget to throw a wa in there!)<br/></div></figure><p id="b7769c92-2a8e-4e68-bb9f-98f5b445b893" class="">Now that was long, but it was mostly cut-and-paste because even these<br/>are well-behaved when you organize them correctly. When you boil down<br/>what needs to be done to these verbs to conjugate them correctly, the<br/>information required is really minimal--even for the oddballs. That&#x27;s<br/>all you need to be able to conjugate almost every verb in Japanese.<br/>Most books say that there are only two irregular verbs in all of<br/>Japanese: suru and kuru. Those you have to memorize separately, but<br/>they kind of make sense when you look at them. In fact, though,<br/>there&#x27;s a third irregular verb: iku. The reason is that unlike kiita<br/>for kiku, you don&#x27;t say iita, you say itta. You don&#x27;t say, iite, you<br/>say itte. But it&#x27;s regular in it&#x27;s irregularity because it acts like<br/>tsukuru for some weird reason.<br/></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="1540ce32-0373-4dfa-ba64-d256613b5b70"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">kuru                     (&quot;will come&quot;, or &quot;comes (often, everyday, etc.)&quot;)<br/>ki                       (to add &quot;-masu&quot;, note that &quot;-yasui&quot; isn&#x27;t used)<br/>kite                     (casual command: &quot;come here&quot;)<br/>kita                     (past tense: &quot;someone came&quot;)<br/>kitara (add ra to past)  (&quot;if(once) someone comes&quot;, some connotation of when)<br/>kitari (ad ri to past)   (&quot;do things like come&quot;)<br/>kureba                   (&quot;if someone comes&quot;, no connotation of when)<br/>koyoo                    (&quot;let&#x27;s come&quot;, no, it can&#x27;t possibly mean orgasms)<br/>koi                      (rude request: &quot;come here you&quot;)<br/>konai                    (negative: &quot;won&#x27;t come&quot; or &quot;doesn&#x27;t come (very much)&quot;)<br/>korareru                 (&quot;can come&quot;)<br/>kosaseru                 (&quot;make (someone) come&quot;)<br/>korareru                 (passive--no example comes to mind)<br/>kosaserareru             (&quot;be made to come (by someone)&quot;)<br/></div></figure><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="279b99ed-2e6c-46a2-a995-4e3c56ef71b5"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">suru                     (&quot;will do&quot;, or &quot;does (often, everyday, etc.)&quot;)<br/>si                       (to add &quot;-masu&quot;, or &quot;-yasui&quot;)<br/>site                     (casual command: &quot;do this&quot;)<br/>sita                     (past tense: &quot;someone did&quot;)<br/>sitara (add ra to past)  (&quot;if(once) someone does&quot;, some connotation of when)<br/>X sitari (ad ri to past) (&quot;do things like doing X&quot;)<br/>sureba                   (&quot;if someone does&quot;, no connotation of when)<br/>X siyoo                  (&quot;let&#x27;s do X&quot;)<br/>siro                     (rude request: &quot;do this dammit&quot;)<br/>sinai                    (negative: &quot;won&#x27;t do&quot; or &quot;doesn&#x27;t do (very much)&quot;)<br/>dekiru (really &quot;seru&quot;)   (&quot;can do&quot;--&quot;someone I can love&quot;: &quot;ai seru hito&quot;)<br/>saseru                   (&quot;make (someone) do&quot;)<br/>sareru                   (&quot;be done (by someone&quot;))<br/>saserareru               (&quot;be made to do (by someone)&quot;)<br/></div></figure><p id="0f91c4f4-30ef-4c01-9bec-a1ebeec7f195" class="">A cool trick to remember suru is that many of the conjugations match<br/>what you would get if you conjugated a lone &quot;su&quot;, so it&#x27;s kind of like<br/>&quot;hanasu&quot;. Hanasita--sita. Hanaseru--seru. Hanasaseru--saseru.<br/></p><p id="702d5887-7366-4c30-a00b-6b3d6d8de9f3" class="">
+</p><hr id="49b1d250-cca5-47bb-831f-0f2da74a4ac7"/><h1 id="450acd0a-d00b-49cb-aadd-259871eafe17" class="">ADJECTIVES:</h1><p id="d809ccfa-0d18-453f-b9a4-6f6769c4eb29" class="">These aren&#x27;t that hard. They always end in [a,i,u,o]+i. They <em>never</em><br/>end in e+i that would be a noun. Basically you replace &quot;i&quot; with a form<br/>of &quot;ka&quot; to inflect.<br/></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="dfde123e-1163-4672-818a-18e94acc9253"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%">yasashii                 (&quot;It&#x27;s nice&quot;)<br/>yasashikunai            (&quot;It&#x27;s not nice&quot;)<br/>yasashikatta             (&quot;It was nice&quot;)<br/>yasashikattara           (&quot;If it&#x27;s nice.&quot;)<br/>yasashikattari           (possible I suppose but not heard often)<br/>yasashikereba            (&quot;If it&#x27;s nice.&quot;)<br/></div></figure><p id="71e17401-597c-42af-9643-5876111fdf8e" class="">These inflections follow what a &quot;ka+u&quot; verb would do. If you can<br/>conjugate &quot;kau&quot; (to buy) you can conjugate every Japanese adjective.<br/>Just note that you don&#x27;t say: &quot;atsukaseru&quot; for &quot;make something hot&quot;<br/>you say &quot;atsuku suru&quot;. For a command, say: &quot;yasashiku natte&quot; (&quot;be<br/>nice&quot;).<br/></p><p id="274b83f7-0cac-4ec7-a48e-f11db1e34b16" class="">Sometimes when you look in a dictionary or ask for an adjective you,<br/>you will find something that doesn&#x27;t look like an adjective at<br/>all. It&#x27;s a noun! If you come up with a noun for a word when you<br/>expected an adjective (like &quot;kirei&quot; for &quot;pretty&quot;), just remember that<br/>you use adjectival noun + na + noun to make it work. So, &quot;kirei na<br/>ojoosan&quot; is &quot;pretty girl&quot;. Everything else is like a noun. &quot;Kirei da&quot;.<br/>&quot;Kirei ja nai&quot;, etc.<br/></p><p id="bb0b1280-0e5f-4f95-bc9a-16fdc5e75857" class="">
+</p><hr id="bb43ae65-171b-47c5-b9a4-8ce609da3d68"/><p id="ed6127ea-1330-4883-8f14-9be9fbd07dd4" class="">Tad Perry Internet: <a href="mailto:tvp@eskimo.com">tvp@eskimo.com</a><br/>CompuServe: 70402,3020<br/>NIFTY-Serve: GBG01266<br/></p><hr id="0913eb27-5784-41c4-be73-941d34425d5b"/><p id="579a121c-4a12-4ee4-9682-60481fe79dc6" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
