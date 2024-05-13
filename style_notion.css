@@ -18,6 +18,7 @@ p,
 h1,
 h2,
 h3,
+ul,
 li,
 blockquote,
 th,
@@ -26,12 +27,25 @@ h4 {
     color: var(--maincolor);
 }
 
-p {
+p,
+ul,
+li {
     font-size: 1.2rem;
 }
 h1{
     font-size: 4rem;
 }
+h2{
+    font-size: 3rem;
+}
+h3{
+    font-size: 2rem;
+}
+
+.page-title {
+	font-size: 5rem;
+}
+
 
 .block-color-gray_background {
 	background: azure;
@@ -50,19 +64,76 @@ h1{
     
 }
 
+.menu_container {
+    width: 100%;
+    height: 5rem;
+    background-color: #154c79;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    padding:0;
+    position: fixed;
+    top: 0;
+    overflow: hidden;
+    z-index: 99;
+}
+.menu {
+    /*flex*/
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    /*look and feel*/
+    margin: auto;
+    width: 80%;
+    height:100%;
+}
+
+.a_menu {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    align-self: center;
+    color: white;
+}
+.menu_item {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    align-self: center;
+    color: white;
+}
+
+.menu_hamburger {
+    font-family: "Montserrat", sans-serif;
+    font-size: 3rem;
+    align-self: center;
+    color: black;
+    display: none;
+}
+
 
 @media only screen and (max-width: 1000px) {
 
-h1,
-h2,
-h3,
-h4 {
+h1 {
     font-size: 4rem;
+    padding-left: 2rem;
+}
+h2 {
+    font-size: 3rem;
+    padding-left: 2rem;
+}
+h3 {
+    font-size: 2rem;
+    padding-left: 2rem;
+}
+h4 {
+    font-size: 2rem;
     padding-left: 2rem;
 }
 
 .page-title {
-	font-size: 6rem;
+	font-size: 5rem;
     padding-left: 2rem;
 }
 
@@ -72,6 +143,25 @@ li {
     padding-left: 2rem;
     padding-right: 2rem;
     font-size: 1.5rem;
+}
+
+.menu {
+    flex-direction: column;
+    flex-wrap:nowrap;
+    justify-content: center;
+}
+
+.home_menu_item {
+    background-color: var(--maincolor);
+    padding-top: 0.2rem;
+}
+
+.menu_item {
+    color: black;
+}
+
+.menu_container {
+    height: 5rem;
 }
 
 }
