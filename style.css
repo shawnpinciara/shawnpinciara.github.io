@@ -39,9 +39,12 @@
         text-decoration: underline;
         font-family: "Montserrat", sans-serif;
         font-size: 1rem;
+        font-weight: 600;
+        font-style: normal;
         padding-left: 0rem;
         padding-right: 0rem;
         color: var(--maincolor);
+        
     }
 
 

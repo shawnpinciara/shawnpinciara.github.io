@@ -112,6 +112,16 @@ h3{
     display: none;
 }
 
+.dewi_svg {
+    /* filter: invert(22%) sepia(81%) saturate(906%) hue-rotate(176deg) brightness(90%) contrast(91%); */
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 300px;
+    width: 200px;
+    z-index: 99;
+}
+
 
 @media only screen and (max-width: 1000px) {
 
