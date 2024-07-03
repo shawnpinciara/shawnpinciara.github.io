@@ -5,6 +5,7 @@
     --textcolor: #fffbf5;
     --black:rgb(34, 34, 34);
     --white: azure;
+    --rot: 0deg;
     }
     
     html, body {
@@ -40,21 +41,54 @@
         }
     }
 
-    #motion-demo {
-        offset-path: path("m 41.439385,116.1326 c 7.673959,-19.9523 32.486433,-10.74355 40.67199,-3.06959 8.185558,7.67396 31.719035,7.41817 40.160395,-0.76739 8.44135,-8.18556 51.67133,-10.11292 51.67133,13.04573 0,23.15865 9.46455,48.60175 -22.76608,58.3221 -32.23064,9.72035 -25.83567,-10.23195 -37.09081,-16.88272 -11.25514,-6.65076 -54.996717,1.7906 -53.717724,18.41751 1.278993,16.62691 -39.904592,24.04508 -40.671988,9.97615 -0.767396,-14.06893 25.579867,-25.46084 20.208095,-36.06761 -5.371772,-10.60678 5.627571,-19.9523 7.418162,-22.76609 1.790589,-2.81378 -7.162363,-7.67396 -5.88337,-20.20809 z");
-        animation: move 3000ms infinite alternate ease-in-out;
-        width: 50px;
-        height: 50px;
-        background: cyan;
-        background-image: url("./src/dewi.svg");
+    #dewi-ani {
+        offset-path: ellipse(40% 20%);
+        animation: move 50000ms infinite linear;
+        width: 100px;
+        height: 200px;
+        /* background: cyan; */
+        background-image: url("./src/dewi_white.svg");
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    #redneko-ani {
+        offset-path: ellipse(40% 20%);
+        animation: move 50000ms infinite linear;
+        animation-delay: 3s;
+        width: 100px;
+        height: 200px;
+        /* background: cyan; */
+        background-image: url("./src/dewi_white.svg");
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-size: cover;
     }
       
     @keyframes move {
         0% {
-          offset-distance: 0%;
+            offset-distance: 0%;
+            offset-rotate: 0deg;
+                /* offset to y axis */
+            offset-anchor: 0% 0%; 
+        }
+        25%{
+            offset-anchor: 0% 50%;
+            offset-rotate: calc(var(--rot) + 72deg);
+        }
+        50% {
+            offset-anchor: 0% 0%;
+            offset-rotate: calc(var(--rot) + 144deg);
+        }
+        75%{
+            offset-anchor: 0% 50%;
+            offset-rotate: calc(var(--rot) + 216deg);
         }
         100% {
-          offset-distance: 100%;
+            offset-anchor: 0% 0%;
+            offset-distance: 100%;
+            offset-rotate: calc(var(--rot) + 360deg);
         }
     }
 
@@ -495,6 +529,10 @@
         .lucas_image {
             padding-bottom: 2rem;
             margin-bottom: 2rem;
+        }
+
+        #dewi-ani {
+            offset-path: ellipse(70% 30%);
         }
 
     }
