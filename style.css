@@ -53,8 +53,21 @@
         background-size: cover;
     }
 
+    #points-ani {
+        offset-path: ellipse(50% 20%);
+        animation: move 50000ms infinite linear;
+        animation-delay: 15s;
+        width: 200px;
+        height: 100px;
+        /* background: cyan; */
+        background-image: url("./src/points.svg");
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
     #redneko-ani {
-        offset-path: ellipse(40% 20%);
+        offset-path: ellipse(40% 22%);
         animation: move 50000ms infinite linear;
         animation-delay: 3s;
         width: 100px;
@@ -100,10 +113,24 @@
         color:var(--textcolor);
     }
 
+    .p {
+        font-family: "Montserrat", sans-serif;
+        font-size: 1rem;
+        font-weight: light;
+        color:var(--textcolor);
+    }
+
     .p_home {
         font-family: "Montserrat light", sans-serif;
         font-size: 1.5rem;
         font-weight: light;
+        color:var(--textcolor);
+    }
+
+    .h1_title {
+        font-family: "Montserrat", sans-serif;
+        font-size: 2rem;
+        font-weight: bold;
         color:var(--textcolor);
     }
 
@@ -118,6 +145,18 @@
         color: var(--textcolor);
         
     }
+    .a {
+        text-decoration: underline;
+        font-family: "Montserrat", sans-serif;
+        font-size: 1rem;
+        font-weight: 600;
+        font-style: normal;
+        padding-left: 0rem;
+        padding-right: 0rem;
+        color: var(--textcolor);
+        
+    }
+
 
 
     a:hover {
@@ -249,6 +288,15 @@
         width: 100%;
         height: 100vh;
         background-image: var(--home);
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: relative;
+        
+    }
+
+    .bg-img {
+        height: 100%;
         background-position: center top;
         background-repeat: no-repeat;
         background-size: cover;
@@ -533,6 +581,10 @@
 
         #dewi-ani {
             offset-path: ellipse(70% 30%);
+        }
+
+        #points-ani {
+            offset-path: ellipse(70% 33%);
         }
 
     }
