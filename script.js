@@ -7,6 +7,13 @@ $( document ).ready(function() {
     $("#points-ani").click(function(){
       window.open("https://pointscs.github.io/","_self")
     })
+
+    
+    $("#redneko-ani").click(function(){
+      window.open("./projects/#redneko_tab","_self")
+    })
+
+     
     
     
 

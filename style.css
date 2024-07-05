@@ -6,6 +6,9 @@
     --black:rgb(34, 34, 34);
     --white: azure;
     --rot: 0deg;
+    --rot_90: 90deg;
+    --dewi_starting_point: 0%;
+    --points_starting_point: -50%;
     }
     
     html, body {
@@ -42,8 +45,8 @@
     }
 
     #dewi-ani {
-        offset-path: ellipse(40% 20%);
-        animation: move 50000ms infinite linear;
+        offset-path: ellipse(40% 30%);
+        animation: moveDewi 50000ms infinite linear;
         width: 100px;
         height: 200px;
         /* background: cyan; */
@@ -54,9 +57,8 @@
     }
 
     #points-ani {
-        offset-path: ellipse(50% 20%);
-        animation: move 50000ms infinite linear;
-        animation-delay: 15s;
+        offset-path: ellipse(40% 30%);
+        animation: movePoints 45000ms infinite linear;
         width: 100px;
         height: 60px;
         /* background: cyan; */
@@ -67,22 +69,22 @@
     }
 
     #redneko-ani {
-        offset-path: ellipse(40% 22%);
-        animation: move 50000ms infinite linear;
-        animation-delay: 3s;
-        width: 100px;
-        height: 200px;
+        offset-path: ellipse(40% 33%);
+        animation: moveRedneko 54000ms infinite linear;
+        width: 130px;
+        height: 95px;
+        opacity: 0.7;
         /* background: cyan; */
-        background-image: url("./src/dewi_white.svg");
+        background-image: url("./src/redneko.svg");
         background-position: center top;
         background-repeat: no-repeat;
         background-size: cover;
     }
       
-    @keyframes move {
+    @keyframes moveDewi {
         0% {
             offset-distance: 0%;
-            offset-rotate: 0deg;
+            offset-rotate: calc(var(--rot) + 0deg);
                 /* offset to y axis */
             offset-anchor: 0% 0%; 
         }
@@ -105,12 +107,68 @@
         }
     }
 
+    @keyframes movePoints {
+        0% {
+            offset-distance: 50%;
+            offset-rotate: calc(var(--rot) + 0deg);
+                /* offset to y axis */
+            offset-anchor: 0% 0%; 
+        }
+        25%{
+            offset-anchor: 0% 50%;
+            offset-rotate: calc(var(--rot) + 72deg);
+        }
+        50% {
+            offset-anchor: 0% 0%;
+            offset-rotate: calc(var(--rot) + 144deg);
+        }
+        75%{
+            offset-anchor: 0% 50%;
+            offset-rotate: calc(var(--rot) + 216deg);
+        }
+        100% {
+            offset-anchor: 0% 0%;
+            offset-distance: 150%;
+            offset-rotate: calc(var(--rot) + 360deg);
+        }
+    }
+
+    @keyframes moveRedneko {
+        0% {
+            offset-distance: 35%;
+            offset-rotate: calc(var(--rot) + 0deg);
+                /* offset to y axis */
+            offset-anchor: 0% 0%; 
+        }
+        25%{
+            offset-anchor: 0% 50%;
+            offset-rotate: calc(var(--rot) + 72deg);
+        }
+        50% {
+            offset-anchor: 0% 0%;
+            offset-rotate: calc(var(--rot) + 144deg);
+        }
+        75%{
+            offset-anchor: 0% 50%;
+            offset-rotate: calc(var(--rot) + 216deg);
+        }
+        100% {
+            offset-anchor: 0% 0%;
+            offset-distance: 135%;
+            offset-rotate: calc(var(--rot) + 360deg);
+        }
+    }
+
     
-    p {
+    p,ul,li {
         font-family: "Montserrat", sans-serif;
         font-size: 1rem;
         font-weight: light;
         color:var(--textcolor);
+    }
+
+    li {
+        margin-left: 2rem;
     }
 
     .p {
@@ -204,6 +262,13 @@
         font-family: "Montserrat", sans-serif;
         font-size: 1.5rem;
         font-weight: lighter;
+        color: azure;
+    }
+
+    .h2_title {
+        font-family: "Montserrat", sans-serif;
+        font-size: 1.5rem;
+        font-weight: bold;
         color: azure;
     }
 
@@ -586,5 +651,11 @@
         #points-ani {
             offset-path: ellipse(70% 33%);
         }
+
+        #redneko-ani {
+            offset-path: ellipse(70% 32%);
+        }
+
+        
 
     }
