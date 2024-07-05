@@ -3,94 +3,110 @@
   <head>
     <title>Shawn Pinciara</title>
     <meta charset="utf-8">
-    
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Montserrat">
     <meta name="viewport" 
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <script>
-        tailwind.config = {
-        theme: {
-            extend: {
-            colors: {
-                clifford: '#da373d',
-                sp_darkb_lue: '#154c79',
-                sp_mid_dark_blue: '#1b66a3',
-                sp_light_blue: '#5199d4'
-            }
-            }
-        }
-        }
-    </script>
-    <link rel="stylesheet" href="../../style.css">
   <body>
-    <div class="animated-background bg-gradient-to-br from-sp_darkb_lue  to-sp_mid_dark_blue">
-    <div class="flex flex-col px-20 lg:px-96">
-        <div class="mt-10"><h1 class="h1_title">Index:</h1></div>
-        <div>
+    <!-- MENU -->
+    <div class="menu_container">
+        <div class="menu">
+            <div class="menu_item home_menu_item">
+                <!-- <a href="#home_screen"><img class="points_home" src="./src/points_home.png"> -->
+                </a>
+            </div>  
+            <div class="menu_item"><a class="a_menu" href="./index.html">Home</a></div>
+            <!-- <div class="menu_item"><a class="a_menu" href="#donate">Contacts</a></div> -->
+            <!-- <div class="menu_item"><a class="a_menu" href="#display" class="menu_hamburger"><img class="hamburger_icon" src="./src/menu.svg"></a></div> -->
+        </div>
+    </div>
+    <a href="#home"><img class="go_to_top" src="./src/go_to_top.svg">
+    </a>
+    
+    <!-- <div class="home_screen" id="home_screen">
+    </div> -->
+        
+    
+    <!-- 
+    Layout is simple, the basic structure od divs:
+    content_container (id="..." to make it findable through menu) (or content_container_reverse to have things from right to left)
+        content (horizontal tab)
+            img_container
+            text_container 
+        
+    -->
+
+    <!-- CONTAINERS -->
+    <!-- <div class="content_container" id="menu1">
+            <center><h3>Title</h3></center>
+            <div class="content">
+                <div class="img_container system_image">
+                </div>
+                <div class="text_container">
+                    <p>
+                        texttt 
+                    </p> 
+                </div>
+    </div> -->
+
+    
+    <div class="content_container" id="home">
+            <center><h4></h4></center>
+            <div class="content">
+                <div class="text_container">
+                    <h1 id="intro">Index:</h1>
                     <ul>
                         <li><a href="#intro" id="toc-intro">Intro:</a></li>
                         <li><a href="#professional-profile" id="toc-professional-profile">Professional profile:</a>
                         <ul>
-                        <li><a href="#education-qualifications" id="toc-education-qualifications">Education &amp; qualifications:</a></li>
+                        <li><a href="#education-qualifications" id="toc-education-qualifications">Education &amp; qualifications</a></li>
                         </ul></li>
                         <li><a href="#artistic-profile" id="toc-artistic-profile">Artistic profile:</a></li>
                         <li><a href="#interests" id="toc-interests">Interests:</a></li>
-        </div>
+                    </ul>
 
-        <div class="mt-10 h-60 lg:h-96 rounded-md bg-[url('./src/shawn.jpg')] bg-no-repeat bg-cover bg-center bg-scroll lg:bg-fixed"></div>
-        <div><p>Shawn Pinciara, male, born the 10/02/2000, in Milan, Italy.</p></div>
-
-        <div class="mt-10">
-            <h1 class="h1_title" id="professional-profile">Professional profile:</h1>
-                        <p>I have attended a 
-                            <a href="">scientific high school,</a>
+                        <h1 id="intro">Intro:</h1>
+                        <p>Fresh of the new millenium, born in the 2000, I have always had a
+                        <em>curious</em> approch on things, and that’s where both my path in the
+                        academic career and artistic career started.</p>
+                        <h1 id="professional-profile">Professional profile:</h1>
+                        <p>I have attended a scientific high school,
                             giving me a good basis of mathematics, physics, 
                             history and Latin. Despite not formally studying programming in school i tought 
                             myself so and started to manage simple projects such as the school's website.
-                            <br><br>
+
                             With the help of the 200-hour work-school project by the government (alternanza scuola-lavoro in 2017), 
                             I worked for one months, full day shifts, in the headquarter of the Italian company <a href="https://www.mbe.it/en">MBE</a>
                             (Mail Boxes Etcetera), mainly focused on selling services such as expeditions or prints. I have also helped the
                              company to remove encrypted and non-usable files through scripts I developed with Powershell, against the crypto-virus. 
-                             <br><br>
-                            Two years later (2019) led me to having 
-                            <a href="">a one year contract (2019) with MBE as an IT Assistant</a>
-                            , where I was put to do data entry, 
+                            
+                            Two years later (2019) led me to having a one year contract with MBE as an IT Assistant, where I was put to do data entry, 
                             bridging datas manually through different platforms.
                             I than started (out of personal desire basically) to automate these processes using Python and APIs to automatically take datas form servers and dbs, 
                             rearrange and correct them, and send them back to the other platforms. 
                             Through this experience I learnt how much I love to make processes much more efficient.
-                            <br><br>
-                            <a href="">As of April 2024 I got the degree in Computer Science for New Media Communications at University Statale of Milan</a>
-                            , writing a thesis about 
+                            
+                            As of April 2024 I got the degree in Computer Science for New Media Communications at University Statale of Milan, writing a thesis about 
                             “A multi-touch control surface implemented as a MIDI controller” , where despite graduating in New Media Communication, 
                             I wanted to make a formal bridge with a passion of mine (music) by writing a thesis in collaborazion with the 
                             <a href="https://www.lim.di.unimi.it/index.php?lang=eng">LIM</a> (Milano Statal University’s *Music Informatics Laboratory)*
-                            <br><br>
-                    
-                            <a href="">Communication wise</a> I handled the communication (As an Istagram social media manager and content creator) of:
-                        </p>
-                    
+
+                    <p>
+                        Communication wise I handled the communication (As an Istagram social media manager and content creator) of:
                         <ul>
                             <li><p>PlayJuggling: (for 4 years) leader in the field of gymnastic/circus equipment.</p></li>
                             <li><p>YoungDoIt: (for 1 years) the youth center in the city of Arese.</p></li>
                         </ul>
-                        <br><br>
+                    </p>
+
                     <p>
-                        From 2021 I've been very active in the <a href="">volunteering field</a> of the youth center of Arese and the city itself, 
+                        From 2021 I've been very active in the volunteering field of the youth center of Arese and the city itself, 
                         helping to organize cultural events, concerts, talks.
                     </p>
-        </div>
-
-        <div class="mt-5">
-            <h2 class="h2_title" id="education-qualifications">Education &amp; qualifications</h2>
+                        <h2 id="education-qualifications">Education &amp; qualifications</h2>
                         <ul>
                         <li><p>Università Degli Studi di Milano – University (2018–
                         now)</p></li>
@@ -103,11 +119,7 @@
                         (2011-2013)</p></li>
                         <li><p>Middle school diploma – 8th grade</p></li>
                         </ul>
-                         
-        </div>
-
-        <div class="mt-10">
-            <h1 class="h1_title" id="artistic-profile">Artistic profile:</h1>
+                        <h1 id="artistic-profile">Artistic profile:</h1>
                         <p>Within school, I have always tried and done various sports, and the
                         one that has always given me plenty of satisfaction is is juggling.</p>
                         <p>I have started my formation in circus arts at the age of 7 till I was
@@ -141,11 +153,7 @@
                         juggling with the help of the HTN.</p>
                         <p>Nowadays I’m focusing both on learning music theory and trying to
                         applying some rules to the juggling world.</p>
-                          
-        </div>
-
-        <div class="mt-10">
-            <h1 class="h1_title" id="interests">Interests:</h1>
+                        <h1 id="interests">Interests:</h1>
                         <p>I have interests in arts and poetry, from Romanticism to
                         Impressionism, music (70’/80’ rock) and digital arts as
                         photography and videomaking. I did some
@@ -163,21 +171,12 @@
                         the power and energy to get through things, and helps me a lot to find
                         my inner peace. That’s why, when there is the chance, I always try to
                         spend time outside to keep my body and mind in a healthy
-                        condition.</p>
-        </div>
-    
+                        condition.</p>               
+                </div>
+                <!-- <div class="img_container learn_image"></div> -->
     </div>
 
-        
 
-    <!-- spacer -->
-    <div class="pt-16"></div> 
-         
-
-</div>
-    
-
-    
 </body>
     
     
