@@ -57,8 +57,8 @@
         offset-path: ellipse(50% 20%);
         animation: move 50000ms infinite linear;
         animation-delay: 15s;
-        width: 200px;
-        height: 100px;
+        width: 100px;
+        height: 60px;
         /* background: cyan; */
         background-image: url("./src/points.svg");
         background-position: center top;
