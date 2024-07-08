@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Shawn Pinciara</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../style.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Montserrat">
+    <meta name="viewport" 
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+        theme: {
+            extend: {
+            colors: {
+                clifford: '#da373d',
+                sp_darkb_lue: '#154c79',
+                sp_mid_dark_blue: '#1b66a3',
+                sp_light_blue: '#5199d4'
+            }
+            }
+        }
+        }
+    </script>
+<body>
+    <div class="snap-y snap-mandatory scroll-smooth overflow-scroll bg-red-700 bg-[url('./src/neko.png')] bg-[length:70px_70px] bg-repeat">
+        <div class="flex h-screen w-screen snap-start flex-col items-center justify-center">
+          <div class="z-50 flex h-fit flex-col rounded-lg bg-amber-50 px-10 py-10">
+            <div><h1 class="font-mono text-3xl font-bold text-slate-950">REDNEKOs</h1></div>
+            <div class="mt-2">
+              <p class="font-mono text-base font-thin text-slate-900">
+                Cheap synths (<$50) <br />
+                for everybody!
+              </p>
+            </div>
+          </div>
+          <!-- arrow -->
+          <div class="mt-14 h-40 w-10 animate-bounce bg-[url('https://img.icons8.com/?size=100&id=41189&format=png&color=ffffff')] bg-contain bg-no-repeat" onclick="location.href='#why';"></div>
+        </div>
+      
+        <div class="flex h-screen w-screen snap-start flex-col items-center justify-center" id="why">
+          <div class="flex h-4/6 w-5/6 lg:w-2/6 flex-col items-center justify-center rounded-xl bg-amber-50">
+            <div><h1 class="font-mono text-3xl font-bold text-slate-950">WHY?</h1></div>
+            <div><p class="font-mono text-base text-justify font-thin text-slate-900 px-10 pt-5">Synths are notoriously expensive. 
+            Big "apple" brands of synths make you pay for the design, and others for the complexity of them.
+            But strangely enough both big companies and small freelancers still make expensive synths,</p>
+            <p class="font-mono text-base line-through text-justify font-thin text-slate-900 px-10">WHATDAFUQISGOINGON?</p>
+            <br>
+            <p class="font-mono text-base font-bold text-center text-slate-900 px-10">I want to make limited synths, for a cheap price.</p>
+            </div>
+            <div class="flex flex-row w-9/12 pt-10 justify-start overflow-x-auto">
+                <!-- tab -->
+              <div class="flex flex-col h-52 w-52"> 
+                <div class="w-full h-full bg-[url('./src/redneko.jpg')] bg-cover rounded-md">
+                </div>
+                <div>
+                  <p class="font-mono text-base text-justify font-thin text-slate-900 pt-2">Redneko 1</p>
+                </div>
+                <div>
+                    <a class="font-mono underline text-base text-justify font-thin text-slate-900" href="https://www.instagram.com/reel/C2SkxClMA7K/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==">Watch a video →</a>
+                </div>
+              </div>
+
+              <!-- tab -->
+              <div class="flex flex-col h-52 w-52 pl-4"> 
+                <div class="w-full h-full bg-slate-300 bg-cover rounded-md">
+                </div>
+                <div>
+                  <p class="font-mono text-base text-justify font-thin text-slate-500 pt-2">Redneko Modular</p>
+                </div>
+                <div>
+                    <a class="font-mono underline text-base text-justify font-thin text-slate-500" href="#">Soon →</a>
+                </div>
+              </div>
+
+            </div>
+
+              
+      
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+      
+          
+    
+</body>
+      
+<script src="script.js"></script>
+
+</html>
