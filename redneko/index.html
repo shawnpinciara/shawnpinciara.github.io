@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Shawn Pinciara</title>
+    <title>REDNEKO Project</title>
     <meta charset="utf-8">
     <!-- <link rel="stylesheet" href="../style.css"> -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -33,7 +33,7 @@
   <section class="snap-start">
     <!-- rednekos -->
     <div class="flex h-screen w-screen flex-col items-center justify-center">
-      <div class="z-50 flex h-fit flex-col rounded-lg bg-amber-50 px-10 py-10">
+      <div class="z-50 flex h-fit flex-col rounded-lg bg-amber-50 px-10 py-10 mt-20">
         <div><h1 class="font-mono text-3xl font-bold text-slate-950">REDNEKOs</h1></div>
         <div class="mt-2">
           <p class="font-mono text-base font-thin text-slate-900">
@@ -50,18 +50,18 @@
     
     <div class="relative h-screen w-screen flex flex-col items-center justify-center overflow-y-scroll" id="why">
       <!-- why -->
-      <div class="flex h-fit m-5 w-11/12 lg:w-3/6 flex-col items-center justify-center rounded-xl bg-amber-50 py-6">
-        <div><h1 class="font-mono text-3xl font-bold text-slate-950 pt-5 lg:pt-0">WHY?</h1></div>
-        <div><p class="font-mono text-sm md:text-base text-justify font-thin text-slate-900 px-10 pt-1">Synths are notoriously expensive. 
+      <div class="flex h-fit m-5 w-11/12 lg:w-3/6 flex-col items-center justify-center rounded-xl bg-amber-50 py-8">
+        <div><h1 class="font-mono text-3xl font-bold text-slate-950">WHY?</h1></div>
+        <div><p class="font-mono text-sm lg:text-base text-justify font-thin text-slate-900 px-10 pt-2">Synths are notoriously expensive. 
         Big "apple" brands of synths make you pay for the design, and others for the complexity of them.
         But strangely enough both big companies and small freelancers still make expensive synths,</p>
         <p class="font-mono text-base line-through text-justify font-thin text-slate-900 px-10">WHATDAFUQISGOINGON?</p>
         
-        <p class="font-mono text-sm md:text-base font-bold text-center text-slate-900 px-10">I want to make limited synths, for a cheap price.</p>
+        <p class="font-mono text-sm md:text-base font-bold text-center text-slate-900 px-10 pt-2">I want to make limited synths, for a cheap price.</p>
         </div>
         <!-- !Why -->
-        <div><h1 class="font-mono text-3xl font-bold text-slate-950">HOW?</h1></div>
-        <div><p class="font-mono text-sm lg:text-base  text-justify font-thin text-slate-900 px-10 pt-1">
+        <div><h1 class="font-mono text-3xl font-bold text-slate-950 pt-5">HOW?</h1></div>
+        <div><p class="font-mono text-sm lg:text-base  text-justify font-thin text-slate-900 px-10 pt-2">
           Not overpricing stuff just because the market says so. <br>
           Designing the PCBs to be highly customizable in terms of type of different components. <br>
           Using commodity microcontrollers. <br>
@@ -69,6 +69,9 @@
         </p></div>
         
       </div>
+      <!-- arrow -->
+      <div class="h-14 w-10 animate-bounce bg-[url('https://img.icons8.com/?size=100&id=41189&format=png&color=ffffff')] bg-contain bg-no-repeat" onclick="location.href='#how';"></div>
+    
     </div>
   </section>
 
@@ -76,17 +79,19 @@
     <div class="relative h-screen w-screen flex flex-col items-center justify-center overflow-y-scroll" id="how">
       <div class="flex h-fit m-5 w-11/12 lg:w-3/6 flex-col items-center justify-center rounded-xl bg-amber-50 py-6">
         <div><h1 class="font-mono text-3xl font-bold text-slate-950 lg:pt-10 pt-1">STATE OF ART?</h1></div>
-        <div><p class="font-mono text-sm md:text-base text-justify font-thin text-slate-900 px-10 pt-2">
+        <div><p class="font-mono text-sm md:text-base text-justify font-thin text-slate-900 px-10 pt-5">
           REDNEKO1 is the first prototype of the series,very limited, but less than 10$ of components (taking account of the 5 pcbs ordered on jlpcb).<br>
           next will follow a more structured mini synth, hopefully a lot more flexible... i'm designing it right now. <br>
         </p></div>
         <div><p class="font-mono text-sm md:text-base font-bold text-center text-slate-900 px-10 pt-5">Do you like the idea? join me in this niche revolution.</p></div>
-        <div class="lg:pt-10 pt-5 animate-pulse"><a class="font-bold" href="mailto:shawnpinciara@gmail.com?subject=The REDNEKO REVOLUTION">Let's talk (contact me) →</a></div>
+        <div class="lg:pt-10 pt-5 animate-pulse">
+          <a class="font-bold" href="mailto:shawnpinciara@gmail.com?subject=The REDNEKO REVOLUTION">Let's talk (contact me) →</a>
+        </div>
         
         <div class="flex flex-row w-9/12 lg:pt-16 pt-5 lg:mt-0 mt-2 justify-start overflow-x-auto">
           <!-- tab -->
-          <div class="flex flex-col h-52 w-52 pr-5"> 
-            <div class="w-full lg:h-full h-10 bg-[url('./src/redneko.jpg')] bg-cover rounded-md">
+          <div class="flex flex-col h-52 w-52 pr-5">
+            <div class="w-full lg:h-full h-20 bg-[url('./src/redneko.jpg')] bg-cover rounded-md">
             </div>
             <div>
               <p class="font-mono text-sm lg:text-base text-justify font-thin text-slate-900 pt-2">Redneko 1</p>
@@ -98,7 +103,7 @@
 
           <!-- tab -->
           <div class="flex flex-col h-52 w-52 pl-4"> 
-            <div class="w-full lg:h-full h-10 bg-slate-300 bg-cover rounded-md">
+            <div class="w-full lg:h-full h-20 bg-slate-300 bg-cover rounded-md">
             </div>
             <div>
               <p class="font-mono text-sm lg:text-base text-justify font-thin text-slate-500 pt-2">Redneko Modular</p>
@@ -109,8 +114,7 @@
           </div>
         </div>
       </div>
-    </div>
-      
+    </div>  
   </section>
 </div>
       
