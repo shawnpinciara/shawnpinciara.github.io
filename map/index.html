@@ -29,16 +29,23 @@
         }
     </script>
 <body>
-    <div class="flex h-full w-full items-center justify-center">
-        <div class="h-36 w-44 flex-grow flex-auto">
-          <p>def mapRange(value, inMin, inMax, outMin, outMax):
-          return outMin + (((value - inMin) / (inMax - inMin)) * (outMax - outMin))</p>
-        </div>
+    <div class="flex h-screen w-screen bg-amber-500 items-center justify-center"> 
+        <div class="flex">
+              <div class="h-36 w-44">
+                <p class="font-mono text-sm pt-2 text-slate-800 text-right font-light">def mapRange(value, inMin, inMax, outMin, outMax):
+                return outMin + (((value - inMin) / (inMax - inMin)) * (outMax - outMin))</p>
+              </div>
+              <button class = "bg-amber-600 hover:bg-amber-800 text-white font-bold py-2 px-4 ml-4 rounded-full" onclick="copyToClipboard()">Copy text</button>
+            </div>
       </div>
       
 </body>
       
-<script src="script.js">
+<script>
+    function copyToClipboard() {
+        // Copy the text inside the text field
+        navigator.clipboard.writeText("def mapRange(value, inMin, inMax, outMin, outMax): return outMin + (((value - inMin) / (inMax - inMin)) * (outMax - outMin))");
+    }
     //https://stackoverflow.com/questions/1969240/mapping-a-range-of-values-to-another
 </script>
 
