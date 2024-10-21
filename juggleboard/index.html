@@ -20,13 +20,19 @@
 <script type="text/javascript" src="p5.js"></script>
 <script type="text/javascript">
 
+
+
 function setup() { 
 	createCanvas(windowWidth, windowHeight);
-    ball1 = new Ball(windowWidth/7 * 2,windowHeight/5 * 4,80);
-    ball2 = new Ball(windowWidth/7 * 3,windowHeight/5 * 4,80);
-    ball3 = new Ball(windowWidth/7 * 4,windowHeight/5 * 4,80);
-    ball4 = new Ball(windowWidth/7 * 5,windowHeight/5 * 4,80);
-    ball5 = new Ball(windowWidth/7 * 6,windowHeight/5 * 4,80);
+    delta_x = 180;
+    winx_2 = windowWidth/2;
+    arr_x = [winx_2-delta_x*2,winx_2-delta_x*1,winx_2,winx_2+delta_x*1,winx_2+delta_x*2];
+    circsize = 130;
+    ball1 = new Ball(arr_x[0],windowHeight/5 * 4,circsize+20);
+    ball2 = new Ball(arr_x[1],windowHeight/5 * 4,circsize+20);
+    ball3 = new Ball(arr_x[2],windowHeight/5 * 4,circsize+20);
+    ball4 = new Ball(arr_x[3],windowHeight/5 * 4,circsize+20);
+    ball5 = new Ball(arr_x[4],windowHeight/5 * 4,circsize+20);
     stack = [ball1,ball2,ball3,ball4,ball5];
 
 
@@ -36,31 +42,14 @@ function draw() {
     background(244,0,0);
     fill(255, 204, 0);
     noStroke();
-    rect(windowWidth/7,windowHeight/5-60, windowWidth/7 *(7-1) ,windowHeight/5*3+100,30);
+    rect(40,250,windowWidth-80,windowHeight-500,20);
     fill(244,0,0);
-    circsize = 70;
 
-    circle(windowWidth/7 * 2,windowHeight/5,circsize);
-    rect(windowWidth/7 * 2 -25,windowHeight/5, 50, windowHeight/5*3);
-    circle(windowWidth/7 * 2,windowHeight/5*4,circsize);
-
-    circle(windowWidth/7 * 3,windowHeight/5,circsize);
-    rect(windowWidth/7 * 3 -25,windowHeight/5, 50, windowHeight/5*3);
-    circle(windowWidth/7 * 3,windowHeight/5*4,circsize);
-
-    circle(windowWidth/7 * 4,windowHeight/5,circsize);
-    rect(windowWidth/7 * 4 -25,windowHeight/5, 50, windowHeight/5*3);
-    circle(windowWidth/7 * 4,windowHeight/5*4,circsize);
-
-    circle(windowWidth/7 * 5,windowHeight/5,circsize);
-    rect(windowWidth/7 * 5 -25,windowHeight/5, 50, windowHeight/5*3);
-    circle(windowWidth/7 * 5,windowHeight/5*4,circsize);
-
-    circle(windowWidth/7 * 6,windowHeight/5,circsize);
-    rect(windowWidth/7 * 6 -25,windowHeight/5, 50, windowHeight/5*3);
-    circle(windowWidth/7 * 6,windowHeight/5*4,circsize);
-
-
+    for (i=0;i<5;i++) {
+        circle(arr_x[i],windowHeight/5,circsize);
+        rect(arr_x[i] -40,windowHeight/5, 80, windowHeight/5*3);
+        circle(arr_x[i],windowHeight/5*4,circsize);
+    }
     for (i=0;i<stack.length;i++) {
         stack[i].show();
     }
@@ -115,7 +104,7 @@ class Ball {
 
   collision(x,y) {
     if (x>this.x-this.size/2 && x<this.x+this.size/2) {
-        if (y>this.y-this.size/2 && y<this.y+this.size/2) {
+        if (y>this.y-this.size/2-50 && y<this.y+this.size/2+50) {
             if (this.direction>0) { //change direction at every tap
                 this.direction=-1;
             } else {
