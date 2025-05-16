@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>online juggleboard test</title>
+</head>
+<style type="text/css">
+	canvas {
+		position: fixed; 
+		top: 0; left: 0; 
+		z-index: 1; 
+		}
+    #content{
+        position: relative; 
+        z-index: 2; 
+    }
+</style>
+<body>
+<div id = "content"></div>
+</body>
+<script type="text/javascript" src="p5.js"></script>
+<script type="text/javascript">
+
+
+
+function setup() { 
+	createCanvas(windowWidth, windowHeight);
+    delta_x = 180;
+    winx_2 = windowWidth/2;
+    arr_x = [winx_2-delta_x*2,winx_2-delta_x*1,winx_2,winx_2+delta_x*1,winx_2+delta_x*2];
+    circsize = 130;
+    ball1 = new Ball(arr_x[0],windowHeight/5 * 4,circsize+20);
+    ball2 = new Ball(arr_x[1],windowHeight/5 * 4,circsize+20);
+    ball3 = new Ball(arr_x[2],windowHeight/5 * 4,circsize+20);
+    ball4 = new Ball(arr_x[3],windowHeight/5 * 4,circsize+20);
+    ball5 = new Ball(arr_x[4],windowHeight/5 * 4,circsize+20);
+    stack = [ball1,ball2,ball3,ball4,ball5];
+
+
+}
+
+function draw() {
+    background(244,0,0);
+    fill(255, 204, 0);
+    noStroke();
+    rect(40,250,windowWidth-80,windowHeight-500,20);
+    fill(244,0,0);
+
+    for (i=0;i<5;i++) {
+        circle(arr_x[i],windowHeight/5,circsize);
+        rect(arr_x[i] -40,windowHeight/5, 80, windowHeight/5*3);
+        circle(arr_x[i],windowHeight/5*4,circsize);
+    }
+    for (i=0;i<stack.length;i++) {
+        stack[i].show();
+    }
+
+}
+
+
+function mouseClicked() { //press and release
+    for (i=0;i<stack.length;i++) {
+        if (stack[i].collision(mouseX,mouseY)) {
+        }
+    }
+}
+
+function windowResized() {
+	resizeCanvas(windowWidth, windowHeight);
+}
+
+class Ball {
+  constructor(x,y,size) {
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.direction = 1;
+    this.speed = 0;
+  };
+
+  setDirection(direction) {
+    this.direction = direction;
+  }
+  getDirection() {
+    return this.direction;
+  }
+  setSpeed(speed) {
+    this.speed = speed;
+  }
+
+  getSpeed() {
+    return this.speed;
+  }
+  
+  show() {
+    fill(74, 232, 166);
+    stroke(10);
+    //direction logic
+    
+    circle(this.x,this.y = this.y + (this.direction*this.speed),this.size);
+    if (this.y < windowHeight/5 || this.y > windowHeight/5*4) { //
+        this.speed = 0;
+    }
+  }
+
+  collision(x,y) {
+    if (x>this.x-this.size/2 && x<this.x+this.size/2) {
+        if (y>this.y-this.size/2-50 && y<this.y+this.size/2+50) {
+            if (this.direction>0) { //change direction at every tap
+                this.direction=-1;
+            } else {
+                this.direction=1;
+            }
+            this.speed = 4;
+            return true;
+        }
+    }
+    return false;
+  }
+
+  
+
+}
+
+
+
+</script>
+</html>
