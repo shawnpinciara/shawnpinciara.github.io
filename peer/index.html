@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8" />
     <title>peer test</title>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.7/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.7/lib/p5.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js "></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-    <div>
-        <h2 id="peer_id">PEER ID</h2> <br> <br>
+    <div class="flex flex-col h-screen w-screen items-center">
+        <div>
+        <h2 id="peer_id">PEER ID</h2>
     </div>
     <div>
-            <form onSubmit= "connectToPeer ">
+            <form onSubmit= "connectToPeer()">
             <label for="fname">Peer id:</label>
-            <input type="text" id="fname" name="fname">
-            <button type="submit" value="Submit">Connect</button>
+            <input type="text" class="bg-gray-200" id="fname" name="fname">
+            <button type="submit" value="Submit" onclick="connectToPeer()">Connect</button>
             </form>
             
     </div>
@@ -22,6 +25,8 @@
     <div class="canvas">
         <main></main>
     </div>
+    </div>
+    
 </body>
 <style>
     /* .canvas {
@@ -45,23 +50,21 @@
     }
 
 </style>
-<script type="module">
-//   import {Peer} from "https://esm.sh/peerjs@1.5.4?bundle-deps"
-//   var peer = new Peer();
-//   peer.on('open', function(id) {
-// 	console.log('My peer ID is: ' + id);
-//   });
+<script>
 
-  function setup() {
+  var peer = new Peer();
+  peer.on('open', function(id) {
+	console.log('My peer ID is: ' + id);
+    document.getElementById("peer_id").innerHTML = str(id);
+  });
+
+    function setup() {
     createCanvas(windowWidth, windowHeight);
-    background(200);
-  }
+    }
 
-
-  function draw() {
-    background(50);
-    fill(100);
-  }
+    function draw() {
+    background(220);
+    }
 
   function connectToPeer() {
     alert("The form was submitted");
