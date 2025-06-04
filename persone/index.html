@@ -11,14 +11,25 @@
       height: 100%;
       overflow: hidden;
     }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+  .wrap {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  iframe {
+    width: 76.92% !important;
+    height: 76.92% !important;
+    -webkit-transform: scale(1.3);
+    transform: scale(1.3);
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+  }
   </style>
 </head>
 <body>
-  <iframe src="https://thispersondoesnotexist.com/"></iframe>
-</body>
+  <div class="wrap">
+    <iframe src="https://thispersondoesnotexist.com/"></iframe>
+  </div>
+  </body>
 </html>

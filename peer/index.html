@@ -14,11 +14,12 @@
         <h2 id="peer_id">PEER ID</h2>
     </div>
     <div>
-            <form onSubmit= "connectToPeer()">
+            
             <label for="fname">Peer id:</label>
-            <input type="text" class="bg-gray-200" id="fname" name="fname">
-            <button type="submit" value="Submit" onclick="connectToPeer()">Connect</button>
-            </form>
+            <input type="text" class="bg-gray-200" id="peer_id_name" name="fname">
+            <button class="connectToPeer">Connect</button>
+            <button class="connectToPeer">Be the master</button>
+            
             
     </div>
     
@@ -58,17 +59,23 @@
     document.getElementById("peer_id").innerHTML = str(id);
   });
 
+
     function setup() {
     createCanvas(windowWidth, windowHeight);
     }
 
     function draw() {
     background(220);
+    noStroke();
+    fill(100);
+    circle(100,100,50);
     }
 
-  function connectToPeer() {
-    alert("The form was submitted");
-  }
+  $(".connectToPeer").click(function(){
+    console.log("button pressed!");
+    var conn = peer.connect($("#peer_id_name").val());
+    console.log(conn);
+  })
 
 </script>
 </html>
