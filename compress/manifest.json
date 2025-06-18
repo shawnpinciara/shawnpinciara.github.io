@@ -1,0 +1,22 @@
+// manifest.json
+{
+    "name": "Offline Video Compressor",
+    "short_name": "Compressor",
+    "description": "A PWA to compress videos offline using FFmpeg and WebAssembly.",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#2c3e50",
+    "theme_color": "#2c3e50",
+    "icons": [
+        {
+            "src": "https://placehold.co/192x192/3498db/ffffff?text=V-C",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "https://placehold.co/512x512/3498db/ffffff?text=V-C",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

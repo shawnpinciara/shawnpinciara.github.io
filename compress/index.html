@@ -1,0 +1,105 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline Video Compressor</title>
+    <!-- Link to the PWA manifest -->
+    <link rel="manifest" href="manifest.json">
+    <!-- Theme color for the browser UI -->
+    <meta name="theme-color" content="#2c3e50">
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for a better look and feel */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        #downloadLink {
+            transition: all 0.3s ease;
+        }
+        .lds-ring {
+          display: inline-block;
+          position: relative;
+          width: 20px;
+          height: 20px;
+        }
+        .lds-ring div {
+          box-sizing: border-box;
+          display: block;
+          position: absolute;
+          width: 16px;
+          height: 16px;
+          margin: 2px;
+          border: 2px solid #fff;
+          border-radius: 50%;
+          animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+          border-color: #fff transparent transparent transparent;
+        }
+        .lds-ring div:nth-child(1) {
+          animation-delay: -0.45s;
+        }
+        .lds-ring div:nth-child(2) {
+          animation-delay: -0.3s;
+        }
+        .lds-ring div:nth-child(3) {
+          animation-delay: -0.15s;
+        }
+        @keyframes lds-ring {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-6 md:p-10 w-full max-w-lg mx-4">
+        <header class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-blue-600 dark:text-blue-400">Video Compressor</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">Compress videos offline, directly in your browser.</p>
+        </header>
+
+        <main>
+            <!-- File Input -->
+            <div class="mb-6">
+                <label for="uploader" class="block w-full cursor-pointer border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span id="file-chosen" class="mt-2 block text-sm font-medium text-gray-600 dark:text-gray-300">Click to select a video</span>
+                </label>
+                <input type="file" id="uploader" class="hidden" accept="video/*"/>
+            </div>
+
+            <!-- Compress Button -->
+            <button id="compressButton" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 transition disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center space-x-2" disabled>
+                 <span id="button-text">Load FFmpeg Core</span>
+                 <div id="loader" class="lds-ring"><div></div><div></div><div></div><div></div></div>
+            </button>
+
+            <!-- Status & Progress -->
+            <div id="status" class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6 min-h-[60px] flex flex-col justify-center">
+                <p id="status-text">Please wait for the FFmpeg library to load. This may take a moment on the first visit.</p>
+                <progress id="progressBar" class="w-full mt-2 rounded-lg [&::-webkit-progress-bar]:rounded-lg [&::-webkit-progress-value]:rounded-lg [&::-webkit-progress-bar]:bg-slate-300 [&::-webkit-progress-value]:bg-blue-500 [&::-moz-progress-bar]:bg-blue-500 hidden" max="100" value="0"></progress>
+            </div>
+
+            <!-- Download Link -->
+            <div class="mt-4 text-center">
+                 <a id="downloadLink" class="hidden inline-block bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition" href="#">
+                    Download Compressed Video
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Core Libraries: FFmpeg.wasm and our app script -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
