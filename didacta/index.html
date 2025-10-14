@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>bassman</title>
+    <meta name="description" content="Our first page">
+    <meta name="keywords" content="html tutorial template">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.min.js" integrity="sha512-WJXVjqeINVpi5XXJ2jn0BSCfp0y80IKrYh731gLRnkAS9TKc5KNt/OfLtu+fCueqdWniouJ1ubM+VI/hbo7POQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script lang="text/javascript" src="https://unpkg.com/simple-web-serial@latest/dist/simple-web-serial.min.js"></script>
+</head>
+
+<body>
+<div class="canvas">
+    <main></main>
+</div>
+</body>
+<script type="module">
+
+const connection = SimpleWebSerial.setupSerialConnection({
+    requestAccessOnPageLoad: true
+});
+// React to incoming events
+connection.on('event-from-arduino', function(data) {
+    console.log('Received event "event-from-arduino" with parameter ' + data)
+});
+
+// Send named events to the Arduino with a number, string, array or json object
+connection.send('event-to-arduino', "Hello there, Arduino");
+p5.disableFriendlyErrors = false;
+document.title = "My beautiful p5.js sketch";
+let description = "A white disc in the center of a black canvas is growing and shrinking slowly.";
+function preload() {}
+
+// **************************
+// *          SETUP         *
+// **************************
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  describe(description); // Create a screen reader accessible description for the canvas
+}
+function draw() {
+  background(0);
+  translate(width / 2, height / 2);
+  circle(0, 0, sin(frameCount * 0.01) * min(width, height));
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
+// Find key codes at http://keycode.info/
+function keyPressed() {
+  if (keyCode === 82) {
+    console.log("R was pressed");
+  } else if (keyCode === 67) {
+    console.log("C was pressed");
+  }
+}
+
+// **************************
+// * HIC ET NUNC VARIABLES  *
+// **************************
+
+// If you want to create OBJKT's with different seeds,
+// you can access the creator and viewer wallet ids.
+// This values will only be injected once the piece has been minted
+// they will not work locally.
+const creator = new URLSearchParams(window.location.search).get("creator");
+const viewer = new URLSearchParams(window.location.search).get("viewer");
+// NOTE: if the user is viewing the page on hicetnunc while unsynced,
+// the viewer variable will return a string of value "false" (NOT a boolean)
+
+// The ID of the OBJKT is also passed via the URL parameters
+const objkt = new URLSearchParams(window.location.search).get("objkt");
+
+console.log("NFT created by", creator); // null if local
+console.log("NFT viewed by", viewer); // null if local
+console.log("OBJKT ID", objkt); // null if local
+</script>
+</html>
