@@ -1,0 +1,7 @@
+html, body {
+    margin: 0;         /* Rimuove i margini predefiniti del body */
+    padding: 0;        /* Rimuove il padding predefinito */
+    width: 100%;       /* Assicura la piena larghezza */
+    height: 100%;      /* Assicura la piena altezza */
+    overflow: hidden;  /* Opzionale: previene le barre di scorrimento se il canvas riempie tutto */
+}

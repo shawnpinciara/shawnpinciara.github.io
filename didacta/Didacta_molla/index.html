@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>bassman</title>
+    <meta name="description" content="Our first page">
+    <meta name="keywords" content="html tutorial template">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.min.js" integrity="sha512-WJXVjqeINVpi5XXJ2jn0BSCfp0y80IKrYh731gLRnkAS9TKc5KNt/OfLtu+fCueqdWniouJ1ubM+VI/hbo7POQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js"></script>
+    <!-- p5.touchgui -->
+    <script src="https://unpkg.com/p5.touchgui@0.5.2/lib/p5.touchgui.js"></script>
+    <script lang="text/javascript" src="https://unpkg.com/simple-web-serial@latest/dist/simple-web-serial.min.js"></script>
+</head>
+
+<body>
+<div class="canvas" style="width: 100%; height: 100%;">
+    <main></main>
+</div>
+</body>
+<script>
+  let gui;
+  let b;
+  var sensor = 9;
+
+  const connection = SimpleWebSerial.setupSerialConnection({
+      requestAccessOnPageLoad: true
+  });
+  // React to incoming events
+  connection.on('event-from-arduino', function(data) {
+      console.log('event from Arduino: ' + data)
+      sensor = data;
+      console_log[console_text_i] = data;
+      console_text_id +=1;
+      if (console_text_i>4) {
+        console_text_i=0;
+      } else {
+        console_text_i+=1;
+      }
+  });
+
+  // Send named events to the Arduino with a number, string, array or json object
+  //connection.send('event-to-arduino', "Hello there, Arduino");
+  p5.disableFriendlyErrors = false;
+  document.title = "My beautiful p5.js sketch";
+  let description = "A white disc in the center of a black canvas is growing and shrinking slowly.";
+  function preload() {}
+
+  function mapRange(value, inMin, inMax, outMin, outMax){ return outMin + (((value - inMin) / (inMax - inMin)) * (outMax - outMin))}
+
+  let img;
+
+  // Load the image.
+  function preload() {
+    img = loadImage('./moto_armonico.png');
+  }
+  function setup() {
+    textFont('Courier New');
+    gui = createGui();
+    gui.loadStyle("Blue");
+    gui.setFont("Courier New");
+    b = createButton("Light on!", 2000, 450);
+    b2 = createButton("Light off!", 2000, 500);
+    fill(255,0,0);
+    t = createToggle("", 60, 475, 30, 30);
+    t.setStyle("fillBgOn", color("#D00000"));
+    t.setStyle("rounding", 20);
+    noStroke();
+    createCanvas(windowWidth, windowHeight);
+    background(200);
+
+    fill(250);
+    rect(20, 20, 550, 400, 20); //GRAPH
+  
+    //describe(description); // Create a screen reader accessible description for the canvas
+  
+  }
+  var circle_x = 50;
+  var point_color = 0;
+  var console_log = []
+  var console_text = []
+  var console_text_i = 0;
+  var console_text_id = 0;
+  function draw() {
+
+    fill(250);
+    rect(20,430,210,120,20); //bottone registra
+    rect(240,430,330,120,20); //CONSOLE
+    rect(20,560,550,180,20); //spiega
+
+    stroke(2);
+    line(40,50,40,400);
+    line(40,50,40+5,50+5);
+    line(40,50,40-5,50+5);
+    line(40,400,500,400);
+    line(500,400,500-5,400-5);
+    line(500,400,500-5,400+5);
+    fill(0); noStroke(); textSize(12);
+    text("Tempo (s)",400,410);
+    text("Distanza dal suolo (mm)",60,50);
+    
+
+    if(b.isPressed) {
+      print(b.label + " is pressed.");
+      connection.send('pixels', 255);
+    }
+
+    if(b2.isPressed) {
+      print(b2.label + " is pressed.");
+      connection.send('pixels', 0);
+    }
+    
+    noStroke();
+    
+
+    fill(point_color,0,0);
+    circle(circle_x,mapRange(sensor,900,10,30,300),5); //puntino grafico
+    //fill(250);
+    //rect(circle_x, 20, 10, 400, 20); //barra che cancella appena davanti il punto
+
+    circle_x+=1;
+    if (circle_x >550) {
+      circle_x=50;
+      //rect(circle_x-5, 20, 5, 400, 20);
+      fill(250);
+      rect(20, 20, 550, 400, 20); //GRAPH
+    }
+
+    if (t.isPressed) {
+      console_text_id = 0;
+      //console_text_i = 0;
+    }
+
+    fill(250);
+    rect(260,475,270,55); //rettangolo per coprire testo console
+
+    if (t.val) { //REC TOGGLE ON
+      view_console = true;
+      point_color = 255;
+      fill(255, 181, 181);
+      rect(20,430,210,120,20); //bottone registra
+      console_text[console_text_i] = str(console_text_id) + " Distanza dal suolo (mm): " + str(console_log[console_text_i])
+      textSize(12); fill(0); noStroke();
+      text(console_text[0], 260, 486);
+      text(console_text[1], 260, 486+13);
+      text(console_text[2], 260, 486+13+13);
+      text(console_text[3], 260, 486+13+13+13);
+    } else {
+      point_color = 0;
+      console_text = ["","","",""];
+      fill(250);
+      rect(20,440,200,100,20); //bottone registra
+    }
+
+    fill(0); noStroke(); textSize(22);
+    text('Record', 100, 498);
+    text('Console:', 260, 470);
+
+
+    //SPIEGA
+    fill(0); noStroke(); textSize(22);
+    text('Il moto armonico:', 40, 600);
+    fill(0); noStroke(); textSize(12);
+    text('In questo esperimento si mostra bla bla bla bla bla bla blfvkslkfd mvfdkvnfknvfkjvn fkjvnfk vnfdk dnjfn l lkjfdlkj. dskfndkj f. nfknds.   dnfsdkdfndlf dkfndkj dkf dknfkn n ', 40, 615,250);
+    image(img, 300, 600,250,120);
+
+    
+
+
+    // if (view_console!=false) {
+      
+    // }
+
+    drawGui();
+
+  }
+
+  function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+  }
+
+  // Find key codes at http://keycode.info/
+  function keyPressed() {
+    if (keyCode === 82) {
+      console.log("R was pressed");
+    } else if (keyCode === 67) {
+      console.log("C was pressed");
+    }
+  }
+
+  // **************************
+  // * HIC ET NUNC VARIABLES  *
+  // **************************
+
+  // If you want to create OBJKT's with different seeds,
+  // you can access the creator and viewer wallet ids.
+  // This values will only be injected once the piece has been minted
+  // they will not work locally.
+  const creator = new URLSearchParams(window.location.search).get("creator");
+  const viewer = new URLSearchParams(window.location.search).get("viewer");
+  // NOTE: if the user is viewing the page on hicetnunc while unsynced,
+  // the viewer variable will return a string of value "false" (NOT a boolean)
+
+  // The ID of the OBJKT is also passed via the URL parameters
+  const objkt = new URLSearchParams(window.location.search).get("objkt");
+
+</script>
+</html>

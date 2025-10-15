@@ -29,7 +29,11 @@
         }
     </script>
     <link rel="stylesheet" href="../../style.css">
-  <body class="">
+    <style>
+
+
+    </style>
+  <body class="" onload="onLoadFunc()" onclick="bodyClick()">
     <!-- MENU -->
     <!-- <div class="menu_container">
         <div class="menu">
@@ -45,14 +49,36 @@
     </div> -->
     <!-- MENU END -->
 
+    <!-- FIRST TIME ALERT -->
+    <div class="fixed w-full h-full bg-cyan-900 bg-opacity-80 z-50 flex flex-col items-center justify-center overflow-hidden" id="first_time_popup">
+        <div class="w-11/12 md:w-1/2 h-auto bg-cyan-700 rounded-md flex flex-col p-4 pt-12">
+            <div class="w-full h-auto flex flex-row">
+                <div class="w-1/2 h-full flex items-center justify-center">
+                    <p class=" text-zinc-200 text-xl"> Hover or click the corner of a photo to zoom it, as if you were flipping through a photo-book.</p>
+                </div>
+                <div class="w-1/2 h-full flex items-center justify-center">
+                    <div class="w-40 h-40 bg-cyan-400 rounded-lg"></div>
+                    <div class="w-20 h-20 -ml-40 -mt-40 absolute bg-transparent border-cyan-900 border-2 rounded-full"></div>
+                </div>
+            </div>
+            <div class="w-full h-auto mt-4 text-center text-sm font-thin">
+                <p>Click anywhere to exit.</p>
+            </div>
+            
+        </div>
+        
+    </div>
+
+    <!-- <iframe src="./photo_corner_popu.html" frameborder="0" style="width: 100%;height: 100%;"></iframe> -->
+
 
     
     <div class="flex flex-col lg:px-20 px-8 w-full">
         <div class="mt-10"><h1 class="h1_title">Projects</h1></div>
         <div class="mt-5 "><p>Getting involved in projects and almost never finishing them is becoming a kink of mine, 
             so here's a non comprehensive list which I’ll try to update regularly:</p></div>
-        <!-- TABS -->
-        <div class="flex lg:flex-row flex-col-reverse mt-10">
+        <!-- DEWI TAB -->
+        <div class="flex lg:flex-row flex-col-reverse mt-10" id="dewi">
             <div class="flex-grow flex flex-col text-wrap pl-0 pt-4 lg:pt-0 lg:w-8/12">
                 <h1 class="h1_title">DEWI:</h1>
                 <p class="break-words h-auto md:pr-10">Wind instruments are physically limited of having the holes in strict positions to achieve the sound of the instrument. This limitation was not overcome with electronic wind instruments, as the current standard in the market is still to replicate the acoustic ones.
@@ -61,49 +87,74 @@
                 
                 <a class="a pl-0" href="../dewi/">Go to the project page →</a>
             </div>
-            <div class="flex-grow h-60 lg:h-96 lg:w-6/12 relative z-0 ml-2 mr-3 mb-4 mt-2">
+            <div class="flex-grow h-60 lg:h-96 lg:w-6/12 relative z-0 ml-2 mr-3 mb-8 mt-8 sm:m-8">
 
-                <img class="w-full h-full object-cover rounded-md absolute z-22 sm:rotate-2 rotate-12 ml-3 mb-3" src="./src/redneko.jpg" alt="">
-                <img class="w-full h-full object-cover rounded-md absolute z-19 sm:rotate-2 rotate-6 ml-2 mb-2" src="./src/redneko.jpg" alt="">
-                <img class="w-full h-full object-cover rounded-md absolute z-17 sm:rotate-2 rotate-0 ml-0 mb-1" src="./src/redneko.jpg" alt="">
-                <img class="w-full h-full object-cover rounded-md absolute z-10 -ml-2 -rotate-6" src="./src/dewi_sketch.jpg" alt="">
+                <img class="active:-mt-40  w-full h-full object-cover rounded-md absolute active:relative hover:relative duration-400 ease-in-out bg-amber-50 z-22 rotate-12 ml-3 mb-3" src="./src/dewi_1.png" alt="">
+                <img class="active:-mt-20 w-full h-full object-cover rounded-md absolute active:relative hover:relative duration-400 ease-in-out bg-amber-50 z-19 rotate-6 ml-2 mb-2" src="./src/dewi_2.png" alt="">
+                <img class="active:-mt-10 w-full h-full object-cover rounded-md absolute active:relative hover:relative duration-400 ease-in-out bg-amber-50 z-17 rotate-0 ml-0 mb-1" src="./src/dewi_3.png" alt="">
+                <img class="w-full h-full object-cover rounded-md absolute active:relative bg-amber-50 z-10 hover:z-50 -ml-2 -rotate-6 " src="./src/dewi_4.png" alt="">
             </div>
-                
-
         </div>
 
-        <div class="flex lg:flex-row-reverse flex-col-reverse mt-20" id="redneko_tab">
-            <div class="flex-grow flex flex-col text-wrap pl-0 lg:pl-10 pt-4 lg:pt-0 lg:w-6/12">
+
+        
+
+        <!-- REDNEKO TAB -->
+        <div class="flex lg:flex-row-reverse flex-col-reverse mt-10" id="redneko">
+            <div class="flex-grow flex flex-col text-wrap pl-0 pt-4 lg:pt-0 lg:w-8/12">
                 <h1 class="h1_title">REDNEKO:</h1>
-                <p class="break-words h-full pr-10">       
-                A mini synthetizer, especially made low power, low cost, built to play 7th chords inversions with interchangable waveforms.
+                <p class="break-words h-auto md:pr-10">
+                    A mini synthetizer, especially made low power, low cost, built to play 7th chords inversions with interchangable waveforms. Usable just with the joystick, you can literally strike chords with different velocities.
                 </p>
+                
                 <a class="a" href="../redneko/">Go to the project page →</a>
             </div>
-            <div class="flex-grow h-60 lg:h-96 lg:w-6/12 rounded-md bg-[url('./src/redneko.jpg')] bg-no-repeat bg-cover bg-center bg-scroll lg:bg-fixed"></div>   
+            <div class="flex-grow h-60 lg:h-96 lg:w-6/12 relative z-0 ml-2 mr-3 mb-8 mt-8 sm:m-8">
+
+                <img class="active:-mt-40  w-full h-full object-cover rounded-md absolute active:relative hover:relative duration-400 ease-in-out bg-amber-50 z-22 rotate-12 ml-3 mb-3" src="./src/dewi_1.png" alt="">
+                <img class="active:-mt-20 w-full h-full object-cover rounded-md absolute active:relative hover:relative duration-400 ease-in-out bg-amber-50 z-19 rotate-6 ml-2 mb-2" src="./src/dewi_2.png" alt="">
+                <img class="active:-mt-10 w-full h-full object-cover rounded-md absolute active:relative hover:relative duration-400 ease-in-out bg-amber-50 z-17 rotate-0 ml-0 mb-1" src="./src/dewi_3.png" alt="">
+                <img class="w-full h-full object-cover rounded-md absolute active:relative bg-amber-50 z-10 hover:z-50 -ml-2 -rotate-6 " src="./src/dewi_4.png" alt="">
+            </div>
         </div>
 
-        <div class="flex lg:flex-row flex-col-reverse mt-20">
-            <div class="flex-grow flex flex-col text-wrap pl-0 lg:pl-10 pt-4 lg:pt-0 lg:w-6/12">
+        <!-- POINTS TAB -->
+        <div class="flex lg:flex-row flex-col-reverse mt-10" id="points">
+            <div class="flex-grow flex flex-col text-wrap pl-0 pt-4 lg:pt-0 lg:w-8/12">
                 <h1 class="h1_title">POINTS:</h1>
-                <p class="break-words h-full pr-10">
+                <p class="break-words h-auto md:pr-10">
                     Points CS is a project that aims to empower
                     occupational therapists and their patients by giving them tools to teach and learn coordination in a fun, affordable, and effective way.
                 </p>
+                
                 <a class="a" href="https://pointscs.github.io/">Go to the website →</a>
             </div>
-            <div class="flex-grow h-60 lg:h-96 lg:w-6/12 rounded-md bg-[url('./src/points.jpg')] bg-no-repeat bg-cover bg-center bg-scroll lg:bg-fixed"></div>   
+            <div class="flex-grow h-60 lg:h-96 lg:w-6/12 relative z-0 ml-2 mr-3 mb-8 mt-8 sm:m-8">
+
+                <img class="active:-mt-40  w-full h-full object-cover rounded-md absolute active:relative hover:relative duration-400 ease-in-out bg-amber-50 z-22 rotate-12 ml-3 mb-3" src="./src/dewi_1.png" alt="">
+                <img class="active:-mt-20 w-full h-full object-cover rounded-md absolute active:relative hover:relative duration-400 ease-in-out bg-amber-50 z-19 rotate-6 ml-2 mb-2" src="./src/dewi_2.png" alt="">
+                <img class="active:-mt-10 w-full h-full object-cover rounded-md absolute active:relative hover:relative duration-400 ease-in-out bg-amber-50 z-17 rotate-0 ml-0 mb-1" src="./src/dewi_3.png" alt="">
+                <img class="w-full h-full object-cover rounded-md absolute active:relative bg-amber-50 z-10 hover:z-50 -ml-2 -rotate-6 " src="./src/points.jpg" alt="">
+            </div>
         </div>
 
-        <div class="flex lg:flex-row-reverse flex-col-reverse mt-20">
-            <div class="flex-grow flex flex-col text-wrap pl-0 lg:pl-10 pt-4 lg:pt-0 lg:w-6/12">
-                <h1 class="h1_title">Juggling Videography:</h1>
-                <p class="break-words h-full pr-10">
+        <!-- JUGGLING TAB -->
+        <div class="flex lg:flex-row-reverse flex-col-reverse mt-10" id="juggling">
+            <div class="flex-grow flex flex-col text-wrap pl-0 pt-4 lg:pt-0 lg:w-8/12">
+                <h1 class="h1_title">Juggling Videography::</h1>
+                <p class="break-words h-auto md:pr-10">
                     I've created and directed some juggling shorts during the years, both mine and for other people.    
                 </p>
+                
                 <a class="a" href="../juggling_videos">Go to the page →</a>
             </div>
-            <div class="flex-grow h-60 lg:h-96 lg:w-6/12 rounded-md bg-[url('./src/juggling_videos.png')] bg-no-repeat bg-cover bg-center bg-scroll lg:bg-fixed"></div>   
+            <div class="flex-grow h-60 lg:h-96 lg:w-6/12 relative z-0 ml-2 mr-3 mb-8 mt-8 sm:m-8">
+
+                <img class="active:-mt-40  w-full h-full object-cover rounded-md absolute active:relative hover:relative duration-400 ease-in-out bg-amber-50 z-22 rotate-12 ml-3 mb-3" src="./src/dewi_1.png" alt="">
+                <img class="active:-mt-20 w-full h-full object-cover rounded-md absolute active:relative hover:relative duration-400 ease-in-out bg-amber-50 z-19 rotate-6 ml-2 mb-2" src="./src/dewi_2.png" alt="">
+                <img class="active:-mt-10 w-full h-full object-cover rounded-md absolute active:relative hover:relative duration-400 ease-in-out bg-amber-50 z-17 rotate-0 ml-0 mb-1" src="./src/dewi_3.png" alt="">
+                <img class="w-full h-full object-cover rounded-md absolute active:relative bg-amber-50 z-10 hover:z-50 -ml-2 -rotate-6 " src="./src/juggling_videos.png" alt="">
+            </div>
         </div>
 
         <!-- spacer -->
@@ -121,6 +172,55 @@
     
   
 <script>
+
+function onLoadFunc() {
+
+    // if (getCookie("spwebsite_first_time")=="") { //first time
+    //     alert(getCookie("spwebsite_first_time"));
+    //     setCookie("spwebsite_first_time","si",30);
+    // } else {
+
+    // }
+ 
+}
+
+function bodyClick() {
+    document.getElementById("first_time_popup").style.visibility = "hidden";
+}
+
+
+function setCookie(cname,cvalue,exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  let expires = "expires=" + d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function checkCookie(cname) {
+  let user = getCookie(cname);
+  if (user != "") {
+    return false;
+  } else {
+     return true;
+  }
+}
+
 </script>
 
 </html>
