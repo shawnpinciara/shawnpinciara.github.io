@@ -1,30 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>bassman</title>
-    <meta name="description" content="Our first page">
-    <meta name="keywords" content="html tutorial template">
+    <title>bassman - Livelli P5.js</title>
+    <meta name="description" content="P5.js sketch with layers">
+    <meta name="keywords" content="p5js, arduino, serial, levels">
     <meta charset="utf-8">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.min.js" integrity="sha512-WJXVjqeINVpi5XXJ2jn0BSCfp0y80IKrYh731gLRnkAS9TKc5KNt/OfLtu+fCueqdWniouJ1ubM+VI/hbo7POQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js"></script>
-    <!-- p5.touchgui -->
     <script src="https://unpkg.com/p5.touchgui@0.5.2/lib/p5.touchgui.js"></script>
     <script lang="text/javascript" src="https://unpkg.com/simple-web-serial@latest/dist/simple-web-serial.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-
 </head>
 
 <body>
-<!-- <div class="canvas" style="width: 100%; height: 100%;">
-    <main></main>
-</div> -->
-
 <div class="w-full h-full flex flex-col p-4 fixed bg-slate-500">
-    <!-- ROW -->
-     <div class="w-full h-1/2 flex flex-row">
+    <div class="w-full h-1/2 flex flex-row">
       <div class="w-3/4 h-full bg-white rounded-lg flex flex-row p-2">
           <div class="canvas w-full h-full" id="p5js_canvas">
               <main></main>
@@ -34,11 +27,7 @@
             <p class="w-full h-1/12 pl-4 pt-4">Console:</p>
             <div class="w-full h-full p-2 flex flex-col">
                 <div class="w-full h-6/12 flex flex-col" id="console_screen" style="visibility: hidden;">
-                    <p id="console_0">aaa \n sss</p>
-                    <p id="console_1">aaaa \n sss</p>
-                    <p id="console_2">aaa \n sss</p>
-                    <p id="console_3">aaaa \n sss</p>
-                    <p id="console_4">aaa \n sss</p>
+                    <p id="console_0">---</p><p id="console_1">---</p><p id="console_2">---</p><p id="console_3">---</p><p id="console_4">---</p>
                 </div>
                 <div class="w-full h-4/12 flex flex-row items-center rounded-lg py-6" id="rec_box" style="background-color: rgb(251, 203, 203);">
                   <button class="w-10 h-10 bg-red-600 hover:bg-red-400 py-2 border rounded-full ml-4" onclick="recButtonPressed()">
@@ -50,44 +39,43 @@
                     <p class="text-l text-white"> Distanza real time:</p>
                     <p class="text-xl text-white" id="distanza_testo">100</p>
                 </div>
+                <div class="w-full h-4/12 flex flex-row justify-center items-center text-center mt-2">
+                    <div class="w-1/2 h-full outline-2 outline-stone-50 outline-solid bg-green-400 rounded-md p-4 items-center align-middle justify-center" onclick="playGraphAnimation()"><p class="text-l text-white  "> ▶</p></div>
+                    <div class="w-1/2 h-full outline-4 outline-stone-50 outline-solid bg-green-400 rounded-md p-4 ml-2 items-center align-middle justify-center" onclick="pauseGraphAnimation()"><p class="text-xl text-white" id="distanza_testo">❚ ❚</p></div>
+                    
+                    
+                </div>
             </div>
-            
       </div>
     </div>
     
-
-    
-
-    <!-- ROW -->
-    <div class="w-full h-1/2 flex flex-row pt-2">
-
-
-        <div class="w-1/2 h-full rounded-lg flex items-center  pr-2">       
-                <div class="w-full h-full flex flex-col bg-white rounded-lg mt-2 p-2">
+    <div class="w-full h-1/2 flex flex-row pt-1">
+        <div class="w-1/2 h-full flex flex-col items-center pr-2 rounded-lg mt-2 p-2 bg-white">       
                   <p class="text-xl font-semibold p-2 m2">La costante elastica:</p>
-                  <p class="text-l font-thin text-left"> La costante elastica K è un parametro fisico che definisce la rigidità di un corpo elastico, come una molla.Essa quantifica la relazione di proporzionalità diretta tra la forza applicata e la deformazione risultante, come stabilito dalla Legge di Hooke. Un valore elevato di K indica una maggiore resistenza alla deformazione.</p>
-                  <div class="h-full w-full flex flex-row p-2 bg-slate-200">
-                    <div class="w-1/2 h-full flex items-center justify-center"> 
+                  <p class="text-l font-thin text-left p-4"> La costante elastica K è un parametro fisico che definisce la rigidità di un corpo elastico, come una molla. Essa quantifica la relazione di proporzionalità diretta tra la forza applicata e la deformazione risultante, come stabilito dalla Legge di Hooke. Un valore elevato di K indica una maggiore resistenza alla deformazione.</p>
+                  <div class="h-full w-full flex flex-row p-2 ">
+                    <div class="w-full h-full flex items-center justify-center"> 
+                      <!-- https://www.desmos.com/calculator/k9nmebvg1s -->
+                       <!-- k\ =\ \frac{F}{\Delta x}=\frac{\left(m\cdot g\right)}{x_{2}-x_{1}}=\frac{\ \ \ \ \ \ \ \ \cdot9.81m/s^{2}}{\cdot} -->
                       <img src="./costante_elastica_formula.png" class="w-full"alt="">
                     </div>
-                    <div class="w-1/2 h-full flex flex-row"> 
-                      <div class="w-1/12 flex items-center ml-1">
-                        <p class="text-xl">=</p>
-                      </div>
-                      <div class="w-4/12">
-                        
-                      </div>
-                      <div class="w-1/3">
-                        
-                      </div>
+                    <div class="w-1/5 h-full flex flex-row"> 
+                      <div class="w-1/12 flex items-center ml-1"><p class="text-xl"></p></div>
+                      <div class="w-4/12"></div>
+                      <div class="w-1/3"></div>
                     </div>
-                  </div>                  
-                </div>   
+                  </div>
+                  <div class="w-full h-3/12 bg-red-400 rounded-md p-4 flex flex-row justify-center items-center text-center mr-2 mb-2">
+                    <p class="text-xl text-white mr-2"> Mostra la linea altezza:</p>
+                    <div class="w-8 h-8 rounded-md mr-4" style="background-color:indianred;" onclick="showHPeaksPressed()" id="showHPeaksButton"></div>
+                  </div>
+
+
+                                    
+
         </div>
 
-
-         <div class="w-1/2 h-full rounded-lg flex items-center justify-center pl-1">
-          <div class="w-full h-full flex flex-col bg-white rounded-lg mt-2 p-2 ">
+         <div class="w-1/2 h-full flex flex-col bg-white rounded-lg mt-2 ml-2 p-2 ">
             <div class="w-full h-1/12"> <p class="text-xl font-semibold mt-1">Il moto armonico:</p></div>
             <div class="w-full h-full bg-slate-200"></div>
             <div class="w-full h-3/12 bg-green-400 rounded-md p-4 flex flex-row justify-center items-center text-center mr-2 mb-2">
@@ -95,121 +83,189 @@
                     <div class="w-8 h-8 rounded-md mr-4" style="background-color: palegreen;" onclick="showPeaksPressed()" id="showPeaksButton"></div>
                     <p class="text-xl text-white ">Periodo:</p>
                     <p class="text-xl text-white" id="peak_period_text">4s</p>
-                </div>
-          </div>
+            </div>
          </div>
     </div>
-
-   
-  
-
 </div>
 </body>
-
     
 <script>
+  // --- VARIABILI GLOBALI ---
   let gui;
-  let b;
-  var sensor = 9;
-  let fake_index = 0;
-  let img;
   let w;
   let h;
+  let sensor = 9;
   let sensor_readings = [];
   let recButtonState = false;
-  let peak_old = 1;
-  let peak_new = 0;
-  let show_peaks = false;
+  let show_peaks = false; // Controlla VPeaksLayer (linee verticali permanenti)
+  let show_peaks_h = false; // Controlla HPeaksLayer (linee orizzontali temporanee)
+  var circle_x = 50;
+  var fake_index = 0;
+  var lower_distance_range = 0;
+  var upper_distance_range = 400;
+  var h_min_peak = 0; 
+  var h_max_peak = 0; 
+
+  var play = true;
+
+  // Dichiarazione dei livelli (PGraphics)
+  let axisLayer;    // Livello 0: Assi (Statico)
+  let circleLayer;  // Livello 1: Traccia del cerchio (reset a fine schermo)
+  let vPeaksLayer;  // Livello 2: Picchi Verticali (reset a fine corsa)
+  let hPeaksLayer;  // Livello 3: Picchi Orizzontali (reset ad ogni nuovo picco)
 
 
-  const connection = SimpleWebSerial.setupSerialConnection({
-      requestAccessOnPageLoad: true
-  });
-  // React to incoming events
+  // --- FUNZIONI DI UTILITY ---
+  const connection = SimpleWebSerial.setupSerialConnection({ requestAccessOnPageLoad: true });
+  function mapRange(value, inMin, inMax, outMin, outMax){ 
+    return outMin + (((value - inMin) / (inMax - inMin)) * (outMax - outMin));
+  }
+
+  // --- FUNZIONI DI DISEGNO DEI LIVELLI ---
+
+  // Disegna gli assi una sola volta
+  function drawAxes() {
+    axisLayer.stroke(2);
+    // Freccia verticale
+    axisLayer.line(40, 50, 40, h - 30);
+    axisLayer.line(40, 50, 40 + 5, 50 + 5);
+    axisLayer.line(40, 50, 40 - 5, 50 + 5);
+    // Asse orizzontale
+    axisLayer.line(40, h - 30, w - 50, h - 30);
+    axisLayer.line(w - 50, h - 30, w - 50 - 5, h - 30 - 5);
+    axisLayer.line(w - 50, h - 30, w - 50 - 5, h - 30 + 5);
+    
+    // Etichette 
+    axisLayer.fill(0); axisLayer.noStroke(); axisLayer.textSize(12);
+    axisLayer.text("Tempo (s)", 400, h - 10); 
+    axisLayer.text("Distanza dal suolo (mm)", 60, 50);
+  }
+
+  // Funzione chiamata quando si riceve un picco verticale (permanente fino a reset)
+  function onVPeakFound() {
+      vPeaksLayer.stroke(17, 179, 5); // Verde
+      vPeaksLayer.strokeWeight(2);
+      vPeaksLayer.line(circle_x-10, 40, circle_x-10, h - 30);
+  }
+
+  // Funzione chiamata quando si riceve un picco orizzontale (temporaneo)
+  function onHminPeakFound(peakValue) {
+      hPeaksLayer.clear(); // Cancella la linea precedente
+      
+      hPeaksLayer.stroke(255, 100, 0); // Arancione
+      hPeaksLayer.strokeWeight(2);
+      
+      let peak_y = mapRange(peakValue, lower_distance_range, upper_distance_range, h - 50, 50);
+      hPeaksLayer.line(50, peak_y, w - 50, peak_y);
+  }
+
+  function onHmaxPeakFound(peakValue) {
+      hPeaksLayer.clear(); // Cancella la linea precedente
+      
+      hPeaksLayer.stroke(255, 100, 0); // Arancione
+      hPeaksLayer.strokeWeight(2);
+      
+      let peak_y = mapRange(peakValue, lower_distance_range, upper_distance_range, h - 50, 50);
+      hPeaksLayer.line(50, peak_y, w - 50, peak_y);
+  }
+
+
+  // --- EVENT LISTENERS DA ARDUINO (SIMULATI) ---
   connection.on('event-from-arduino', function(data) {
-      console.log('event from Arduino: ' + data)
       sensor = data;
       sensor_readings.push(data);
-      document.getElementById("distanza_testo").innerHTML = str(data)+"mm";
+      if (play) {
+        document.getElementById("distanza_testo").innerHTML = str(data) + "mm";
+      }
       if (sensor_readings.length > 5) {
         sensor_readings.shift();
       }
-
-      for (let i = 0; i<5 ; i++) {
-        document.getElementById("console_"+str(i)).innerHTML = str(fake_index) + " Distanza dal suolo(mm): " + str(sensor_readings[i])
-        fake_index+=1;
+      if (play) {
+        for (let i = 0; i < 5 ; i++) {
+          document.getElementById("console_" + str(i)).innerHTML = str(fake_index) + " Distanza: " + str(sensor_readings[i] || '---');
+          fake_index += 1;
+        }
       }
   });
 
   connection.on('peak_found', function(data) {
-      console.log('Found peak ' + data)
-      peak_old = peak_new;
-      peak_new = data;
-      stroke(17, 179, 5);
-    if (show_peaks) {
-        fill(17, 179, 5);
-        line(circle_x -5, 40, circle_x -5, h-40);
-    }
-    // document.getElementById("peak_period_text").innerHTML = str()
-    
-      
+      if (show_peaks) {
+          onVPeakFound();
+      }
   });
 
-  // Send named events to the Arduino with a number, string, array or json object
-  //connection.send('event-to-arduino', "Hello there, Arduino");
-  p5.disableFriendlyErrors = false;
+  connection.on('h_min_peak', function(data) {
+      if (show_peaks_h) {
+          h_min_peak = data;
+          onHminPeakFound(data); 
+      }
+  });
+  connection.on('h_min_peak', function(data) {
+      if (show_peaks_h) {
+          h_min_peak = data;
+          onHmaxPeakFound(data); 
+      }
+  });
 
-  function mapRange(value, inMin, inMax, outMin, outMax){ return outMin + (((value - inMin) / (inMax - inMin)) * (outMax - outMin))}
 
+  // --- FUNZIONI P5.JS ---
   function setup() {
     textFont('Courier New');
     gui = createGui();
     gui.loadStyle("Blue");
     gui.setFont("Courier New");
-    fill(255,0,0);
-    noStroke();
     container = document.getElementById('p5js_canvas');
     w = container.offsetWidth;
     h = container.offsetHeight;
     createCanvas(w, h);
-    background(255);
-  }
-  var circle_x = 50;
-  var point_color = 0;
-  var console_log = []
-  var console_text = []
-  var console_text_i = 0;
-  var console_text_id = 0;
-  function draw() {
 
-    stroke(2);
-    line(40,50,40,h-30); //freccia verticale
-    line(40,50,40+5,50+5); //freccia
-    line(40,50,40-5,50+5); //freccia
-    line(40,h-30,w-50,h-30);
-    line(w-50,h-30,w-50-5,h-30-5); //freccia
-    line(w-50,h-30,w-50-5,h-30+5); //freccia
-    fill(0); noStroke(); textSize(12);
-    text("Tempo (s)",400,410);
-    text("Distanza dal suolo (mm)",60,50);
-
-    noStroke();
+    // Inizializza i 4 livelli grafici
+    axisLayer = createGraphics(w, h);
+    circleLayer = createGraphics(w, h);
+    hPeaksLayer = createGraphics(w, h);
+    vPeaksLayer = createGraphics(w, h);
     
-    fill(point_color,0,0);
-    circle(circle_x,mapRange(sensor,900,10,30,300),5); //puntino grafico
-    circle_x+=1;
-    if (circle_x > w-50) {
-      circle_x=50;
-      //rect(circle_x-5, 20, 5, 400, 20);
-      fill(255);
-      rect(20, 20, w-50, h-30, 20); //GRAPH
-    }
+    // Imposta sfondo e trasparenze iniziali
+    circleLayer.background(255); 
+    hPeaksLayer.clear();
+    vPeaksLayer.clear();
+    axisLayer.clear();
+    
+    // Disegna gli assi una sola volta (Livello 0)
+    drawAxes(); 
+  }
 
-    // if () { //REC TOGGLE ON
-    //   point_color = 255;
-    // } else {
-    //   point_color = 0;
-    // }
+  function draw() {
+    background(255); // Cancella lo sfondo del canvas principale ad ogni frame
+
+    // 1. Logica di spostamento e reset dei livelli persistenti
+    if (play) {
+      circle_x += 1;
+      if (circle_x > w - 50) {
+          circle_x = 50;
+          circleLayer.background(255); // Reset della traccia
+          vPeaksLayer.clear();        // Reset delle linee verticali permanenti
+      }
+      
+      
+
+      // 2. Disegno sul Livello 1 (circleLayer): Traccia persistente
+      circleLayer.fill(0, 0, 255); 
+      circleLayer.noStroke();
+      circleLayer.circle(circle_x, mapRange(sensor, lower_distance_range, upper_distance_range, h - 50, 50), 3);
+      
+      // 3. Disegno del puntino mobile (sul CANVAS PRINCIPALE, sopra tutto)
+      fill(255, 0, 0); 
+      noStroke();
+      circle(circle_x, mapRange(sensor, lower_distance_range, upper_distance_range, h - 50, 50), 5); 
+    }
+    
+    // 4. Visualizzazione dei Livelli (Ordine dal basso verso l'alto)
+    
+    image(circleLayer, 0, 0);  // Livello 1: Traccia
+    image(vPeaksLayer, 0, 0);  // Livello 2: Linee verticali permanenti
+    image(hPeaksLayer, 0, 0);  // Livello 3: Linee orizzontali temporanee
+    image(axisLayer, 0, 0);    // Livello 0: Assi (Sotto a tutti)
 
     drawGui();
   }
@@ -218,14 +274,7 @@
     resizeCanvas(windowWidth, windowHeight);
   }
 
-  // Find key codes at http://keycode.info/
-  function keyPressed() {
-    if (keyCode === 82) {
-      console.log("R was pressed");
-    } else if (keyCode === 67) {
-      console.log("C was pressed");
-    }
-  }
+  // --- FUNZIONI BOTTONI ---
 
   function recButtonPressed() {
     if (recButtonState==false) {
@@ -234,7 +283,6 @@
         document.getElementById("rec_box").style.backgroundColor = "#ffbab5";
         document.getElementById("console_box").style.backgroundColor = "#ffbab5";
         fake_index = 0;
-
         connection.send('rec_on', 255);
     } else {
         recButtonState = false;
@@ -249,12 +297,39 @@
     if (show_peaks) {
         show_peaks = false;
         document.getElementById("showPeaksButton").style.backgroundColor = "palegreen";
+        hPeaksLayer.clear(); // Cancella la linea precedente
+      
     } else {
         show_peaks = true;
         document.getElementById("showPeaksButton").style.backgroundColor = "forestgreen";
+        hPeaksLayer.clear(); // Cancella la linea precedente
+      
     }
   }
 
+  function showHPeaksPressed() {
+    if (show_peaks_h) {
+      hPeaksLayer.clear();
+        show_peaks_h = false;
+        document.getElementById("showHPeaksButton").style.backgroundColor = "indianred";
+        hPeaksLayer.clear(); // Cancella la linea precedente
+      
+    } else {
+      hPeaksLayer.clear();
+        show_peaks_h = true;
+        document.getElementById("showHPeaksButton").style.backgroundColor = "darkred";
+        hPeaksLayer.clear(); // Cancella la linea precedente
+      
+    }
+  }
 
+  function playGraphAnimation() {
+    play = true;
+  }
+
+  function pauseGraphAnimation() {
+    play=false;
+
+  }
 </script>
 </html>

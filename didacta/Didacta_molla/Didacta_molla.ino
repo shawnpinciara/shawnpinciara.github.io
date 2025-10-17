@@ -14,6 +14,16 @@ ModulinoDistance distance;
 // Create a ModulinoBuzzer object
 ModulinoBuzzer buzzer;
 
+const int buffer_peak_size = 30; 
+int peak_buffer[buffer_peak_size];
+int buffer_index = 0;
+int sample_count = 0;
+const int h_peak_buffer_size = 50;
+const int PEAK_SENSITIVITY = 4; // Valore di sensibilità (da tarare)
+int h_peak_buffer[h_peak_buffer_size];
+int h_peak_buffer_index = 0;
+
+
 
 void setup() {
     // 57600 is the default connection speed used in the JavaScript library.
@@ -28,6 +38,10 @@ void setup() {
   distance.begin();
 
   buzzer.begin();
+
+  for (int i = 0; i < h_peak_buffer_size; i++) {
+        h_peak_buffer[i] = 0;
+    }
   //Serial.begin(9600);
 }
 
@@ -49,13 +63,7 @@ void recOn(JSONVar val) {
     }
 }
 
-const int buffer_peak_size = 30; 
 
-int peak_buffer[buffer_peak_size];
-
-int buffer_index = 0;
-
-int sample_count = 0;
 
 bool findPeak(int sample) {
     peak_buffer[buffer_index] = sample;
@@ -77,6 +85,56 @@ bool findPeak(int sample) {
 }
 
 
+void updateHorizontalPeakBuffer(int sample) {
+    h_peak_buffer[h_peak_buffer_index] = sample;
+    h_peak_buffer_index++;
+
+    if (h_peak_buffer_index >= h_peak_buffer_size) {
+        h_peak_buffer_index = 0;
+    }
+}
+
+int findHorizontalAverage() {
+    long sum = 0;
+    for (int i = 0; i < h_peak_buffer_size; i++) {
+        sum += h_peak_buffer[i];
+    }
+    return (int)(sum / h_peak_buffer_size);
+}
+
+int findHorizontalMinPeak() {
+    int min_peak = h_peak_buffer[0];
+    for (int i = 1; i < h_peak_buffer_size; i++) {
+        if (h_peak_buffer[i] < min_peak) {
+            min_peak = h_peak_buffer[i];
+        }
+    }
+
+    // Ritorna il picco solo se è significativamente sotto la media
+    int avg = findHorizontalAverage();
+    if (avg - min_peak > PEAK_SENSITIVITY) {
+        return min_peak;
+    }
+    return 0; // Altrimenti ritorna 0
+}
+
+int findHorizontalMaxPeak() {
+    int max_peak = h_peak_buffer[0];
+    for (int i = 1; i < h_peak_buffer_size; i++) {
+        if (h_peak_buffer[i] > max_peak) {
+            max_peak = h_peak_buffer[i];
+        }
+    }
+
+    // Ritorna il picco solo se è significativamente sopra la media
+    int avg = findHorizontalAverage();
+    if (max_peak - avg > PEAK_SENSITIVITY) {
+        return max_peak;
+    }
+    return 0; // Altrimenti ritorna 0
+}
+
+
 int i =0;
 
 void loop() {
@@ -90,17 +148,21 @@ void loop() {
     if(findPeak(measure)) {
       WebSerial.send("peak_found", measure);
     }
+    updateHorizontalPeakBuffer(measure);
+    int h_min_p = findHorizontalMinPeak();
+    if (h_min_p!=0) {
+      //Serial.println("MIN PEAK");
+      //Serial.println(h_min_p);
+      WebSerial.send("h_min_peak", measure);
+    }
+
+    int h_max_p = findHorizontalMaxPeak();
+    if (h_max_p!=0) {
+      //Serial.println("MIN PEAK");
+      //Serial.println(h_min_p);
+      WebSerial.send("h_max_peak", measure);
+    }
   }
+  //delay(10);
 
-  // if (timer>300) {
-  //   timer=0;
-  //   WebSerial.send("event-from-arduino", i);
-  //   // Serial.print(i);
-  //   // Serial.print(",");
-  //   // Serial.print(200-i);
-  //   // Serial.println();
-
-  //   if (i>100) i=0;
-  //   i++;
-  // }
 }

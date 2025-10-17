@@ -13,73 +13,235 @@
     <!-- p5.touchgui -->
     <script src="https://unpkg.com/p5.touchgui@0.5.2/lib/p5.touchgui.js"></script>
     <script lang="text/javascript" src="https://unpkg.com/simple-web-serial@latest/dist/simple-web-serial.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
 
 <body>
-<div class="canvas" style="width: 100%; height: 100%;">
+<!-- <div class="canvas" style="width: 100%; height: 100%;">
     <main></main>
+</div> -->
+
+<div class="w-full h-full flex flex-col p-4 fixed bg-slate-500">
+    <!-- ROW -->
+     <div class="w-full h-1/2 flex flex-row">
+      <div class="w-3/4 h-full bg-white rounded-lg flex flex-row p-2">
+          <div class="canvas w-full h-full" id="p5js_canvas">
+              <main></main>
+          </div>
+      </div>
+      <div class="w-1/4 h-full bg-white rounded-lg ml-2 flex flex-col items-end" id="console_box">
+            <p class="w-full h-1/12 pl-4 pt-4">Console:</p>
+            <div class="w-full h-full p-2 flex flex-col">
+                <div class="w-full h-6/12 flex flex-col" id="console_screen" style="visibility: hidden;">
+                    <p id="console_0">aaa \n sss</p>
+                    <p id="console_1">aaaa \n sss</p>
+                    <p id="console_2">aaa \n sss</p>
+                    <p id="console_3">aaaa \n sss</p>
+                    <p id="console_4">aaa \n sss</p>
+                </div>
+                <div class="w-full h-4/12 flex flex-row items-center rounded-lg py-6" id="rec_box" style="background-color: rgb(251, 203, 203);">
+                  <button class="w-10 h-10 bg-red-600 hover:bg-red-400 py-2 border rounded-full ml-4" onclick="recButtonPressed()">
+                    </button>
+                    <p class="text-red-600 font-normal text-lg ml-2">Registra:</p>
+                </div>
+                
+                <div class="w-full h-4/12 bg-blue-400 rounded-md p-4 flex flex-col justify-center items-center text-center mt-2">
+                    <p class="text-l text-white"> Temperatura del sensore (C):</p>
+                    <p class="text-xl text-white" id="temperatura_text">100</p>
+                    <p class="text-l text-white"> Isteresi (+-C):</p>
+                    <p class="text-xl text-white" id="isteresi_text">100</p>
+                    <p class="text-l text-white"> Temperatura set (+-C):</p>
+                    <p class="text-xl text-white" id="setpoint_text">100</p>
+                </div>
+            </div>
+            
+      </div>
+    </div>
+    
+
+    
+
+    <!-- ROW -->
+    <div class="w-full h-1/2 flex flex-row pt-2">
+
+
+        <div class="w-1/2 h-full rounded-lg flex items-center  pr-2">       
+                <div class="w-full h-full flex flex-col bg-white rounded-lg mt-2 p-2">
+                  <p class="text-xl font-semibold p-2 m2">La costante elastica:</p>
+                  <p class="text-l font-thin text-left"> La costante elastica K è un parametro fisico che definisce la rigidità di un corpo elastico, come una molla.Essa quantifica la relazione di proporzionalità diretta tra la forza applicata e la deformazione risultante, come stabilito dalla Legge di Hooke. Un valore elevato di K indica una maggiore resistenza alla deformazione.</p>
+                  <div class="h-full w-full flex flex-row p-2 bg-slate-200">
+                    <div class="w-1/2 h-full flex items-center justify-center"> 
+                      <img src="./costante_elastica_formula.png" class="w-full"alt="">
+                    </div>
+                    <div class="w-1/2 h-full flex flex-row"> 
+                      <div class="w-1/12 flex items-center ml-1">
+                        <p class="text-xl">=</p>
+                      </div>
+                      <div class="w-4/12">
+                        
+                      </div>
+                      <div class="w-1/3">
+                        
+                      </div>
+                    </div>
+                  </div>                  
+                </div>   
+        </div>
+
+
+         <div class="w-1/2 h-full rounded-lg flex items-center justify-center pl-1">
+          <div class="w-full h-full flex flex-col bg-white rounded-lg mt-2 p-2 ">
+            <div class="w-full h-1/12"> <p class="text-xl font-semibold mt-1">Il moto armonico:</p></div>
+            <div class="w-full h-full bg-slate-200"></div>
+            <div class="w-full h-3/12 bg-green-400 rounded-md p-4 flex flex-row justify-center items-center text-center mr-2 mb-2">
+                    <p class="text-xl text-white mr-2"> Mostra i picchi:</p>
+                    <div class="w-8 h-8 rounded-md mr-4" style="background-color: palegreen;" onclick="showPeaksPressed()" id="showPeaksButton"></div>
+                    <p class="text-xl text-white ">Periodo:</p>
+                    <p class="text-xl text-white" id="peak_period_text">4s</p>
+                </div>
+          </div>
+         </div>
+    </div>
+
+   
+  
+
 </div>
 </body>
+
+    
 <script>
   let gui;
   let b;
   var sensor = 9;
+  let fake_index = 0;
+  let img;
+  let w;
+  let h;
+  let sensor_readings = [];
+  let recButtonState = false;
+  let peak_old = 1;
+  let peak_new = 0;
+  let show_peaks = false;
+  let temperature_setpoint =28;
+  let hysteresis = 0.2;
+  var circle_x = 50;
+  var circle_xs = [];
+  var point_color = 0;
+  var console_log = []
+  var console_text = []
+  var console_text_i = 0;
+  var console_text_id = 0;
+  var lower_temp_range = 20;
+  var upper_temp_range = 35;
+
 
   const connection = SimpleWebSerial.setupSerialConnection({
       requestAccessOnPageLoad: true
   });
+
   // React to incoming events
-  connection.on('event-from-arduino', function(data) {
-      console.log('event from Arduino: ' + data)
-      sensor = data;
+  connection.on('temperature_setpoint', function(data) {
+      console.log('temperature_setpoint ' + data)
+      temperature_setpoint = data;
+      document.getElementById("setpoint_text").innerHTML = temperature_setpoint.toFixed(2);
+  });
+
+  connection.on('hysteresis', function(data) {
+      console.log('hysteresis ' + data)
+      hysteresis = data;    
+
+      document.getElementById("isteresi_text").innerHTML = hysteresis.toFixed(2);  
+  });
+
+  connection.on('temperature_sensor', function(data) {
+      console.log('temperature_sensor ' + data)
+      sensor = data;    
+      document.getElementById("temperatura_text").innerHTML = sensor.toFixed(2);
+  });
+
+  connection.on('light_state', function(data) { //se la lue è accesa o no
+      console.log('light_state ' + data)
+
   });
 
   // Send named events to the Arduino with a number, string, array or json object
   //connection.send('event-to-arduino', "Hello there, Arduino");
   p5.disableFriendlyErrors = false;
-  document.title = "My beautiful p5.js sketch";
-  let description = "A white disc in the center of a black canvas is growing and shrinking slowly.";
-  function preload() {}
 
   function mapRange(value, inMin, inMax, outMin, outMax){ return outMin + (((value - inMin) / (inMax - inMin)) * (outMax - outMin))}
 
   function setup() {
+    textFont('Courier New');
     gui = createGui();
-    b = createButton("Light on!", 20, 450);
-    b2 = createButton("Light off!", 20, 500);
-    createCanvas(windowWidth, windowHeight);
-    background(200);
-    fill(250);
-    rect(20, 20, 550, 400, 20); //GRAPH
-    //describe(description); // Create a screen reader accessible description for the canvas
-  }
-  var circle_x = 50;
-  function draw() {
-    drawGui();
-
-    if(b.isPressed) {
-      print(b.label + " is pressed.");
-      connection.send('pixels', 255);
-    }
-
-    if(b2.isPressed) {
-      print(b2.label + " is pressed.");
-      connection.send('pixels', 0);
-    }
-    
-    noStroke();
-    
-
+    gui.loadStyle("Blue");
+    gui.setFont("Courier New");
     fill(255,0,0);
-    circle(circle_x,mapRange(sensor,900,10,30,300),5);
+    noStroke();
+    container = document.getElementById('p5js_canvas');
+    w = container.offsetWidth;
+    h = container.offsetHeight;
+    createCanvas(w, h);
+    background(255);
+  }
+ 
+  function draw() {
+
+    noStroke();
+    fill(255);
+    rect(20, 20, w, h-30, 20); //GRAPH
+
+    stroke(2);
+    line(40,50,40,h-30); //freccia verticale
+    line(40,50,40+5,50+5); //freccia
+    line(40,50,40-5,50+5); //freccia
+    line(40,h-30,w-50,h-30);
+    line(w-50,h-30,w-50-5,h-30-5); //freccia
+    line(w-50,h-30,w-50-5,h-30+5); //freccia
+    fill(0); noStroke(); textSize(12);
+    text("Tempo (s)",400,410);
+    text("Temperatura (°C)",60,50);
+
+    
+    
+   
+
+    //puntino nel grafico
+    circle_xs[circle_x] = sensor;
 
     circle_x+=1;
-    if (circle_x >650) {
-      fill(250);
-      rect(20, 20, 550, 400, 20); //GRAPH
-      circle_x=50;
+    if (circle_x > 2000) {
+      circle_x=0;
     }
 
+    for (let i=0; i< 2000; i++) { //disegna tutti i punti
+      noStroke();
+      fill(point_color,0,0);
+      let ii = mapRange(i,0,2000,50,w-50);
+      circle(ii,mapRange(circle_xs[i],lower_temp_range,upper_temp_range,h-50,50),3); //puntino grafico
+    }
+    
+    //linea temperatura
+    stroke(0);
+    let temp_ranged = mapRange(temperature_setpoint,lower_temp_range,upper_temp_range,h-50,50);
+    line(50, temp_ranged, w-50, temp_ranged);
+
+    //linee isteresi
+    stroke(252, 44, 3);
+    let hysteresis_range =  mapRange(temperature_setpoint + hysteresis,lower_temp_range,upper_temp_range,h-50,50);
+    line(50, hysteresis_range, w-50, hysteresis_range);
+    hysteresis_range =  mapRange(temperature_setpoint - hysteresis,lower_temp_range,upper_temp_range,h-50,50);
+    line(50, hysteresis_range, w-50, hysteresis_range);
+    
+
+    // if () { //REC TOGGLE ON
+    //   point_color = 255;
+    // } else {
+    //   point_color = 0;
+    // }
+
+    drawGui();
   }
 
   function windowResized() {
@@ -95,21 +257,34 @@
     }
   }
 
-  // **************************
-  // * HIC ET NUNC VARIABLES  *
-  // **************************
+  function recButtonPressed() {
+    if (recButtonState==false) {
+        recButtonState = true;
+        document.getElementById("console_screen").style.visibility = "visible";
+        document.getElementById("rec_box").style.backgroundColor = "#ffbab5";
+        document.getElementById("console_box").style.backgroundColor = "#ffbab5";
+        fake_index = 0;
 
-  // If you want to create OBJKT's with different seeds,
-  // you can access the creator and viewer wallet ids.
-  // This values will only be injected once the piece has been minted
-  // they will not work locally.
-  const creator = new URLSearchParams(window.location.search).get("creator");
-  const viewer = new URLSearchParams(window.location.search).get("viewer");
-  // NOTE: if the user is viewing the page on hicetnunc while unsynced,
-  // the viewer variable will return a string of value "false" (NOT a boolean)
+        connection.send('rec_on', 255);
+    } else {
+        recButtonState = false;
+        document.getElementById("console_screen").style.visibility = "hidden"
+        document.getElementById("rec_box").style.backgroundColor = "white";
+        document.getElementById("console_box").style.backgroundColor = "white";
+        connection.send('rec_on', 0);
+    }
+  }
 
-  // The ID of the OBJKT is also passed via the URL parameters
-  const objkt = new URLSearchParams(window.location.search).get("objkt");
+  function showPeaksPressed() {
+    if (show_peaks) {
+        show_peaks = false;
+        document.getElementById("showPeaksButton").style.backgroundColor = "palegreen";
+    } else {
+        show_peaks = true;
+        document.getElementById("showPeaksButton").style.backgroundColor = "forestgreen";
+    }
+  }
+
 
 </script>
 </html>
