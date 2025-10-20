@@ -32,7 +32,7 @@
       </div>
       <div class="w-1/4 h-full bg-white rounded-lg ml-2 flex flex-col items-end" id="console_box">
             <p class="w-full h-1/12 pl-4 pt-4">Console:</p>
-            <div class="w-full h-full p-2 flex flex-col">
+            <div class="w-full h-full p-2 flex flex-col items-end">
                 <div class="w-full h-6/12 flex flex-col" id="console_screen" style="visibility: hidden;">
                     <p id="console_0">aaa \n sss</p>
                     <p id="console_1">aaaa \n sss</p>
@@ -54,6 +54,10 @@
                     <p class="text-l text-white"> Temperatura set (+-C):</p>
                     <p class="text-xl text-white" id="setpoint_text">100</p>
                 </div>
+                <div class="w-full h-4/12 flex flex-row justify-center items-center text-center mt-2">
+                    <div class="w-1/2 h-full outline-2 outline-stone-50 outline-solid bg-green-400 rounded-md p-4 items-center align-middle justify-center" onclick="playGraphAnimation()"><p class="text-l text-white  "> ▶</p></div>
+                    <div class="w-1/2 h-full outline-4 outline-stone-50 outline-solid bg-green-400 rounded-md p-4 ml-2 items-center align-middle justify-center" onclick="pauseGraphAnimation()"><p class="text-xl text-white" id="distanza_testo">❚ ❚</p></div>
+                </div>
             </div>
             
       </div>
@@ -64,44 +68,41 @@
 
     <!-- ROW -->
     <div class="w-full h-1/2 flex flex-row pt-2">
-
-
-        <div class="w-1/2 h-full rounded-lg flex items-center  pr-2">       
+        <div class="w-full h-full rounded-lg flex items-center">       
                 <div class="w-full h-full flex flex-col bg-white rounded-lg mt-2 p-2">
-                  <p class="text-xl font-semibold p-2 m2">La costante elastica:</p>
-                  <p class="text-l font-thin text-left"> La costante elastica K è un parametro fisico che definisce la rigidità di un corpo elastico, come una molla.Essa quantifica la relazione di proporzionalità diretta tra la forza applicata e la deformazione risultante, come stabilito dalla Legge di Hooke. Un valore elevato di K indica una maggiore resistenza alla deformazione.</p>
-                  <div class="h-full w-full flex flex-row p-2 bg-slate-200">
-                    <div class="w-1/2 h-full flex items-center justify-center"> 
-                      <img src="./costante_elastica_formula.png" class="w-full"alt="">
-                    </div>
-                    <div class="w-1/2 h-full flex flex-row"> 
-                      <div class="w-1/12 flex items-center ml-1">
-                        <p class="text-xl">=</p>
-                      </div>
-                      <div class="w-4/12">
-                        
-                      </div>
-                      <div class="w-1/3">
-                        
-                      </div>
-                    </div>
-                  </div>                  
+                  <p class="text-2xl font-semibold p-2 m2">Il Controllo a Isteresi:</p>
+                  <p class="text-l font-normal text-left p-2"> 
+                    Il sistema funziona come un termostato intelligente basato su un controllo a retroazione <b>(feedback)</b>. Un sensore misura costantemente la temperatura interna e la confronta con il valore desiderato <b>(Setpoint)</b>. <br>
+                    Per evitare che l'elemento riscaldante si accenda e spenga continuamente attorno al valore di setpoint (fenomeno detto chattering), viene utilizzata una isteresi.
+                     <br><br>
+                    L'<b>isteresi</b> definisce un intervallo di tolleranza. 
+                    Il riscaldamento si attiva solo quando la temperatura scende al di 
+                    sotto del limite inferiore (Setpoint - Isteresi) e si disattiva solo 
+                    quando supera il limite superiore (Setpoint + Isteresi). 
+                    Questo garantisce stabilità al sistema e riduce l'usura dei componenti.
+                    <br><br>
+                    <b>Condizione di ACCENSIONE:</b> &nbsp; &nbsp; &nbsp; T <sub>reale</sub>  <  ( T <sub>setpoint</sub> - T <sub>isteresi</sub> )
+                    <br>
+                    <b>Condizione di SPEGNIMENTO:</b> &nbsp; &nbsp; &nbsp; T <sub>reale</sub> >  ( T <sub>setpoint</sub> + T <sub>isteresi</sub> )
+                    <br> <br>
+                    Nota come la temperatura nel grafico non si inverte istantaneamente. 
+                    Questo fenomeno è dovuto all'<b>inerzia termica</b>: il sistema impiega del tempo per riscaldarsi e 
+                    per raffreddarsi. Per questo motivo, la temperatura potrebbe superare leggermente i limiti dell'isteresi, 
+                    creando delle piccole <b>oscillazioni</b> visibili nel grafico. 
+                    <br> <br>
+                    Per un controllo più preciso, si può sostituire il semplice sistema ON/OFF con un algoritmo <b>PID (Proporzionale-Integrale-Derivativo)</b> . 
+                    <br>
+                    Questo metodo, un'evoluzione dei sistemi a retroazione negativa, non si limita ad accendere e spegnere ma modula finemente la potenza del riscaldatore. 
+                    <br>
+                    Analizza l'errore di temperatura attuale (P), quello accumulato (I) e la sua tendenza futura (D). 
+                    Per funzionare, richiede un componente elettronico che possa non solo accendere o spegnere la lampadina, ma anche sceglierne l'intensità, garantendo una stabilità termica molto superiore.
+
+                  </p>
+                                  
                 </div>   
         </div>
 
 
-         <div class="w-1/2 h-full rounded-lg flex items-center justify-center pl-1">
-          <div class="w-full h-full flex flex-col bg-white rounded-lg mt-2 p-2 ">
-            <div class="w-full h-1/12"> <p class="text-xl font-semibold mt-1">Il moto armonico:</p></div>
-            <div class="w-full h-full bg-slate-200"></div>
-            <div class="w-full h-3/12 bg-green-400 rounded-md p-4 flex flex-row justify-center items-center text-center mr-2 mb-2">
-                    <p class="text-xl text-white mr-2"> Mostra i picchi:</p>
-                    <div class="w-8 h-8 rounded-md mr-4" style="background-color: palegreen;" onclick="showPeaksPressed()" id="showPeaksButton"></div>
-                    <p class="text-xl text-white ">Periodo:</p>
-                    <p class="text-xl text-white" id="peak_period_text">4s</p>
-                </div>
-          </div>
-         </div>
     </div>
 
    
@@ -135,6 +136,7 @@
   var console_text_id = 0;
   var lower_temp_range = 20;
   var upper_temp_range = 35;
+  var play = false;
 
 
   const connection = SimpleWebSerial.setupSerialConnection({
@@ -159,6 +161,17 @@
       console.log('temperature_sensor ' + data)
       sensor = data;    
       document.getElementById("temperatura_text").innerHTML = sensor.toFixed(2);
+
+      sensor_readings.push(data);
+      if (sensor_readings.length > 5) {
+        sensor_readings.shift();
+      }
+
+        for (let i = 0; i < 5 ; i++) {
+          document.getElementById("console_" + str(i)).innerHTML = str(fake_index) + " Temperatura: " + str(parseFloat(sensor_readings[i]).toFixed(2));
+          fake_index += 1;
+        }
+      
   });
 
   connection.on('light_state', function(data) { //se la lue è accesa o no
@@ -200,7 +213,7 @@
     line(w-50,h-30,w-50-5,h-30-5); //freccia
     line(w-50,h-30,w-50-5,h-30+5); //freccia
     fill(0); noStroke(); textSize(12);
-    text("Tempo (s)",400,410);
+    text("Tempo (s)",400,h-10);
     text("Temperatura (°C)",60,50);
 
     
@@ -211,16 +224,24 @@
     circle_xs[circle_x] = sensor;
 
     circle_x+=1;
-    if (circle_x > 2000) {
+    if (circle_x > 1500) {
       circle_x=0;
+      noStroke();
+    fill(255);
+    rect(20, 20, w, h-30, 20); //GRAPH
+    circle_xs = []
+          background(255);
     }
 
-    for (let i=0; i< 2000; i++) { //disegna tutti i punti
+    
+    for (let i=0; i< 1500; i++) { //disegna tutti i punti
       noStroke();
       fill(point_color,0,0);
-      let ii = mapRange(i,0,2000,50,w-50);
+      let ii = mapRange(i,0,1500,50,w-50);
       circle(ii,mapRange(circle_xs[i],lower_temp_range,upper_temp_range,h-50,50),3); //puntino grafico
     }
+
+
     
     //linea temperatura
     stroke(0);
@@ -283,6 +304,15 @@
         show_peaks = true;
         document.getElementById("showPeaksButton").style.backgroundColor = "forestgreen";
     }
+  }
+
+  function playGraphAnimation() {
+    play = true;
+  }
+
+  function pauseGraphAnimation() {
+    play=false;
+
   }
 
 

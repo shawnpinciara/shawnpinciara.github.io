@@ -18,7 +18,7 @@ bool knob_state = true;
 
 
 void setup() {
-  // put your setup code here, to run once:
+  // put your setup code here, to run once: 57600
   Serial.begin(57600);
 
   // Initialize Modulino I2C communication
@@ -54,11 +54,11 @@ void loop() {
   Serial.print(hysteresis);
 
   if (sensorTemp < setPoint + position - hysteresis ) { //accendi luce e scalda
-    analogWrite(11,200);
+    analogWrite(3,200);
     Serial.print("!!! WARMING UP !!!");
     WebSerial.send("light_state", 255);
   } else if (sensorTemp > setPoint + position +hysteresis ) {
-    analogWrite(11,0);
+    analogWrite(3,0);
     Serial.print("!!! COOLING DOWN!!!");
     WebSerial.send("light_state", 0);
   }
@@ -69,7 +69,7 @@ void loop() {
   } 
 
   if (knob_state) { //temperatura
-    setPoint = setPoint + position;
+    setPoint = constrain(setPoint + position,20,34);
   } else { //isteresi
     hysteresis = hysteresis + ((float)position *0.05);
   }

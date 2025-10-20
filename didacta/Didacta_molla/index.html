@@ -42,29 +42,37 @@
                 <div class="w-full h-4/12 flex flex-row justify-center items-center text-center mt-2">
                     <div class="w-1/2 h-full outline-2 outline-stone-50 outline-solid bg-green-400 rounded-md p-4 items-center align-middle justify-center" onclick="playGraphAnimation()"><p class="text-l text-white  "> ▶</p></div>
                     <div class="w-1/2 h-full outline-4 outline-stone-50 outline-solid bg-green-400 rounded-md p-4 ml-2 items-center align-middle justify-center" onclick="pauseGraphAnimation()"><p class="text-xl text-white" id="distanza_testo">❚ ❚</p></div>
-                    
-                    
                 </div>
             </div>
       </div>
     </div>
     
     <div class="w-full h-1/2 flex flex-row pt-1">
-        <div class="w-1/2 h-full flex flex-col items-center pr-2 rounded-lg mt-2 p-2 bg-white">       
-                  <p class="text-xl font-semibold p-2 m2">La costante elastica:</p>
-                  <p class="text-l font-thin text-left p-4"> La costante elastica K è un parametro fisico che definisce la rigidità di un corpo elastico, come una molla. Essa quantifica la relazione di proporzionalità diretta tra la forza applicata e la deformazione risultante, come stabilito dalla Legge di Hooke. Un valore elevato di K indica una maggiore resistenza alla deformazione.</p>
+        <div class="w-1/2 h-full flex flex-col pr-2 rounded-lg mt-2 p-2 bg-white">       
+                  <p class="text-xl font-semibold p-2">La costante elastica:</p>
+                  <p class="text-l font-normal text-left p-2"> La costante elastica K è il parametro che definisce la rigidità 
+                    di un corpo elastico, come una molla. Essa quantifica la relazione di 
+                    proporzionalità diretta tra la forza applicata e la deformazione risultante, 
+                    come stabilito dalla Legge di Hooke: F = -K • Δx. Un valore elevato di K 
+                    indica una maggiore resistenza alla deformazione. <br> <br>
+                  <b>💡 Come la misuriamo (Metodo Statico):</b>
+                  Prima di far oscillare il sistema, possiamo calcolare K 
+                  misurando di quanto si allunga la molla sotto l'effetto di un peso noto (m)</p>
                   <div class="h-full w-full flex flex-row p-2 ">
-                    <div class="w-full h-full flex items-center justify-center"> 
+                    <div class="w-1/2 h-full flex items-center justify-center"> 
                       <!-- https://www.desmos.com/calculator/k9nmebvg1s -->
                        <!-- k\ =\ \frac{F}{\Delta x}=\frac{\left(m\cdot g\right)}{x_{2}-x_{1}}=\frac{\ \ \ \ \ \ \ \ \cdot9.81m/s^{2}}{\cdot} -->
-                      <img src="./costante_elastica_formula.png" class="w-full"alt="">
+                      <img src="./costante_elastica_formula.png" class="w-3/4"alt="">
                     </div>
-                    <div class="w-1/5 h-full flex flex-row"> 
-                      <div class="w-1/12 flex items-center ml-1"><p class="text-xl"></p></div>
-                      <div class="w-4/12"></div>
-                      <div class="w-1/3"></div>
+                    <div class="w-1/2 h-full flex flex-row pl-4"> 
+                      <div class="w-full flex items-center ml-1"><ul class="text-l font-normal text-left p-4 list-disc">Dove:
+                        <li><i>m</i> è la massa del peso (in kg)</li>
+                        <li><i>g</i> è l'accelerazione di gravità (circa 9.81 m/s²)</li>
+                        <li><i>Δx</i> è l'allungamento della molla in metri.</li>
+                      </ul></div>
                     </div>
                   </div>
+                  
                   <div class="w-full h-3/12 bg-red-400 rounded-md p-4 flex flex-row justify-center items-center text-center mr-2 mb-2">
                     <p class="text-xl text-white mr-2"> Mostra la linea altezza:</p>
                     <div class="w-8 h-8 rounded-md mr-4" style="background-color:indianred;" onclick="showHPeaksPressed()" id="showHPeaksButton"></div>
@@ -76,13 +84,38 @@
         </div>
 
          <div class="w-1/2 h-full flex flex-col bg-white rounded-lg mt-2 ml-2 p-2 ">
-            <div class="w-full h-1/12"> <p class="text-xl font-semibold mt-1">Il moto armonico:</p></div>
-            <div class="w-full h-full bg-slate-200"></div>
+            <div class="w-full h-1/12 pl-2"> 
+              <p class="text-xl font-semibold mt-1">Il moto armonico:</p>
+              <p class="text-l font-normal text-left pt-4">Quando la forza di richiamo è proporzionale allo spostamento 
+                (come nella nostra molla), il sistema oscilla con un moto armonico semplice.
+                 Il grafico in alto visualizza esattamente questo moto: la sua forma d'onda è una sinusoide.
+                La posizione del peso in funzione del tempo t è descritta dalla seguente equazione: </p>
+                <p class="text-xl font-normal text-center mt-2">x(t)=A•cos(ωt+φ)</p>
+                <ul class="text-l font-normal text-left p-4 list-disc ml-2">Dove:
+                        <li><i>A</i> (Ampiezza): È il massimo spostamento dalla posizione di equilibrio. Sul grafico, 
+                          corrisponde all'altezza dei picchi dell'onda.</li>
+                        <li><i>ω</i> (Pulsazione): È la frequenza dell'oscillazione.</li>
+                        <li><i>φ</i> (Fase iniziale): Indica la posizione di partenza del peso all'istante t=0.</li>
+                </ul>
+                <p class="text-l font-normal text-left"><b>⚙️ Periodo e Frequenza:</b> Il Periodo (T) è il tempo necessario per compiere un'oscillazione completa (da un picco al successivo). 
+                  È il valore che misuriamo direttamente dal grafico! <br> 
+                  La cosa interessante è che il periodo non dipende dall'ampiezza dell'oscillazione,
+               ma solo dalle caratteristiche fisiche del sistema:</p>
+                <img src="./tempo_formula.png" class="h-14">
+                
+
+                  <!-- <p>Questa formula è il cuore del nostro esperimento dinamico!
+                    Misurando il periodo T dal grafico e conoscendo la massa m, 
+                    possiamo ricavare la costante elastica k in un secondo modo, del tutto indipendente dal primo. 
+                    Confrontare i due valori di $k$ (statico e dinamico) è una potente verifica del modello fisico.</p> -->
+            </div>
+
+            <div class="w-full h-full"></div>
             <div class="w-full h-3/12 bg-green-400 rounded-md p-4 flex flex-row justify-center items-center text-center mr-2 mb-2">
                     <p class="text-xl text-white mr-2"> Mostra i picchi:</p>
                     <div class="w-8 h-8 rounded-md mr-4" style="background-color: palegreen;" onclick="showPeaksPressed()" id="showPeaksButton"></div>
-                    <p class="text-xl text-white ">Periodo:</p>
-                    <p class="text-xl text-white" id="peak_period_text">4s</p>
+                    <!-- <p class="text-xl text-white ">Periodo:</p>
+                    <p class="text-xl text-white" id="peak_period_text">4s</p> -->
             </div>
          </div>
     </div>
@@ -250,7 +283,7 @@
       
 
       // 2. Disegno sul Livello 1 (circleLayer): Traccia persistente
-      circleLayer.fill(0, 0, 255); 
+      circleLayer.fill(0, 0, 0); 
       circleLayer.noStroke();
       circleLayer.circle(circle_x, mapRange(sensor, lower_distance_range, upper_distance_range, h - 50, 50), 3);
       
@@ -298,11 +331,13 @@
         show_peaks = false;
         document.getElementById("showPeaksButton").style.backgroundColor = "palegreen";
         hPeaksLayer.clear(); // Cancella la linea precedente
+        connection.send('show_peaks', 0);
       
     } else {
         show_peaks = true;
         document.getElementById("showPeaksButton").style.backgroundColor = "forestgreen";
         hPeaksLayer.clear(); // Cancella la linea precedente
+        connection.send('show_peaks', 255);
       
     }
   }

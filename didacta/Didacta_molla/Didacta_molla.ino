@@ -22,6 +22,7 @@ const int h_peak_buffer_size = 50;
 const int PEAK_SENSITIVITY = 4; // Valore di sensibilità (da tarare)
 int h_peak_buffer[h_peak_buffer_size];
 int h_peak_buffer_index = 0;
+bool show_peaks = false;
 
 
 
@@ -30,6 +31,7 @@ void setup() {
   Serial.begin(57600);
   WebSerial.on("pixels", changeColor);
   WebSerial.on("rec_on", recOn);
+  WebSerial.on("show_peaks", showPeaks);
   // Initialize Modulino I2C communication
   Modulino.begin();
   // Detect and connect to pixels module
@@ -58,8 +60,30 @@ void changeColor(JSONVar val) {
 void recOn(JSONVar val) {
     if (int(val)>100) { //rec on
         buzzer.tone(260, 500);
+        for (int i = 0; i < 8; i++) {
+        // Set each LED (index, color, brightness)
+        // Available colors: RED, BLUE, GREEN, VIOLET, WHITE
+        leds.set(i, RED, 10);
+        // Update the physical LEDs with new settings
+        leds.show();
+        }
     } else { //rec off
         buzzer.tone(200, 500);
+        for (int i = 0; i < 8; i++) {
+        // Set each LED (index, color, brightness)
+        // Available colors: RED, BLUE, GREEN, VIOLET, WHITE
+        leds.set(i, 0,0,0, val);
+        // Update the physical LEDs with new settings
+        leds.show();
+        }
+    }
+}
+
+void showPeaks(JSONVar val) {
+    if (int(val)> 100) {
+        show_peaks = true;
+    } else {
+        show_peaks = false;
     }
 }
 
@@ -125,7 +149,6 @@ int findHorizontalMaxPeak() {
             max_peak = h_peak_buffer[i];
         }
     }
-
     // Ritorna il picco solo se è significativamente sopra la media
     int avg = findHorizontalAverage();
     if (max_peak - avg > PEAK_SENSITIVITY) {
@@ -147,6 +170,17 @@ void loop() {
     WebSerial.send("event-from-arduino", measure);
     if(findPeak(measure)) {
       WebSerial.send("peak_found", measure);
+      if (show_peaks) {
+        for (int i = 0; i < 8; i++) {
+            leds.set(i, 0,255,0, 10);
+            leds.show();
+        }
+
+        for (int i = 0; i < 8; i++) {
+            leds.set(i, 0,0,0, 10);
+            leds.show();
+        }
+      }
     }
     updateHorizontalPeakBuffer(measure);
     int h_min_p = findHorizontalMinPeak();
