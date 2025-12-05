@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="it">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Hand distance — p5 + Handsfree</title>
+	<!-- p5 from CDN -->
+	<script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
+	<!-- local loader for Handsfree (loads the real build from unpkg) -->
+	<script src="handsfree.js"></script>
+	<style>
+		html,body{height:100%;margin:0}
+		#sketch-container{position:fixed;top:0;left:0;right:0;bottom:0}
+		/* small debug window in bottom-left */
+		#debugWrap{position:fixed;left:12px;bottom:12px;width:260px;height:195px;z-index:9999;border:2px solid rgba(0,0,0,0.5);background:rgba(0,0,0,0.1);overflow:hidden;border-radius:6px}
+			#debugToolbar{position:absolute;left:6px;right:6px;top:6px;display:flex;justify-content:space-between;align-items:center;gap:8px;z-index:10001;pointer-events:auto}
+		#distanceDisplay{font-size:13px;padding:4px 6px;background:rgba(0,0,0,0.35);border-radius:4px}
+			#topControls{position:fixed;top:12px;right:12px;display:flex;gap:10px;align-items:center;z-index:10003;pointer-events:auto;background:rgba(255,255,255,0.9);padding:6px 10px;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+			#topControls > div, #topControls > select, #topControls > button, #topControls > span{color:#000}
+			/* right-side vertical CC list */
+			#ccSentList{position:fixed;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;align-items:flex-end;z-index:10003;background:rgba(255,255,255,0.9);padding:8px;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+			#ccSentList div{color:#000;font-family:monospace;padding:4px 8px;border-radius:4px;background:rgba(0,0,0,0.03)}
+		#resizeHandle{position:absolute;right:4px;bottom:4px;width:18px;height:18px;cursor:nwse-resize;z-index:10002;background:linear-gradient(135deg,rgba(255,255,255,0.25) 0%,rgba(255,255,255,0.05) 100%);border-radius:3px}
+		#thresholdControl input[type="range"]{vertical-align:middle}
+
+
+
+		/* Hands display styling */
+		#handsDisplay{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;gap:48px;align-items:center;z-index:9998;pointer-events:none}
+		.handSvg{width:180px;height:260px;fill:#ddd;transition:fill 120ms linear;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.15))}
+			/* left/right handled by SVG content; no CSS flip here */
+		/* make Handsfree video/canvas fill the wrapper */
+			#debugWrap .handsfree-video,
+			#debugWrap .handsfree-canvas-hands{width:100% !important;height:100% !important;object-fit:cover;display:block;transform:scaleX(-1);transform-origin:center center}
+		/* hide other debugging canvases (we only want the hands view) */
+		#debugWrap .handsfree-canvas{display:none}
+		#debugWrap .handsfree-canvas-hands{display:block}
+	</style>
+</head>
+<body>
+		<div id="sketch-container"></div>
+			<!-- Hands display: two SVGs, left and right -->
+			<div id="handsDisplay" aria-hidden="true">
+				<!-- Right hand maps to index 0, Left hand maps to index 1 -->
+				<!-- Right: mirrored version of the provided left-hand SVG -->
+				<svg id="handRight" viewBox="0 0 600 600" class="handSvg" aria-label="Right hand">
+					<g transform="translate(600 0) scale(-1 1)">
+						<path d="m200.5,532.5l240.5,0.5c-37.49809,0.5 8.5,-119.43386 8.5,-187.5c0,-68.06614 -54,-57 -64,-41c0,-31 -1,7 -1,-102c0,-109 -209,-123 -210,13c-1,136 24,169 26,317z" id="svg_2_right" />
+					</g>
+				</svg>
+				<!-- Left: provided SVG (cleaned to allow CSS fill) -->
+				<svg id="handLeft" viewBox="0 0 600 600" class="handSvg" aria-label="Left hand">
+					<path d="m200.5,532.5l240.5,0.5c-37.49809,0.5 8.5,-119.43386 8.5,-187.5c0,-68.06614 -54,-57 -64,-41c0,-31 -1,7 -1,-102c0,-109 -209,-123 -210,13c-1,136 24,169 26,317z" id="svg_2_left" />
+				</svg>
+			</div>
+			<!-- right-side CC list: one per row -->
+			<div id="ccSentList" aria-hidden="false">
+				<div id="cc35" onclick="toggleCCEnabled(0)">Right Hand X: —</div>
+				<div id="cc36" onclick="toggleCCEnabled(1)">Right Hand Y: —</div>
+				<div id="cc37" onclick="toggleCCEnabled(2)">Right Hand Dist: —</div>
+				<div id="cc38" onclick="toggleCCEnabled(3)">Left Hand X: —</div>
+				<div id="cc39" onclick="toggleCCEnabled(4)">Left Hand Y: —</div>
+				<div id="cc40" onclick="toggleCCEnabled(5)">Left Hand Dist: —</div>
+			</div>
+	<!-- Debug wrapper for Handsfree (webcam + hands canvas) -->
+			<div id="debugWrap" aria-hidden="true">
+				<div id="debugToolbar"></div>
+				<div id="resizeHandle" title="Ridimensiona" aria-hidden="true"></div>
+			</div>
+			<!-- top-right controls (moved out of debug preview) -->
+			<div id="topControls" aria-hidden="false">
+				<div id="distanceDisplay" style="color:#000;font-family:monospace;">—</div>
+				<div id="midiControl" style="display:flex;align-items:center;gap:8px;color:#000;font-family:monospace;">
+					<button id="midiEnable" style="background:rgba(0,0,0,0.06);border:0;color:#000;padding:4px 6px;border-radius:4px;cursor:pointer">Enable MIDI</button>
+					<select id="midiOutSelect" style="background:rgba(255,255,255,0.85);color:#000;border:0;padding:4px 6px;border-radius:4px;">
+						<option value="">(no output)</option>
+					</select>
+				</div>
+				<div id="thresholdControl" style="display:flex;align-items:center;gap:6px;">
+					<label for="thresholdSlider" style="color:#000;font-size:12px;">th</label>
+					<input id="thresholdSlider" type="range" min="0" max="1" step="0.01" value="0.1" style="width:110px">
+					<span id="thresholdValue" style="color:#000;font-family:monospace;font-size:12px;">0.10</span>
+				</div>
+			</div>
+
+	<script>
+		// Console logs requested by user
+		console.log('caricato p5js (script tag inserito)');
+
+		// Shared state updated by Handsfree plugin
+		let handScale = 0;
+		// lastDistances holds per-hand numeric metrics (index order)
+		let lastDistances = [];
+		// detection confidence threshold (0..1). If a hand's reported confidence is below this,
+		// we ignore its values. Default 0.7 as requested.
+		let detectionThreshold = 0.7;
+		// distance threshold: if the computed distance metric is less than this value,
+		// we consider the hand too close/invalid for UI updates. Default 0.1
+		let distanceThreshold = 0.1;
+
+			// MIDI state
+			let midiAccess = null;
+			let midiOut = null; // selected MIDIOutput
+			let midiEnabled = false;
+			// CC numbers to use (remapped per user request)
+			const CC_LEFT_X = 35;   // left hand X
+			const CC_LEFT_Y = 36;   // left hand Y
+			const CC_LEFT_DIST = 37; // left hand distance
+			const CC_RIGHT_X = 38;  // right hand X
+			const CC_RIGHT_Y = 39;  // right hand Y
+			const CC_RIGHT_DIST = 40; // right hand distance
+			// throttle MIDI sends (ms)
+			const midiThrottleMs = 40;
+			let lastMidiSentAt = [0,0, 0,0, 0,0]; // indices: [left_x, left_y, left_dist, right_x, right_y, right_dist]
+			let lastMidiValue = [null, null, null, null, null, null]; // [left_x, left_y, left_dist, right_x, right_y, right_dist]
+			// CC enable/disable state (all enabled by default)
+			let ccEnabled = [true, true, true, true, true, true]; // indices: [cc35, cc36, cc37, cc38, cc39, cc40]
+			// hand position tracking (0..1 normalized)
+			let handPositions = [[0.5, 0.5], [0.5, 0.5]]; // [[x,y] right, [x,y] left]
+			let handPositionsMM = [null, null]; // last-sent MIDI values (to detect change)
+
+			function updateMidiStatusText(text){
+				const el = document.getElementById('midiStatus');
+				if (el) el.textContent = text;
+			}
+
+			function updateMidiLastText(){
+				// update right-side per-CC display with new CC mapping
+				const ccLabels = [
+					{ id: 'cc35', label: 'Right Hand X' },
+					{ id: 'cc36', label: 'Right Hand Y' },
+					{ id: 'cc37', label: 'Right Hand Dist' },
+					{ id: 'cc38', label: 'Left Hand X' },
+					{ id: 'cc39', label: 'Left Hand Y' },
+					{ id: 'cc40', label: 'Left Hand Dist' }
+				];
+				ccLabels.forEach((info, idx) => {
+					const el = document.getElementById(info.id);
+					if (el) {
+						const val = lastMidiValue[idx] === null ? '—' : lastMidiValue[idx];
+						el.textContent = `${info.label}: ${val}`;
+						// update visual state (darker if disabled)
+						el.style.opacity = ccEnabled[idx] ? '1' : '0.35';
+						el.style.cursor = 'pointer';
+					}
+				});
+			}
+
+			// toggle CC enabled state on click
+			function toggleCCEnabled(ccIndex){
+				ccEnabled[ccIndex] = !ccEnabled[ccIndex];
+				updateMidiLastText();
+			}
+
+			async function enableMidi(){
+				try{
+					midiAccess = await navigator.requestMIDIAccess();
+					const outs = Array.from(midiAccess.outputs.values());
+					const select = document.getElementById('midiOutSelect');
+					if (select) {
+						// populate select with outputs
+						select.innerHTML = '';
+						if (outs.length === 0) {
+							const opt = document.createElement('option'); opt.value = ''; opt.textContent = '(no output)'; select.appendChild(opt);
+						} else {
+							outs.forEach((o) => {
+								const opt = document.createElement('option');
+								opt.value = o.id;
+								opt.textContent = o.name || o.id;
+								select.appendChild(opt);
+							});
+							// set default to first
+							select.value = outs[0].id;
+							midiOut = midiAccess.outputs.get(select.value);
+							midiEnabled = !!midiOut;
+							updateMidiStatusText(midiOut ? `MIDI: ${midiOut.name || midiOut.id}` : 'MIDI: none');
+							console.log('MIDI outputs populated:', outs.map(o=>o.name||o.id));
+							// change handler
+							select.addEventListener('change', (ev) => {
+								const id = select.value;
+								midiOut = midiAccess.outputs.get(id) || null;
+								midiEnabled = !!midiOut;
+								updateMidiStatusText(midiOut ? `MIDI: ${midiOut.name || midiOut.id}` : 'MIDI: none');
+							});
+						}
+					} else {
+						// no select found, fallback to first output
+						if (outs.length) {
+							midiOut = outs[0];
+							midiEnabled = true;
+							updateMidiStatusText(`MIDI: ${midiOut.name || 'output'}`);
+							console.log('MIDI output selected:', midiOut.name || midiOut.id);
+						} else {
+							updateMidiStatusText('MIDI: no outputs');
+							console.warn('No MIDI outputs found');
+						}
+					}
+				} catch(err){
+					console.warn('MIDI not available:', err);
+					updateMidiStatusText('MIDI: unavailable');
+				}
+				updateMidiLastText();
+			}
+
+			function sendMidiCC(cc, value){
+				if (!midiEnabled || !midiOut) return;
+				// ensure 0..127
+				const v = Math.max(0, Math.min(127, Math.round(value)));
+				try{
+					// send as Control Change on channel 0 (0xB0)
+					midiOut.send([0xB0 | 0x00, cc & 0x7F, v & 0x7F]);
+				}catch(e){
+					console.warn('MIDI send failed', e);
+				}
+			}
+		// lastSeen timestamps for each forced hand index (ms). Used to reset SVG after timeout.
+		let lastSeen = [0,0,0,0];
+		const resetTimeoutMs = 800; // ms to wait before resetting SVG to neutral when absent
+
+		// p5 instance (instance mode)
+		new p5((sketch) => {
+			sketch.setup = function() {
+				const container = document.getElementById('sketch-container');
+				const cnv = sketch.createCanvas(window.innerWidth, window.innerHeight);
+				cnv.parent(container);
+				console.log('p5 setup chiamato');
+			};
+
+			sketch.windowResized = function(){
+				sketch.resizeCanvas(window.innerWidth, window.innerHeight);
+			};
+
+					sketch.draw = function(){
+					// keep background white
+					sketch.background(255);
+					// draw numeric distance overlay (top-left)
+					sketch.push();
+					sketch.noStroke();
+					sketch.fill(0, 160);
+					sketch.rect(10, 10, 240, 34 + (lastDistances && lastDistances.length > 2 ? 12 : 0), 6);
+					sketch.fill(255);
+					sketch.textSize(14);
+					sketch.textAlign(sketch.LEFT, sketch.CENTER);
+					// Show per-hand distances (H0, H1...)
+					let textLine = '';
+					if (lastDistances && lastDistances.length) {
+						const parts = lastDistances.map((v,i) => (typeof v === 'number' && v >= distanceThreshold) ? `H${i}:${v.toFixed(3)}` : `H${i}:—`);
+						textLine = parts.join(' ');
+					} else {
+						textLine = handScale ? `D:${handScale.toFixed(3)}` : 'D:—';
+					}
+					sketch.text(textLine, 18, 27);
+					sketch.pop();
+			};
+		});
+
+		// Setup debug UI controls (toggle + resizer)
+			(function setupDebugControls(){
+				const wrap = document.getElementById('debugWrap');
+				const handle = document.getElementById('resizeHandle');
+				if (!wrap || !handle) return;
+
+			// Resizer
+			let isResizing = false;
+			let startX = 0, startY = 0, startW = 0, startH = 0;
+			const minW = 140, minH = 100;
+
+			handle.addEventListener('pointerdown', (ev) => {
+				ev.preventDefault();
+				isResizing = true;
+				startX = ev.clientX;
+				startY = ev.clientY;
+				startW = wrap.offsetWidth;
+				startH = wrap.offsetHeight;
+				handle.setPointerCapture && handle.setPointerCapture(ev.pointerId);
+			});
+
+			window.addEventListener('pointermove', (ev) => {
+				if (!isResizing) return;
+				const dx = ev.clientX - startX;
+				const dy = ev.clientY - startY;
+				let nw = Math.max(minW, startW + dx);
+				let nh = Math.max(minH, startH + dy);
+				wrap.style.width = nw + 'px';
+				wrap.style.height = nh + 'px';
+			});
+
+			window.addEventListener('pointerup', (ev) => {
+				if (!isResizing) return;
+				isResizing = false;
+				handle.releasePointerCapture && handle.releasePointerCapture(ev.pointerId);
+			});
+
+			// double-click reset size
+			handle.addEventListener('dblclick', () => {
+				wrap.style.width = '260px';
+				wrap.style.height = '195px';
+			});
+		})();
+
+		// Initialize Handsfree when available (the local loader injects the real build)
+		function initHandsfreeWhenReady(){
+			if (window.Handsfree){
+				console.log('caricato handsfreejs (libreria disponibile)');
+				try{
+					const debugWrapEl = document.getElementById('debugWrap');
+					// Initialize Handsfree with a small debug wrapper (bottom-left)
+					const handsfree = new Handsfree({
+						hands: true,
+						showDebug: true,
+						setup: {
+							wrap: { $el: debugWrapEl },
+							video: { $el: null, width: 320, height: 240 },
+							canvas: { hands: { $el: null, width: 320, height: 240 } }
+						}
+					});
+					// Expose instance for UI controls
+					window.handsfreeInstance = handsfree;
+
+					// Plugin that runs every frame and updates `handScale` with an
+					// approximate distance/scale measure. Also logs the distance.
+					handsfree.use('distanceBg', function(data){
+						const hands = data.hands;
+						const distances = [];
+						const positions = [[0.5, 0.5], [0.5, 0.5]]; // reset positions to center
+						const confidences = []; // per-hand confidence mapped to forced indices
+						let anyVisible = false;
+
+						// Build a mapping of confidences if available in hands.multiHandedness
+						// multiHandedness is aligned with multiHandLandmarks; we need to map it
+						// to forced indices (0=Right,1=Left for the first two hands)
+						if (hands && Array.isArray(hands.multiHandedness)) {
+							for (let n = 0; n < hands.multiHandedness.length; n++) {
+								const item = hands.multiHandedness[n];
+								if (!item) continue;
+								const label = item.label || (item.className || '').toString();
+								const score = (typeof item.score === 'number') ? item.score : (typeof item.confidence === 'number' ? item.confidence : null);
+								// map to forced index
+								let idx = null;
+								if (n < 2) idx = (label === 'Right') ? 0 : 1; else idx = (label === 'Right') ? 2 : 3;
+								if (idx !== null && score !== null) confidences[idx] = score;
+							}
+						}
+
+						if (hands && hands.landmarks) {
+							for (let h = 0; h < hands.landmarks.length; h++) {
+								const lm = hands.landmarks[h];
+								const visible = Array.isArray(hands.landmarksVisible) ? hands.landmarksVisible[h] : (h === 0);
+								// Only proceed if visible AND confidence (if available) >= threshold
+								const conf = (typeof confidences[h] === 'number') ? confidences[h] : null;
+								const confOk = conf === null ? true : (conf >= detectionThreshold);
+								if (lm && lm.length && visible && confOk) {
+									anyVisible = true;
+									let metric = 0;
+									if (lm[0] && lm[9]) {
+										const dx = lm[0].x - lm[9].x;
+										const dy = lm[0].y - lm[9].y;
+										metric = Math.sqrt(dx*dx + dy*dy);
+									} else {
+										// fallback: span of detected landmarks
+										let xs = [], ys = [];
+										for (let i=0;i<lm.length;i++){ if (lm[i]){ xs.push(lm[i].x); ys.push(lm[i].y); } }
+										if (xs.length){
+											const minx=Math.min(...xs), maxx=Math.max(...xs);
+											const miny=Math.min(...ys), maxy=Math.max(...ys);
+											metric = Math.sqrt((maxx-minx)*(maxx-minx) + (maxy-miny)*(maxy-miny));
+										}
+									}
+									// Only accept the metric if it exceeds the distanceThreshold
+									if (typeof metric === 'number' && metric >= distanceThreshold) {
+										distances[h] = metric;
+										// only log when hand is visible and metric meets threshold
+										console.log(`distanza approssimata mano [${h}] dalla webcam:`, metric);
+										// extract hand center position
+										let cx = 0, cy = 0, cnt = 0;
+										for (let i = 0; i < lm.length; i++) {
+											if (lm[i]) { cx += lm[i].x; cy += lm[i].y; cnt++; }
+										}
+										if (cnt > 0) {
+											positions[h] = [cx / cnt, cy / cnt];
+										}
+									} else {
+										// treat as absent/ignored when too small
+										distances[h] = undefined;
+									}
+								} else {
+									// if visible but below confidence threshold, treat as absent
+									distances[h] = undefined;
+								}
+								// store confidence for UI
+								confidences[h] = (conf !== null) ? conf : confidences[h];
+							}
+						}
+
+						// update hand positions
+						handPositions = positions;
+
+						if (!anyVisible) {
+							lastDistances = [];
+							handScale = handScale * 0.95;
+							return;
+						}
+
+						lastDistances = distances;
+
+						const visibleMetrics = distances.filter(d => typeof d === 'number' && d >= distanceThreshold);
+						if (visibleMetrics.length) handScale = Math.max(...visibleMetrics);
+					});
+
+					handsfree.enablePlugins('browser');
+					// Ensure debugger is visible (sometimes required depending on config)
+					handsfree.showDebugger && handsfree.showDebugger();
+
+					// Update the debug distance display from the plugin (if present)
+					handsfree.use('distanceUi', function(){
+						const dEl = document.getElementById('distanceDisplay');
+						if (!dEl) return;
+						// If there are no detected hands, don't send/update values
+						if (!lastDistances || !lastDistances.length) {
+							dEl.textContent = '—';
+							return;
+						}
+						// Build parts only for detected (defined) hands that also meet distanceThreshold
+						const parts = [];
+						for (let i = 0; i < lastDistances.length; i++) {
+							const v = lastDistances[i];
+							if (typeof v === 'number' && v >= distanceThreshold) parts.push(`H${i}:${v.toFixed(3)}`);
+						}
+						// If none defined, show placeholder
+						dEl.textContent = parts.length ? parts.join(' ') : '—';
+					});
+
+						// Color the SVG hands according to left/right distances each frame
+						handsfree.use('distanceHandsUi', function(){
+							// mapping: index 0 => Right, index 1 => Left (per HandsModel.forceHandedness)
+							const rightDist = (lastDistances && typeof lastDistances[0] === 'number') ? lastDistances[0] : null;
+							const leftDist = (lastDistances && typeof lastDistances[1] === 'number') ? lastDistances[1] : null;
+							function mapColor(d){
+								const minS = 0.02, maxS = 0.45;
+								let t = (d - minS) / (maxS - minS);
+								t = Math.max(0, Math.min(1, t));
+								const r = Math.round(255 * t);
+								const g = Math.round(100 * (1 - t));
+								const b = Math.round(255 * (1 - t));
+								return `rgb(${r},${g},${b})`;
+							}
+
+							const rightEl = document.getElementById('handRight');
+							const leftEl = document.getElementById('handLeft');
+							const now = Date.now();
+							// If numeric distances are present, update color and lastSeen
+							// Update SVG colors and send MIDI if enabled. Map distances to 0..127
+							const mapToCC = (d, minD=distanceThreshold, maxD=0.45) => {
+								let t = (d - minD) / (maxD - minD);
+								t = Math.max(0, Math.min(1, t));
+								return Math.round(t * 127);
+							};
+
+							// helper to map 0..1 position to 0..127 MIDI (inverted: 1 -> 0, 0 -> 127)
+							const mapPosToCC = (pos) => Math.round((1 - pos) * 127);
+
+							if (rightEl) {
+								if (rightDist !== null && rightDist >= distanceThreshold) {
+									rightEl.style.fill = mapColor(rightDist);
+									lastSeen[0] = now;
+									// MIDI send for right distance (CC40 - index 5)
+									const ccVal = mapToCC(rightDist);
+									if (midiEnabled && midiOut && ccEnabled[5]) {
+										if (ccVal !== lastMidiValue[5] && (now - lastMidiSentAt[5] > midiThrottleMs)) {
+											sendMidiCC(CC_RIGHT_DIST, ccVal);
+											lastMidiValue[5] = ccVal;
+											lastMidiSentAt[5] = now;
+											updateMidiLastText();
+										}
+									}
+									// MIDI send for right position (CC35, CC36 = x, y)
+									const [posX, posY] = handPositions[0];
+									const posXCC = mapPosToCC(posX);
+									const posYCC = mapPosToCC(posY);
+									if (midiEnabled && midiOut) {
+										if (ccEnabled[3] && posXCC !== lastMidiValue[3] && (now - lastMidiSentAt[3] > midiThrottleMs)) {
+											sendMidiCC(CC_RIGHT_X, posXCC);
+											lastMidiValue[3] = posXCC;
+											lastMidiSentAt[3] = now;
+											updateMidiLastText();
+										}
+										if (ccEnabled[4] && posYCC !== lastMidiValue[4] && (now - lastMidiSentAt[4] > midiThrottleMs)) {
+											sendMidiCC(CC_RIGHT_Y, posYCC);
+											lastMidiValue[4] = posYCC;
+											lastMidiSentAt[4] = now;
+											updateMidiLastText();
+										}
+									}
+									// move SVG hand to position (invert X because preview is mirrored)
+									const offsetX = (-(posX - 0.5)) * window.innerWidth * 0.4;
+									const offsetY = (posY - 0.5) * window.innerHeight * 0.4;
+									rightEl.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+								} else if (now - (lastSeen[0] || 0) > resetTimeoutMs) {
+									// reset to neutral after timeout
+									rightEl.style.fill = '#ddd';
+									rightEl.style.transform = 'translate(0, 0)';
+								}
+							}
+							if (leftEl) {
+								if (leftDist !== null && leftDist >= distanceThreshold) {
+									leftEl.style.fill = mapColor(leftDist);
+									lastSeen[1] = now;
+									// MIDI send for left distance (CC40 - index 2)
+									const ccVal = mapToCC(leftDist);
+									if (midiEnabled && midiOut && ccEnabled[2]) {
+										if (ccVal !== lastMidiValue[2] && (now - lastMidiSentAt[2] > midiThrottleMs)) {
+											sendMidiCC(CC_LEFT_DIST, ccVal);
+											lastMidiValue[2] = ccVal;
+											lastMidiSentAt[2] = now;
+											updateMidiLastText();
+										}
+									}
+									// MIDI send for left position (CC35, CC36 = x, y)
+									const [posX, posY] = handPositions[1];
+									const posXCC = mapPosToCC(posX);
+									const posYCC = mapPosToCC(posY);
+									if (midiEnabled && midiOut) {
+										if (ccEnabled[0] && posXCC !== lastMidiValue[0] && (now - lastMidiSentAt[0] > midiThrottleMs)) {
+											sendMidiCC(CC_LEFT_X, posXCC);
+											lastMidiValue[0] = posXCC;
+											lastMidiSentAt[0] = now;
+											updateMidiLastText();
+										}
+										if (ccEnabled[1] && posYCC !== lastMidiValue[1] && (now - lastMidiSentAt[1] > midiThrottleMs)) {
+											sendMidiCC(CC_LEFT_Y, posYCC);
+											lastMidiValue[1] = posYCC;
+											lastMidiSentAt[1] = now;
+											updateMidiLastText();
+										}
+									}
+									// move SVG hand to position (invert X because preview is mirrored)
+									const offsetX = (-(posX - 0.5)) * window.innerWidth * 0.4;
+									const offsetY = (posY - 0.5) * window.innerHeight * 0.4;
+									leftEl.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+								} else if (now - (lastSeen[1] || 0) > resetTimeoutMs) {
+									leftEl.style.fill = '#ddd';
+									leftEl.style.transform = 'translate(0, 0)';
+								}
+							}
+						});
+					handsfree.start(() => {
+						console.log('handsfree avviato (start callback)');
+					});
+
+					// Hook up MIDI enable button (if present)
+					const midiBtn = document.getElementById('midiEnable');
+					if (midiBtn) {
+						midiBtn.addEventListener('click', async () => {
+							await enableMidi();
+							// disable the button to avoid repeated requests
+							midiBtn.disabled = true;
+						});
+					}
+
+					// Hook up threshold slider to update display
+					const thresholdSlider = document.getElementById('thresholdSlider');
+					const thresholdValue = document.getElementById('thresholdValue');
+					if (thresholdSlider && thresholdValue) {
+						thresholdSlider.addEventListener('input', (e) => {
+							distanceThreshold = parseFloat(e.target.value);
+							thresholdValue.textContent = distanceThreshold.toFixed(2);
+						});
+					}
+				} catch (err){
+					console.error('Errore inizializzazione Handsfree:', err);
+				}
+			} else {
+				setTimeout(initHandsfreeWhenReady, 200);
+			}
+		}
+
+		initHandsfreeWhenReady();
+	</script>
+</body>
+</html>
