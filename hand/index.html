@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width,initial-scale=1" />
-	<title>Hand distance — p5 + Handsfree</title>
+	<title>Hand CCs</title>
 	<!-- p5 from CDN -->
 	<script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
 	<!-- local loader for Handsfree (loads the real build from unpkg) -->
@@ -17,9 +17,6 @@
 		#distanceDisplay{font-size:13px;padding:4px 6px;background:rgba(0,0,0,0.35);border-radius:4px}
 			#topControls{position:fixed;top:12px;right:12px;display:flex;gap:10px;align-items:center;z-index:10003;pointer-events:auto;background:rgba(255,255,255,0.9);padding:6px 10px;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
 			#topControls > div, #topControls > select, #topControls > button, #topControls > span{color:#000}
-			/* right-side vertical CC list */
-			#ccSentList{position:fixed;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;align-items:flex-end;z-index:10003;background:rgba(255,255,255,0.9);padding:8px;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
-			#ccSentList div{color:#000;font-family:monospace;padding:4px 8px;border-radius:4px;background:rgba(0,0,0,0.03)}
 		#resizeHandle{position:absolute;right:4px;bottom:4px;width:18px;height:18px;cursor:nwse-resize;z-index:10002;background:linear-gradient(135deg,rgba(255,255,255,0.25) 0%,rgba(255,255,255,0.05) 100%);border-radius:3px}
 		#thresholdControl input[type="range"]{vertical-align:middle}
 
@@ -28,6 +25,15 @@
 		/* Hands display styling */
 		#handsDisplay{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;gap:48px;align-items:center;z-index:9998;pointer-events:none}
 		.handSvg{width:180px;height:260px;fill:#ddd;transition:fill 120ms linear;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.15))}
+		/* Left hand labels that move with the hand */
+		#rightHandLabels{transition:transform 120ms linear, opacity 200ms ease;z-index:9999}
+		#rightHandLabels > div{line-height:1.4}
+		/* Right hand labels that move with the hand */
+		#leftHandLabels{transition:transform 120ms linear, opacity 200ms ease;z-index:9999}
+		#leftHandLabels > div{line-height:1.4}
+		/* CC toggle buttons */
+		.cc-toggle{transition:background 200ms ease, color 200ms ease}
+		.cc-toggle:hover{opacity:0.8}
 			/* left/right handled by SVG content; no CSS flip here */
 		/* make Handsfree video/canvas fill the wrapper */
 			#debugWrap .handsfree-video,
@@ -38,29 +44,64 @@
 	</style>
 </head>
 <body>
-		<div id="sketch-container"></div>
+	<!-- Welcome Popup -->
+	<div id="welcomePopup" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:99999;pointer-events:auto;">
+		<div style="background:rgba(255,255,255,0.95);padding:48px;border-radius:12px;max-width:600px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.3);cursor:pointer;">
+			<h1 style="margin:0 0 12px 0;font-size:28px;color:#333;">Hand position → MIDI CCs</h1>
+			<h2 style="margin:0 0 20px 0;font-size:18px;color:#666;font-weight:normal;">Have fun with yo hands!</h2>
+			<p style="margin:0 0 16px 0;font-size:14px;color:#555;line-height:1.6;">Convert the position, rotation, distance of both of your hands (and some gestures such as pinching the index finger with the thumb) to midi cc to map in your daw!</p>
+			<p style="margin:0 0 16px 0;font-size:14px;color:#d9534f;font-weight:bold;">‼ Enable both the camera and midi ‼</p>
+			<p style="margin:0 0 20px 0;font-size:12px;color:#999;font-style:italic;">This was entirely vibecoded, it would take me weeks to do this alone, even if i know all libraries involved!</p>
+			<p style="margin:0;font-size:12px;color:#999;">Click anywhere to exit the popup</p>
+		</div>
+	</div>
+	<script>
+		// Close popup on any click
+		document.getElementById('welcomePopup').addEventListener('click', function() {
+			this.style.display = 'none';
+		});
+	</script>
+
+	<div id="sketch-container"></div>
 			<!-- Hands display: two SVGs, left and right -->
-			<div id="handsDisplay" aria-hidden="true">
-				<!-- Right hand maps to index 0, Left hand maps to index 1 -->
-				<!-- Right: mirrored version of the provided left-hand SVG -->
+		<div id="handsDisplay" aria-hidden="true">
+			<!-- Left hand maps to index 0 (CC35-37,41,43-46), Right hand maps to index 1 (CC38-40,42,47-50) -->
+				<!-- Right: reflected on X axis -->
 				<svg id="handRight" viewBox="0 0 600 600" class="handSvg" aria-label="Right hand">
-					<g transform="translate(600 0) scale(-1 1)">
+					<path d="m200.5,532.5l240.5,0.5c-37.49809,0.5 8.5,-119.43386 8.5,-187.5c0,-68.06614 -54,-57 -64,-41c0,-31 -1,7 -1,-102c0,-109 -209,-123 -210,13c-1,136 24,169 26,317z" id="svg_2_left" />
+					<!-- Pinch indicator circle (bottom-right of hand) -->
+					<circle id="pinchCircle" cx="480" cy="480" r="35" fill="#ccc" opacity="0.8" />
+				</svg>
+		<!-- Labels for right hand (positioned top-left of hand) -->
+		<div id="rightHandLabels" style="position:absolute;left:50%;top:50%;transform:translate(-220px, -150px);pointer-events:none;background:rgba(255,255,255,0.85);padding:6px 10px;border-radius:6px;font-family:monospace;font-size:10px;color:#000;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+			<div id="rightLabel_x">X (CC35): —</div>
+			<div id="rightLabel_y">Y (CC36): —</div>
+			<div id="rightLabel_dist">Dist (CC37): —</div>
+			<div id="rightLabel_rot">Rot (CC41): —</div>
+			<div id="rightLabel_pinch">Pinch (CC43): —</div>
+			<div id="rightLabel_pinch_x">PX (CC44): —</div>
+			<div id="rightLabel_pinch_y">PY (CC45): —</div>
+			<div id="rightLabel_pinch_rot">PR (CC46): —</div>
+		</div>
+				<!-- Left: original (no reflection) -->
+				<svg id="handLeft" viewBox="0 0 600 600" class="handSvg" aria-label="Left hand">
+					<g transform="translate(300 0) scale(-1 1) translate(-300 0)">
 						<path d="m200.5,532.5l240.5,0.5c-37.49809,0.5 8.5,-119.43386 8.5,-187.5c0,-68.06614 -54,-57 -64,-41c0,-31 -1,7 -1,-102c0,-109 -209,-123 -210,13c-1,136 24,169 26,317z" id="svg_2_right" />
+						<!-- Pinch indicator circle (bottom-right of hand, mirrored) -->
+						<circle id="pinchCircleLeft" cx="480" cy="480" r="35" fill="#ccc" opacity="0.8" />
 					</g>
 				</svg>
-				<!-- Left: provided SVG (cleaned to allow CSS fill) -->
-				<svg id="handLeft" viewBox="0 0 600 600" class="handSvg" aria-label="Left hand">
-					<path d="m200.5,532.5l240.5,0.5c-37.49809,0.5 8.5,-119.43386 8.5,-187.5c0,-68.06614 -54,-57 -64,-41c0,-31 -1,7 -1,-102c0,-109 -209,-123 -210,13c-1,136 24,169 26,317z" id="svg_2_left" />
-				</svg>
-			</div>
-			<!-- right-side CC list: one per row -->
-			<div id="ccSentList" aria-hidden="false">
-				<div id="cc35" onclick="toggleCCEnabled(0)">Right Hand X: —</div>
-				<div id="cc36" onclick="toggleCCEnabled(1)">Right Hand Y: —</div>
-				<div id="cc37" onclick="toggleCCEnabled(2)">Right Hand Dist: —</div>
-				<div id="cc38" onclick="toggleCCEnabled(3)">Left Hand X: —</div>
-				<div id="cc39" onclick="toggleCCEnabled(4)">Left Hand Y: —</div>
-				<div id="cc40" onclick="toggleCCEnabled(5)">Left Hand Dist: —</div>
+		<!-- Labels for left hand (positioned top-left of hand) -->
+		<div id="leftHandLabels" style="position:absolute;left:50%;top:50%;transform:translate(70px, -150px);pointer-events:none;background:rgba(255,255,255,0.85);padding:6px 10px;border-radius:6px;font-family:monospace;font-size:10px;color:#000;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+			<div id="leftLabel_x">X (CC38): —</div>
+			<div id="leftLabel_y">Y (CC39): —</div>
+			<div id="leftLabel_dist">Dist (CC40): —</div>
+			<div id="leftLabel_rot">Rot (CC42): —</div>
+			<div id="leftLabel_pinch">Pinch (CC47): —</div>
+			<div id="leftLabel_pinch_x">PX (CC48): —</div>
+			<div id="leftLabel_pinch_y">PY (CC49): —</div>
+			<div id="leftLabel_pinch_rot">PR (CC50): —</div>
+		</div>
 			</div>
 	<!-- Debug wrapper for Handsfree (webcam + hands canvas) -->
 			<div id="debugWrap" aria-hidden="true">
@@ -77,11 +118,63 @@
 					</select>
 				</div>
 				<div id="thresholdControl" style="display:flex;align-items:center;gap:6px;">
-					<label for="thresholdSlider" style="color:#000;font-size:12px;">th</label>
+					<label for="thresholdSlider" style="color:#000;font-size:12px;">Precision:</label>
 					<input id="thresholdSlider" type="range" min="0" max="1" step="0.01" value="0.1" style="width:110px">
 					<span id="thresholdValue" style="color:#000;font-family:monospace;font-size:12px;">0.10</span>
 				</div>
 			</div>
+
+	<!-- Bottom CC enable/disable buttons -->
+	<div id="ccButtons" style="position:fixed;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:24px;z-index:10003;background:rgba(255,255,255,0.9);padding:12px;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,0.08);align-items:flex-start;justify-content:center;flex-wrap:wrap;">
+		
+		<!-- Title above all buttons -->
+		<span style="color:#666;font-size:11px;font-weight:bold;width:100%;text-align:center;margin-bottom:4px;">Enable/Disable CCs:</span>
+		
+		<!-- LEFT HAND GROUP (CC35-37, CC41, CC43-46) -->
+		<div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+			<span style="color:#666;font-size:10px;font-weight:bold;margin-bottom:2px;">Left Hand</span>
+			
+			<!-- Row 1: CC35-37, CC41 -->
+			<div style="display:flex;gap:6px;justify-content:center;">
+				<button class="cc-toggle" data-cc-index="0" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC35</button>
+				<button class="cc-toggle" data-cc-index="1" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC36</button>
+				<button class="cc-toggle" data-cc-index="2" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC37</button>
+				<button class="cc-toggle" data-cc-index="6" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC41</button>
+			</div>
+			
+			<!-- Row 2: CC43-46 -->
+			<div style="display:flex;gap:6px;justify-content:center;">
+				<button class="cc-toggle" data-cc-index="8" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC43</button>
+				<button class="cc-toggle" data-cc-index="9" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC44</button>
+				<button class="cc-toggle" data-cc-index="10" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC45</button>
+				<button class="cc-toggle" data-cc-index="11" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC46</button>
+			</div>
+		</div>
+		
+		<!-- Divider line -->
+		<div style="width:1px;height:60px;background:#ddd;"></div>
+		
+		<!-- RIGHT HAND GROUP (CC38-40, CC42, CC47-50) -->
+		<div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+			<span style="color:#666;font-size:10px;font-weight:bold;margin-bottom:2px;">Right Hand</span>
+			
+			<!-- Row 1: CC38-40, CC42 -->
+			<div style="display:flex;gap:6px;justify-content:center;">
+				<button class="cc-toggle" data-cc-index="3" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC38</button>
+				<button class="cc-toggle" data-cc-index="4" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC39</button>
+				<button class="cc-toggle" data-cc-index="5" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC40</button>
+				<button class="cc-toggle" data-cc-index="7" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC42</button>
+			</div>
+			
+			<!-- Row 2: CC47-50 -->
+			<div style="display:flex;gap:6px;justify-content:center;">
+				<button class="cc-toggle" data-cc-index="12" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC47</button>
+				<button class="cc-toggle" data-cc-index="13" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC48</button>
+				<button class="cc-toggle" data-cc-index="14" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC49</button>
+				<button class="cc-toggle" data-cc-index="15" style="padding:6px 10px;border:2px solid #666;background:#666;color:#fff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;font-weight:bold;">CC50</button>
+			</div>
+		</div>
+	</div>
 
 	<script>
 		// Console logs requested by user
@@ -102,24 +195,40 @@
 			let midiAccess = null;
 			let midiOut = null; // selected MIDIOutput
 			let midiEnabled = false;
-			// CC numbers to use (remapped per user request)
-			const CC_LEFT_X = 35;   // left hand X
-			const CC_LEFT_Y = 36;   // left hand Y
-			const CC_LEFT_DIST = 37; // left hand distance
-			const CC_RIGHT_X = 38;  // right hand X
-			const CC_RIGHT_Y = 39;  // right hand Y
-			const CC_RIGHT_DIST = 40; // right hand distance
-			// throttle MIDI sends (ms)
-			const midiThrottleMs = 40;
-			let lastMidiSentAt = [0,0, 0,0, 0,0]; // indices: [left_x, left_y, left_dist, right_x, right_y, right_dist]
-			let lastMidiValue = [null, null, null, null, null, null]; // [left_x, left_y, left_dist, right_x, right_y, right_dist]
-			// CC enable/disable state (all enabled by default)
-			let ccEnabled = [true, true, true, true, true, true]; // indices: [cc35, cc36, cc37, cc38, cc39, cc40]
-			// hand position tracking (0..1 normalized)
-			let handPositions = [[0.5, 0.5], [0.5, 0.5]]; // [[x,y] right, [x,y] left]
-			let handPositionsMM = [null, null]; // last-sent MIDI values (to detect change)
+		// CC numbers to use (remapped per user request)
+		const CC_LEFT_X = 35;    // left hand X
+		const CC_LEFT_Y = 36;    // left hand Y
+		const CC_LEFT_DIST = 37; // left hand distance
+		const CC_RIGHT_X = 38;   // right hand X
+		const CC_RIGHT_Y = 39;   // right hand Y
+		const CC_RIGHT_DIST = 40; // right hand distance
+		const CC_LEFT_ROT = 41;   // left hand rotation
+		const CC_RIGHT_ROT = 42;  // right hand rotation
+		// Pinch-based CC (new)
+		const CC_LEFT_PINCH = 43; // left hand pinch state (0-127)
+		const CC_LEFT_PINCH_X = 44; // left hand X during pinch
+		const CC_LEFT_PINCH_Y = 45; // left hand Y during pinch
+		const CC_LEFT_PINCH_ROT = 46; // left hand rotation during pinch
+		const CC_RIGHT_PINCH = 47; // right hand pinch state (0-127)
+		const CC_RIGHT_PINCH_X = 48; // right hand X during pinch
+		const CC_RIGHT_PINCH_Y = 49; // right hand Y during pinch
+		const CC_RIGHT_PINCH_ROT = 50; // right hand rotation during pinch
+		// throttle MIDI sends (ms)
+		const midiThrottleMs = 40;
+		let lastMidiSentAt = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; // expanded for 16 CCs
+		let lastMidiValue = [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]; // same order
+		// CC enable/disable state (all enabled by default)
+		let ccEnabled = [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]; // indices: [cc35-50]
+		// hand position tracking (0..1 normalized)
+		let handPositions = [[0.5, 0.5], [0.5, 0.5]]; // [[x,y] right, [x,y] left]
+		let handPositionsMM = [null, null]; // last-sent MIDI values (to detect change)
+		// hand rotation tracking (in degrees, -180 to 180, 0 = vertical)
+		let handRotations = [0, 0]; // [right, left]
+		// pinch detection (thumb-index distance)
+		let pinchActive = [false, false]; // [right, left]
+		const pinchThreshold = 0.05; // distance threshold for pinch detection (normalized 0..1)
 
-			function updateMidiStatusText(text){
+		function updateMidiStatusText(text){
 				const el = document.getElementById('midiStatus');
 				if (el) el.textContent = text;
 			}
@@ -127,18 +236,20 @@
 			function updateMidiLastText(){
 				// update right-side per-CC display with new CC mapping
 				const ccLabels = [
-					{ id: 'cc35', label: 'Right Hand X' },
-					{ id: 'cc36', label: 'Right Hand Y' },
-					{ id: 'cc37', label: 'Right Hand Dist' },
-					{ id: 'cc38', label: 'Left Hand X' },
-					{ id: 'cc39', label: 'Left Hand Y' },
-					{ id: 'cc40', label: 'Left Hand Dist' }
+					{ id: 'cc35', label: 'Right Hand X', cc: 35 },
+					{ id: 'cc36', label: 'Right Hand Y', cc: 36 },
+					{ id: 'cc37', label: 'Right Hand Dist', cc: 37 },
+					{ id: 'cc38', label: 'Left Hand X', cc: 38 },
+					{ id: 'cc39', label: 'Left Hand Y', cc: 39 },
+					{ id: 'cc40', label: 'Left Hand Dist', cc: 40 },
+					{ id: 'cc41', label: 'Right Hand Rot', cc: 41 },
+					{ id: 'cc42', label: 'Left Hand Rot', cc: 42 }
 				];
 				ccLabels.forEach((info, idx) => {
 					const el = document.getElementById(info.id);
 					if (el) {
 						const val = lastMidiValue[idx] === null ? '—' : lastMidiValue[idx];
-						el.textContent = `${info.label}: ${val}`;
+						el.textContent = `${info.label} (CC ${info.cc}): ${val}`;
 						// update visual state (darker if disabled)
 						el.style.opacity = ccEnabled[idx] ? '1' : '0.35';
 						el.style.cursor = 'pointer';
@@ -146,13 +257,22 @@
 				});
 			}
 
-			// toggle CC enabled state on click
-			function toggleCCEnabled(ccIndex){
-				ccEnabled[ccIndex] = !ccEnabled[ccIndex];
-				updateMidiLastText();
+		// toggle CC enabled state on click
+		function toggleCCEnabled(ccIndex){
+			ccEnabled[ccIndex] = !ccEnabled[ccIndex];
+			updateMidiLastText();
+			// Update button visual state
+			const btn = document.querySelector(`.cc-toggle[data-cc-index="${ccIndex}"]`);
+			if (btn) {
+				if (ccEnabled[ccIndex]) {
+					btn.style.background = '#666';
+					btn.style.color = '#fff';
+				} else {
+					btn.style.background = 'transparent';
+					btn.style.color = '#999';
+				}
 			}
-
-			async function enableMidi(){
+		}			async function enableMidi(){
 				try{
 					midiAccess = await navigator.requestMIDIAccess();
 					const outs = Array.from(midiAccess.outputs.values());
@@ -379,6 +499,31 @@
 										if (cnt > 0) {
 											positions[h] = [cx / cnt, cy / cnt];
 										}
+									// Calculate hand rotation from wrist (0) to middle finger (9)
+									// Vertical = 0 degrees, clockwise positive, counter-clockwise negative
+									if (lm[0] && lm[9]) {
+										const dx = lm[9].x - lm[0].x;
+										const dy = lm[9].y - lm[0].y;
+										// atan2 gives angle in radians (-π to π)
+										let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+										// Rotate so that vertical (pointing up) = 0°
+										// atan2 gives 90° for pointing up, so subtract 90°
+										angle = angle - 90 + 180; // add 180° offset
+										// Normalize to -180..180
+										while (angle > 180) angle -= 360;
+										while (angle < -180) angle += 360;
+										handRotations[h] = angle;
+									}
+									// Calculate pinch: distance between thumb tip (4) and index tip (8)
+									if (lm[4] && lm[8]) {
+										const dx = lm[4].x - lm[8].x;
+										const dy = lm[4].y - lm[8].y;
+										const pinchDist = Math.sqrt(dx*dx + dy*dy);
+										pinchActive[h] = pinchDist < pinchThreshold;
+										console.log(`pinch mano [${h}]:`, pinchActive[h], 'dist:', pinchDist);
+									} else {
+										pinchActive[h] = false;
+									}
 									} else {
 										// treat as absent/ignored when too small
 										distances[h] = undefined;
@@ -491,14 +636,99 @@
 											updateMidiLastText();
 										}
 									}
-									// move SVG hand to position (invert X because preview is mirrored)
-									const offsetX = (-(posX - 0.5)) * window.innerWidth * 0.4;
-									const offsetY = (posY - 0.5) * window.innerHeight * 0.4;
-									rightEl.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-								} else if (now - (lastSeen[0] || 0) > resetTimeoutMs) {
-									// reset to neutral after timeout
-									rightEl.style.fill = '#ddd';
-									rightEl.style.transform = 'translate(0, 0)';
+									// MIDI send for right rotation (CC41 - index 7)
+									// Map -90..+90 degrees to 0..127 (inverted): -90° (left)=127, 0°(vertical)=63, +90°(right)=0
+									const rotDeg = handRotations[0];
+									const rotCC = Math.round(63 - (rotDeg / 90) * 64); // -90->127, 0->63, 90->0
+									const rotCCClamped = Math.max(0, Math.min(127, rotCC));
+									if (midiEnabled && midiOut && ccEnabled[7]) {
+									if (rotCCClamped !== lastMidiValue[7] && (now - lastMidiSentAt[7] > midiThrottleMs)) {
+										sendMidiCC(CC_RIGHT_ROT, rotCCClamped);
+										lastMidiValue[7] = rotCCClamped;
+										lastMidiSentAt[7] = now;
+										updateMidiLastText();
+									}
+								}
+								// MIDI send for right hand pinch-based CCs (CC43-46, indices 8-11)
+								if (midiEnabled && midiOut) {
+									// CC43: Pinch state (0 = not pinching, 127 = pinching)
+									const pinchCC = pinchActive[0] ? 127 : 0;
+									if (ccEnabled[8] && pinchCC !== lastMidiValue[8] && (now - lastMidiSentAt[8] > midiThrottleMs)) {
+										sendMidiCC(CC_RIGHT_PINCH, pinchCC);
+										lastMidiValue[8] = pinchCC;
+										lastMidiSentAt[8] = now;
+									}
+									// Only send pinch movement if pinch is active
+									if (pinchActive[0]) {
+										// CC44: Pinch X
+										if (ccEnabled[9] && posXCC !== lastMidiValue[9] && (now - lastMidiSentAt[9] > midiThrottleMs)) {
+											sendMidiCC(CC_RIGHT_PINCH_X, posXCC);
+											lastMidiValue[9] = posXCC;
+											lastMidiSentAt[9] = now;
+										}
+										// CC45: Pinch Y
+										if (ccEnabled[10] && posYCC !== lastMidiValue[10] && (now - lastMidiSentAt[10] > midiThrottleMs)) {
+											sendMidiCC(CC_RIGHT_PINCH_Y, posYCC);
+											lastMidiValue[10] = posYCC;
+											lastMidiSentAt[10] = now;
+										}
+										// CC46: Pinch Rotation
+										if (ccEnabled[11] && rotCCClamped !== lastMidiValue[11] && (now - lastMidiSentAt[11] > midiThrottleMs)) {
+											sendMidiCC(CC_RIGHT_PINCH_ROT, rotCCClamped);
+											lastMidiValue[11] = rotCCClamped;
+											lastMidiSentAt[11] = now;
+										}
+									}
+								}
+							// move SVG hand to position (invert X because preview is mirrored) and rotate
+								const offsetX = (-(posX - 0.5)) * window.innerWidth * 0.4;
+								const offsetY = (posY - 0.5) * window.innerHeight * 0.4;
+								rightEl.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${-rotDeg}deg)`;
+								
+						// Update right hand labels and move them with the hand
+						const rightLabels = document.getElementById('rightHandLabels');
+						if (rightLabels) {
+							// Calculate pinch CC value
+							const pinchCC = pinchActive[0] ? 127 : 0;
+							const pinchCCX = pinchActive[0] ? posXCC : 0;
+							const pinchCCY = pinchActive[0] ? posYCC : 0;
+							const pinchCCRot = pinchActive[0] ? rotCCClamped : 0;
+							// Update label text
+							document.getElementById('rightLabel_x').textContent = `X (CC35): ${posXCC}`;
+							document.getElementById('rightLabel_y').textContent = `Y (CC36): ${posYCC}`;
+							document.getElementById('rightLabel_dist').textContent = `Dist (CC37): ${ccVal}`;
+							document.getElementById('rightLabel_rot').textContent = `Rot (CC41): ${rotCCClamped}`;
+							document.getElementById('rightLabel_pinch').textContent = `Pinch (CC43): ${pinchCC}`;
+							document.getElementById('rightLabel_pinch_x').textContent = `PX (CC44): ${pinchCCX}`;
+							document.getElementById('rightLabel_pinch_y').textContent = `PY (CC45): ${pinchCCY}`;
+							document.getElementById('rightLabel_pinch_rot').textContent = `PR (CC46): ${pinchCCRot}`;
+							// Move labels with hand (position top-left relative to hand)
+							rightLabels.style.transform = `translate(calc(-50% + ${offsetX}px - 220px), calc(-50% + ${offsetY}px - 150px))`;
+							rightLabels.style.opacity = '1';
+						}
+						} else if (now - (lastSeen[0] || 0) > resetTimeoutMs) {
+							// reset to neutral after timeout
+							rightEl.style.fill = '#ddd';
+							rightEl.style.transform = 'translate(0, 0) rotate(0deg)';
+							// Hide labels when hand not detected
+							const rightLabels = document.getElementById('rightHandLabels');
+							if (rightLabels) {
+								rightLabels.style.opacity = '0';
+							}
+							// Reset pinch circle to gray when hand not detected
+							const pinchCircle = document.getElementById('pinchCircle');
+							if (pinchCircle) {
+								pinchCircle.setAttribute('fill', '#ddd');
+							}
+								}
+							}
+							// Update pinch indicator circle for right hand
+							const pinchCircle = document.getElementById('pinchCircle');
+							if (pinchCircle) {
+								if (pinchActive[0]) {
+									pinchCircle.setAttribute('fill', '#ff0000'); // red when pinch active
+								} else {
+									pinchCircle.setAttribute('fill', '#cccccc'); // gray when not active
 								}
 							}
 							if (leftEl) {
@@ -533,14 +763,99 @@
 											updateMidiLastText();
 										}
 									}
-									// move SVG hand to position (invert X because preview is mirrored)
-									const offsetX = (-(posX - 0.5)) * window.innerWidth * 0.4;
-									const offsetY = (posY - 0.5) * window.innerHeight * 0.4;
-									leftEl.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-								} else if (now - (lastSeen[1] || 0) > resetTimeoutMs) {
-									leftEl.style.fill = '#ddd';
-									leftEl.style.transform = 'translate(0, 0)';
+									// MIDI send for left rotation (CC42 - index 6)
+									// Map -90..+90 degrees to 0..127 (inverted): -90° (left)=127, 0°(vertical)=63, +90°(right)=0
+									const rotDeg = handRotations[1];
+									const rotCC = Math.round(63 - (rotDeg / 90) * 64); // -90->127, 0->63, 90->0
+									const rotCCClamped = Math.max(0, Math.min(127, rotCC));
+								if (midiEnabled && midiOut && ccEnabled[6]) {
+									if (rotCCClamped !== lastMidiValue[6] && (now - lastMidiSentAt[6] > midiThrottleMs)) {
+										sendMidiCC(CC_LEFT_ROT, rotCCClamped);
+										lastMidiValue[6] = rotCCClamped;
+										lastMidiSentAt[6] = now;
+										updateMidiLastText();
+									}
 								}
+								// MIDI send for left hand pinch-based CCs (CC47-50, indices 12-15)
+								if (midiEnabled && midiOut) {
+									// CC47: Pinch state (0 = not pinching, 127 = pinching)
+									const pinchCC = pinchActive[1] ? 127 : 0;
+									if (ccEnabled[12] && pinchCC !== lastMidiValue[12] && (now - lastMidiSentAt[12] > midiThrottleMs)) {
+										sendMidiCC(CC_LEFT_PINCH, pinchCC);
+										lastMidiValue[12] = pinchCC;
+										lastMidiSentAt[12] = now;
+									}
+									// Only send pinch movement if pinch is active
+									if (pinchActive[1]) {
+										// CC48: Pinch X
+										if (ccEnabled[13] && posXCC !== lastMidiValue[13] && (now - lastMidiSentAt[13] > midiThrottleMs)) {
+											sendMidiCC(CC_LEFT_PINCH_X, posXCC);
+											lastMidiValue[13] = posXCC;
+											lastMidiSentAt[13] = now;
+										}
+										// CC49: Pinch Y
+										if (ccEnabled[14] && posYCC !== lastMidiValue[14] && (now - lastMidiSentAt[14] > midiThrottleMs)) {
+											sendMidiCC(CC_LEFT_PINCH_Y, posYCC);
+											lastMidiValue[14] = posYCC;
+											lastMidiSentAt[14] = now;
+										}
+										// CC50: Pinch Rotation
+										if (ccEnabled[15] && rotCCClamped !== lastMidiValue[15] && (now - lastMidiSentAt[15] > midiThrottleMs)) {
+											sendMidiCC(CC_LEFT_PINCH_ROT, rotCCClamped);
+											lastMidiValue[15] = rotCCClamped;
+											lastMidiSentAt[15] = now;
+										}
+									}
+								}
+							// move SVG hand to position (invert X because preview is mirrored) and rotate
+								const offsetX = (-(posX - 0.5)) * window.innerWidth * 0.4;
+								const offsetY = (posY - 0.5) * window.innerHeight * 0.4;
+								leftEl.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${-rotDeg}deg)`;
+								
+							// Update left hand labels and move them with the hand
+						const leftLabels = document.getElementById('leftHandLabels');
+						if (leftLabels) {
+							// Calculate pinch CC value
+							const pinchCC = pinchActive[1] ? 127 : 0;
+							const pinchCCX = pinchActive[1] ? posXCC : 0;
+							const pinchCCY = pinchActive[1] ? posYCC : 0;
+							const pinchCCRot = pinchActive[1] ? rotCCClamped : 0;
+							// Update label text
+							document.getElementById('leftLabel_x').textContent = `X (CC38): ${posXCC}`;
+							document.getElementById('leftLabel_y').textContent = `Y (CC39): ${posYCC}`;
+							document.getElementById('leftLabel_dist').textContent = `Dist (CC40): ${ccVal}`;
+							document.getElementById('leftLabel_rot').textContent = `Rot (CC42): ${rotCCClamped}`;
+							document.getElementById('leftLabel_pinch').textContent = `Pinch (CC47): ${pinchCC}`;
+							document.getElementById('leftLabel_pinch_x').textContent = `PX (CC48): ${pinchCCX}`;
+							document.getElementById('leftLabel_pinch_y').textContent = `PY (CC49): ${pinchCCY}`;
+							document.getElementById('leftLabel_pinch_rot').textContent = `PR (CC50): ${pinchCCRot}`;
+							// Move labels with hand (position top-left relative to hand)
+							leftLabels.style.transform = `translate(calc(-50% + ${offsetX}px + 70px), calc(-50% + ${offsetY}px - 150px))`;
+							leftLabels.style.opacity = '1';
+						}
+						} else if (now - (lastSeen[1] || 0) > resetTimeoutMs) {
+							leftEl.style.fill = '#ddd';
+							leftEl.style.transform = 'translate(0, 0) rotate(0deg)';
+							// Hide labels when hand not detected
+							const leftLabels = document.getElementById('leftHandLabels');
+							if (leftLabels) {
+								leftLabels.style.opacity = '0';
+							}
+							// Reset pinch circle to gray when hand not detected
+							const pinchCircleLeft = document.getElementById('pinchCircleLeft');
+							if (pinchCircleLeft) {
+								pinchCircleLeft.setAttribute('fill', '#ddd');
+							}
+						}
+							// Update pinch indicator circle for left hand
+							const pinchCircleLeft = document.getElementById('pinchCircleLeft');
+							if (pinchCircleLeft) {
+								if (pinchActive[1]) {
+									pinchCircleLeft.setAttribute('fill', '#ff0000'); // red when pinch active
+								} else {
+									pinchCircleLeft.setAttribute('fill', '#cccccc'); // gray when not active
+								}
+							}
 							}
 						});
 					handsfree.start(() => {
@@ -557,16 +872,25 @@
 						});
 					}
 
-					// Hook up threshold slider to update display
-					const thresholdSlider = document.getElementById('thresholdSlider');
-					const thresholdValue = document.getElementById('thresholdValue');
-					if (thresholdSlider && thresholdValue) {
-						thresholdSlider.addEventListener('input', (e) => {
-							distanceThreshold = parseFloat(e.target.value);
-							thresholdValue.textContent = distanceThreshold.toFixed(2);
-						});
-					}
-				} catch (err){
+				// Hook up threshold slider to update display
+				const thresholdSlider = document.getElementById('thresholdSlider');
+				const thresholdValue = document.getElementById('thresholdValue');
+				if (thresholdSlider && thresholdValue) {
+					thresholdSlider.addEventListener('input', (e) => {
+						distanceThreshold = parseFloat(e.target.value);
+						thresholdValue.textContent = distanceThreshold.toFixed(2);
+					});
+				}
+
+				// Hook up CC toggle buttons
+				const ccToggleButtons = document.querySelectorAll('.cc-toggle');
+				ccToggleButtons.forEach(btn => {
+					btn.addEventListener('click', () => {
+						const ccIndex = parseInt(btn.getAttribute('data-cc-index'));
+						toggleCCEnabled(ccIndex);
+					});
+				});
+			} catch (err){
 					console.error('Errore inizializzazione Handsfree:', err);
 				}
 			} else {
