@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sequence Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Arial', sans-serif;
+            background: #f3f3f3;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: fit-content;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+        }
+
+        .editor-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .spreadsheet {
+            display: inline-block;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .spreadsheet tr {
+            display: flex;
+        }
+
+        .spreadsheet td {
+            width: 80px;
+            height: 50px;
+            border: 2px solid #dadce0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .spreadsheet td input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            text-align: center;
+            font-size: 14px;
+            padding: 0;
+            background: transparent;
+        }
+
+        .spreadsheet td input:focus {
+            background: #e8f0fe;
+        }
+
+        .spreadsheet td.selected {
+            background: #c5e1f5;
+            border: 2px solid #1f73e6;
+        }
+
+        .row-header {
+            width: 100px;
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #1f1f1f;
+            cursor: default;
+        }
+
+        .row-header input {
+            font-weight: 600;
+            color: #1f1f1f;
+        }
+
+        .col-header {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #1f1f1f;
+            cursor: default;
+        }
+
+        .col-header input {
+            font-weight: 600;
+            color: #1f1f1f;
+        }
+
+        .corner {
+            width: 100px;
+            height: 50px;
+            background: #f8f9fa;
+            border: 2px solid #dadce0;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Right Panel - Tools */
+        .tools-panel {
+            width: 120px;
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            height: fit-content;
+        }
+
+        .tool-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #5f6368;
+            padding: 8px 0 4px 0;
+            border-top: 1px solid #dadce0;
+            margin-top: 8px;
+        }
+
+        .tool-section-title:first-child {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        .tool-btn {
+            padding: 10px;
+            border: 1px solid #dadce0;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 36px;
+        }
+
+        .tool-btn:hover {
+            background: #f8f9fa;
+            border-color: #1f73e6;
+        }
+
+        .tool-btn.primary {
+            background: #1f73e6;
+            color: white;
+            border-color: #1f73e6;
+        }
+
+        .tool-btn.primary:hover {
+            background: #1666c4;
+        }
+
+        .tool-btn.danger {
+            background: #d33b27;
+            color: white;
+            border-color: #d33b27;
+        }
+
+        .tool-btn.danger:hover {
+            background: #b8301f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel - Spreadsheet -->
+        <div class="editor-panel">
+            <table class="spreadsheet" id="spreadsheet">
+                <thead>
+                    <tr>
+                        <td class="corner"></td>
+                        <td class="col-header"><input type="text" value="1" readonly /></td>
+                        <td class="col-header"><input type="text" value="2" readonly /></td>
+                        <td class="col-header"><input type="text" value="3" readonly /></td>
+                        <td class="col-header"><input type="text" value="4" readonly /></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="row-header"><input type="text" value="Left" /></td>
+                        <td><input type="text" data-row="0" data-col="0" /></td>
+                        <td><input type="text" data-row="0" data-col="1" /></td>
+                        <td><input type="text" data-row="0" data-col="2" /></td>
+                        <td><input type="text" data-row="0" data-col="3" /></td>
+                    </tr>
+                    <tr>
+                        <td class="row-header"><input type="text" value="Right" /></td>
+                        <td><input type="text" data-row="1" data-col="0" /></td>
+                        <td><input type="text" data-row="1" data-col="1" /></td>
+                        <td><input type="text" data-row="1" data-col="2" /></td>
+                        <td><input type="text" data-row="1" data-col="3" /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Right Panel - Tools -->
+        <div class="tools-panel">
+            <div class="tool-section-title">Columns</div>
+            <button class="tool-btn primary" id="addColBtn">+ Add</button>
+            <button class="tool-btn danger" id="removeColBtn">− Remove</button>
+
+            <div class="tool-section-title">Export</div>
+            <button class="tool-btn" id="exportBtn">⬇ Export</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedCell = null;
+        let cols = 4;
+
+        // Click on cell to select it
+        document.querySelectorAll('[data-row][data-col]').forEach(input => {
+            input.addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectCell(this);
+            });
+
+            input.addEventListener('focus', function() {
+                selectCell(this);
+            });
+        });
+
+        function selectCell(input) {
+            // Deselect previous cell
+            document.querySelectorAll('td.selected').forEach(td => {
+                td.classList.remove('selected');
+            });
+
+            // Select new cell
+            selectedCell = input;
+            input.parentElement.classList.add('selected');
+        }
+
+        // Arrow key navigation
+        document.addEventListener('keydown', function(e) {
+            if (!selectedCell || !selectedCell.dataset.row) return;
+
+            const row = parseInt(selectedCell.dataset.row);
+            const col = parseInt(selectedCell.dataset.col);
+
+            let newInput = null;
+
+            switch(e.key) {
+                case 'ArrowUp':
+                    if (row > 0) {
+                        newInput = document.querySelector(`[data-row="${row - 1}"][data-col="${col}"]`);
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (row < 1) {
+                        newInput = document.querySelector(`[data-row="${row + 1}"][data-col="${col}"]`);
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (col > 0) {
+                        newInput = document.querySelector(`[data-row="${row}"][data-col="${col - 1}"]`);
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (col < cols - 1) {
+                        newInput = document.querySelector(`[data-row="${row}"][data-col="${col + 1}"]`);
+                    }
+                    break;
+            }
+
+            if (newInput) {
+                e.preventDefault();
+                selectCell(newInput);
+                newInput.focus();
+            }
+        });
+
+        // Add column
+        document.getElementById('addColBtn').addEventListener('click', () => {
+            cols++;
+            const table = document.getElementById('spreadsheet');
+            const headerRow = table.querySelector('thead tr');
+            
+            // Add header
+            const headerCell = document.createElement('td');
+            headerCell.className = 'col-header';
+            const headerInput = document.createElement('input');
+            headerInput.type = 'text';
+            headerInput.value = cols.toString();
+            headerInput.readOnly = true;
+            headerCell.appendChild(headerInput);
+            headerRow.appendChild(headerCell);
+
+            // Add cells to each row
+            table.querySelectorAll('tbody tr').forEach((row, rowIndex) => {
+                const cell = document.createElement('td');
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.dataset.row = rowIndex;
+                input.dataset.col = cols - 1;
+                
+                input.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    selectCell(this);
+                });
+                input.addEventListener('focus', function() {
+                    selectCell(this);
+                });
+                
+                cell.appendChild(input);
+                row.appendChild(cell);
+            });
+        });
+
+        // Remove column
+        document.getElementById('removeColBtn').addEventListener('click', () => {
+            if (cols > 1) {
+                cols--;
+                const table = document.getElementById('spreadsheet');
+                const headerRow = table.querySelector('thead tr');
+                headerRow.lastElementChild.remove();
+                
+                table.querySelectorAll('tbody tr').forEach(row => {
+                    row.lastElementChild.remove();
+                });
+            }
+        });
+
+        // Export function
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            const table = document.getElementById('spreadsheet');
+            const data = [];
+            
+            table.querySelectorAll('tbody tr').forEach(row => {
+                const rowData = [];
+                row.querySelectorAll('[data-row][data-col]').forEach(input => {
+                    rowData.push(input.value);
+                });
+                if (rowData.length > 0) {
+                    data.push(rowData);
+                }
+            });
+
+            const exportData = {
+                timestamp: new Date().toISOString(),
+                columns: cols,
+                data: data
+            };
+
+            console.log(JSON.stringify(exportData, null, 2));
+
+            // Download as JSON file
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportData, null, 2)));
+            element.setAttribute('download', `sequence_${new Date().getTime()}.json`);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1111 @@
+<!doctype html>
+<html lang="it">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Hand CCs</title>
+	<!-- p5 from CDN -->
+	<script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
+	<!-- local loader for Handsfree (loads the real build from unpkg) -->
+	<script src="handsfree.js"></script>
+	<style>
+		html,body{height:100%;margin:0;overflow:hidden}
+		#sketch-container{position:fixed;top:0;left:0;right:0;bottom:0;background:#f5f5f5}
+		/* small debug window in bottom-left */
+		#debugWrap{position:fixed;left:12px;bottom:12px;width:260px;height:195px;z-index:9999;border:2px solid rgba(0,0,0,0.5);background:rgba(0,0,0,0.1);overflow:hidden;border-radius:6px}
+		#resizeHandle{position:absolute;right:4px;bottom:4px;width:18px;height:18px;cursor:nwse-resize;z-index:10002;background:linear-gradient(135deg,rgba(255,255,255,0.25) 0%,rgba(255,255,255,0.05) 100%);border-radius:3px}
+		/* top controls */
+		#topControls{position:fixed;top:12px;right:12px;display:flex;gap:10px;align-items:center;z-index:10003;pointer-events:auto;background:rgba(255,255,255,0.9);padding:6px 10px;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+		#topControls > div, #topControls > select, #topControls > button, #topControls > span{color:#000}
+		/* distance display */
+		#distanceDisplay{position:fixed;top:12px;left:12px;z-index:10003;background:rgba(0,0,0,0.7);color:#fff;padding:8px 12px;border-radius:6px;font-family:monospace;font-size:14px}
+		/* Hand display */
+		#handDisplay{position:fixed;left:0;top:0;z-index:9998;pointer-events:none}
+		.handSvg{width:180px;height:260px;fill:#ddd;transition:fill 120ms linear, transform 120ms linear;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.15))}
+		/* Hand labels */
+		#handLabels{position:absolute;left:50%;top:50%;transform:translate(-220px, -150px);pointer-events:none;background:rgba(255,255,255,0.85);padding:6px 10px;border-radius:6px;font-family:monospace;font-size:10px;color:#000;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:transform 120ms linear, opacity 200ms ease}
+		#handLabels > div{line-height:1.4}
+		/* make Handsfree video/canvas fill the wrapper */
+		#debugWrap .handsfree-video,
+		#debugWrap .handsfree-canvas-hands{width:100% !important;height:100% !important;object-fit:cover;display:block;transform:scaleX(-1);transform-origin:center center}
+		/* hide other debugging canvases (we only want the hands view) */
+		#debugWrap .handsfree-canvas{display:none}
+		#debugWrap .handsfree-canvas-hands{display:block}
+	</style>
+</head>
+<body>
+	<!-- Welcome Popup -->
+	<div id="welcomePopup" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:99999;pointer-events:auto;">
+		<div style="background:rgba(255,255,255,0.95);padding:48px;border-radius:12px;max-width:600px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.3);cursor:pointer;">
+			<h1 style="margin:0 0 12px 0;font-size:28px;color:#333;">Triangolo e Cerchio</h1>
+			<h2 style="margin:0 0 20px 0;font-size:18px;color:#666;font-weight:normal;">Pinch per muovere il cerchio!</h2>
+			<p style="margin:0 0 16px 0;font-size:14px;color:#555;line-height:1.6;">Usa la gesture di pinch con la mano destra per muovere il cerchio rosso. La distanza dal triangolo viene mappata su CC35 (0-127).</p>
+			<p style="margin:0 0 16px 0;font-size:14px;color:#d9534f;font-weight:bold;">‼ Abilita camera e MIDI ‼</p>
+			<p style="margin:0;font-size:12px;color:#999;">Clicca per iniziare</p>
+		</div>
+	</div>
+	<script>
+		// Close popup on any click
+		document.getElementById('welcomePopup').addEventListener('click', function() {
+			this.style.display = 'none';
+		});
+	</script>
+
+	<div id="sketch-container"></div>
+	
+	<!-- Hand display: SVG della mano destra -->
+	<div id="handDisplay" aria-hidden="true">
+		<svg id="handRight" viewBox="0 0 600 600" class="handSvg" aria-label="Right hand">
+			<path d="m200.5,532.5l240.5,0.5c-37.49809,0.5 8.5,-119.43386 8.5,-187.5c0,-68.06614 -54,-57 -64,-41c0,-31 -1,7 -1,-102c0,-109 -209,-123 -210,13c-1,136 24,169 26,317z" id="svg_hand" transform="translate(300 0) scale(-1 1) translate(-300 0)" />
+			<!-- Pinch indicator circle -->
+			<circle id="pinchCircle" cx="120" cy="480" r="35" fill="#ccc" opacity="0.8" />
+		</svg>
+		<!-- Labels for hand -->
+		<div id="handLabels">
+			<div id="handLabel_pinch">Pinch: —</div>
+			<div id="handLabel_pos">Pos: —</div>
+		</div>
+	</div>
+	
+	<!-- Debug wrapper for Handsfree (webcam + hands canvas) -->
+	<div id="debugWrap" aria-hidden="true">
+		<div id="resizeHandle" title="Ridimensiona" aria-hidden="true"></div>
+	</div>
+	
+	<!-- Distance display -->
+	<div id="distanceDisplay">CC35: —</div>
+	
+	<!-- Sequencer UI (frames + play/pause) -->
+	<div id="sequencerPanel" style="position:fixed;right:20px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;background:rgba(255,255,255,0.9);padding:15px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.2);max-height:80vh;overflow-y:auto;">
+		<div style="font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:5px;">Frames</div>
+		<div id="framesContainer">
+			<!-- Frame 1 (unico frame di default) -->
+			<div class="frameRow" style="display:flex;align-items:center;gap:5px;margin-bottom:10px;">
+				<div style="font-size:10px;width:15px;text-align:center;color:#666;">1</div>
+				<button class="saveFrameBtn" data-frame="0" title="Save current positions" style="width:28px;height:28px;background:#4CAF50;color:white;border:none;border-radius:3px;cursor:pointer;font-size:14px;">💾</button>
+				<button class="viewFrameBtn" data-frame="0" title="View frame positions" style="width:28px;height:28px;background:#2196F3;color:white;border:none;border-radius:3px;cursor:pointer;font-size:14px;">👁</button>
+				<label style="font-size:11px;">Time:</label>
+				<input type="number" class="frameTime" data-frame="0" min="0.1" step="0.1" value="1" style="width:50px;padding:2px;border:1px solid #ccc;border-radius:3px;">
+				<button class="moveUpBtn" data-frame="0" title="Move up" style="width:25px;height:25px;background:#FF9800;color:white;border:none;border-radius:3px;cursor:pointer;font-size:12px;font-weight:bold;">↑</button>
+				<button class="moveDownBtn" data-frame="0" title="Move down" style="width:25px;height:25px;background:#FF9800;color:white;border:none;border-radius:3px;cursor:pointer;font-size:12px;font-weight:bold;">↓</button>
+				<button class="deleteFrameBtn" data-frame="0" style="width:25px;height:25px;background:#f44336;color:white;border:none;border-radius:3px;cursor:pointer;font-size:12px;font-weight:bold;">×</button>
+			</div>
+		</div>
+		<!-- Play/Pause button -->
+		<button id="playPauseBtn" style="margin-top:10px;padding:8px;background:#4CAF50;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;">▶ Play</button>
+		<!-- Add/Remove frame buttons -->
+		<div style="display:flex;gap:8px;margin-top:5px;">
+			<button id="addFrameBtn" style="flex:1;padding:6px;background:#2196F3;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;">+ Add Frame</button>
+			<button id="removeFrameBtn" style="flex:1;padding:6px;background:#FF9800;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;">− Remove Last</button>
+		</div>
+		<!-- Save/Load sequence buttons -->
+		<div style="display:flex;gap:8px;margin-top:5px;">
+			<button id="saveSequenceBtn" style="flex:1;padding:6px;background:#9C27B0;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;">💾 Save</button>
+			<button id="loadSequenceBtn" style="flex:1;padding:6px;background:#673AB7;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;">📁 Load</button>
+		</div>
+		<input type="file" id="loadSequenceInput" accept=".txt" style="display:none;">
+	</div>
+	
+	<!-- top-right controls -->
+	<div id="topControls" aria-hidden="false">
+		<div id="midiControl" style="display:flex;align-items:center;gap:8px;color:#000;font-family:monospace;">
+			<button id="midiEnable" style="background:rgba(0,0,0,0.06);border:0;color:#000;padding:4px 6px;border-radius:4px;cursor:pointer">Enable MIDI</button>
+			<select id="midiOutSelect" style="background:rgba(255,255,255,0.85);color:#000;border:0;padding:4px 6px;border-radius:4px;">
+				<option value="">(no output)</option>
+			</select>
+		</div>
+		<div id="thresholdControl" style="display:flex;align-items:center;gap:6px;">
+			<label for="thresholdSlider" style="color:#000;font-size:12px;">Pinch:</label>
+			<input id="thresholdSlider" type="range" min="0.05" max="0.5" step="0.01" value="0.10" style="width:110px">
+			<span id="thresholdValue" style="color:#000;font-family:monospace;font-size:12px;">0.10</span>
+		</div>
+	</div>
+
+	<script>
+		// Console logs requested by user
+		console.log('caricato p5js (script tag inserito)');
+
+		// Area raggiungibile dalla mano (margini stimati)
+		const handMargin = 80; // margine dai bordi dello schermo
+		
+		// Tre triangoli (posizioni modificabili tramite drag)
+		const triangleSize = 60;
+		// Triangolo 1 (sinistra)
+		let triangle1X = handMargin + 200;
+		let triangle1Y = handMargin + 200;
+		// Triangolo 2 (centro, più in alto)
+		let triangle2X = 0; // calcolato in setup
+		let triangle2Y = handMargin + 100;
+		// Triangolo 3 (destra, speculare al primo)
+		let triangle3X = 0; // calcolato in setup
+		let triangle3Y = handMargin + 200;
+		
+		// Stato drag triangoli
+		let isDraggingTriangle = false;
+		let draggedTriangleIndex = -1; // 0, 1, o 2
+
+		// Cerchi mobili (iniziano in linea orizzontale in fondo allo schermo)
+		let circleRedX = 0;
+		let circleRedY = 0;
+		let circleBlueX = 0;
+		let circleBlueY = 0;
+		let circleGreenX = 0;
+		let circleGreenY = 0;
+		const circleRadius = 40;
+
+		// Sequencer/Animation state (inizia con 1 solo frame)
+		const frames = [
+			{ red: {x: 0, y: 0}, blue: {x: 0, y: 0}, green: {x: 0, y: 0} }
+		];
+		let isPlaying = false;
+		let currentFrameIndex = 0;
+		let animationProgress = 0; // 0-1 durante l'interpolazione
+		let animationStartTime = 0;
+
+		// Stato pinch
+		let isPinching = false;
+		let wasAlreadyPinching = false;
+		let isCircleRedGrabbed = false;
+		let isCircleBlueGrabbed = false;
+		let isCircleGreenGrabbed = false;
+		let handPosX = 0.5; // 0..1 normalized
+		let handPosY = 0.5; // 0..1 normalized
+		let lastHandPosX = 0.5; // posizione precedente quando inizia pinch
+		let lastHandPosY = 0.5;
+		let handPosXRaw = 0.5; // posizione raw per l'SVG (non rimappata)
+		let handPosYRaw = 0.5;
+		let pinchThreshold = 0.10; // threshold per rilevare il pinch
+		let handDetected = false;
+		let lastHandSeen = 0;
+		const handResetTimeout = 800; // ms
+		
+		// Calibrazione: range effettivo dei landmark da Handsfree
+		let minHandX = 1, maxHandX = 0;
+		let minHandY = 1, maxHandY = 0;
+
+		// MIDI state
+		let midiAccess = null;
+		let midiOut = null;
+		let midiEnabled = false;
+		// CC per triangolo 1 (sinistra)
+		const CC_T1_RED = 35;
+		const CC_T1_BLUE = 36;
+		const CC_T1_GREEN = 37;
+		// CC per triangolo 2 (centro)
+		const CC_T2_RED = 38;
+		const CC_T2_BLUE = 39;
+		const CC_T2_GREEN = 40;
+		// CC per triangolo 3 (destra)
+		const CC_T3_RED = 41;
+		const CC_T3_BLUE = 42;
+		const CC_T3_GREEN = 43;
+		// Ultimi valori inviati per ogni CC
+		let lastCC35Value = null;
+		let lastCC36Value = null;
+		let lastCC37Value = null;
+		let lastCC38Value = null;
+		let lastCC39Value = null;
+		let lastCC40Value = null;
+		let lastCC41Value = null;
+		let lastCC42Value = null;
+		let lastCC43Value = null;
+		const midiThrottleMs = 4;
+		let lastMidiSentAt = 0;
+
+		function updateMidiStatusText(text){
+			const el = document.getElementById('distanceDisplay');
+			if (el) el.textContent = text;
+		}
+
+		async function enableMidi(){
+			try{
+				midiAccess = await navigator.requestMIDIAccess();
+				const outs = Array.from(midiAccess.outputs.values());
+				const select = document.getElementById('midiOutSelect');
+				if (select) {
+					select.innerHTML = '';
+					if (outs.length === 0) {
+						const opt = document.createElement('option'); opt.value = ''; opt.textContent = '(no output)'; select.appendChild(opt);
+					} else {
+						outs.forEach((o) => {
+							const opt = document.createElement('option');
+							opt.value = o.id;
+							opt.textContent = o.name || o.id;
+							select.appendChild(opt);
+						});
+						select.value = outs[0].id;
+						midiOut = midiAccess.outputs.get(select.value);
+						midiEnabled = !!midiOut;
+						console.log('MIDI outputs populated:', outs.map(o=>o.name||o.id));
+						select.addEventListener('change', (ev) => {
+							const id = select.value;
+							midiOut = midiAccess.outputs.get(id) || null;
+							midiEnabled = !!midiOut;
+						});
+					}
+				}
+			} catch(err){
+				console.warn('MIDI not available:', err);
+			}
+		}
+
+		function sendMidiCC(cc, value){
+			if (!midiEnabled || !midiOut) return;
+			const v = Math.max(0, Math.min(127, Math.round(value)));
+			try{
+				midiOut.send([0xB0 | 0x00, cc & 0x7F, v & 0x7F]);
+			}catch(e){
+				console.warn('MIDI send failed', e);
+			}
+		}
+
+		// p5 instance (instance mode)
+		let p5Canvas = null;
+		new p5((sketch) => {
+		sketch.setup = function() {
+			const container = document.getElementById('sketch-container');
+			const cnv = sketch.createCanvas(window.innerWidth, window.innerHeight);
+			cnv.parent(container);
+			p5Canvas = cnv;
+			
+			// Calcola posizioni triangoli 2 e 3 (centro e destra)
+			triangle2X = sketch.width / 2;
+			triangle3X = sketch.width - handMargin - 200; // speculare rispetto al primo
+			
+			// Inizializza cerchi in linea orizzontale in fondo allo schermo
+			const bottomY = sketch.height - 80;
+			const spacing = sketch.width / 4;
+			circleRedX = spacing;
+			circleRedY = bottomY;
+			circleBlueX = spacing * 2;
+			circleBlueY = bottomY;
+			circleGreenX = spacing * 3;
+			circleGreenY = bottomY;
+			console.log('p5 setup chiamato');
+		};
+		
+		sketch.windowResized = function(){
+			sketch.resizeCanvas(window.innerWidth, window.innerHeight);
+		};
+		
+		sketch.draw = function(){
+			sketch.background(245);
+				
+			// Animation update (se in play)
+			if (isPlaying) {
+				const now = Date.now();
+				const frameTimeInputs = document.querySelectorAll('.frameTime');
+				const currentFrameTime = parseFloat(frameTimeInputs[currentFrameIndex].value) * 1000; // secondi -> ms
+				
+				const elapsed = now - animationStartTime;
+				animationProgress = Math.min(1, elapsed / currentFrameTime);
+				
+				// Interpola tra frame corrente e prossimo
+				const nextFrameIndex = (currentFrameIndex + 1) % frames.length;
+				const currentFrame = frames[currentFrameIndex];
+				const nextFrame = frames[nextFrameIndex];
+				
+				const lerp = (a, b, t) => a + (b - a) * t;
+				
+				circleRedX = lerp(currentFrame.red.x, nextFrame.red.x, animationProgress);
+				circleRedY = lerp(currentFrame.red.y, nextFrame.red.y, animationProgress);
+				circleBlueX = lerp(currentFrame.blue.x, nextFrame.blue.x, animationProgress);
+				circleBlueY = lerp(currentFrame.blue.y, nextFrame.blue.y, animationProgress);
+				circleGreenX = lerp(currentFrame.green.x, nextFrame.green.x, animationProgress);
+				circleGreenY = lerp(currentFrame.green.y, nextFrame.green.y, animationProgress);
+				
+				// Aggiorna UI per mostrare frame attivo (highlight dei numeri)
+				const frameRows = document.querySelectorAll('.frameRow');
+				frameRows.forEach((row, idx) => {
+					const frameNum = row.querySelector('div');
+					if (frameNum) {
+						if (idx === currentFrameIndex) {
+							frameNum.style.color = '#2196F3';
+							frameNum.style.fontWeight = 'bold';
+						} else {
+							frameNum.style.color = '#666';
+							frameNum.style.fontWeight = 'normal';
+						}
+					}
+				});
+				
+				// Avanza al frame successivo quando completo
+				if (animationProgress >= 1) {
+					currentFrameIndex = nextFrameIndex;
+					animationProgress = 0;
+					animationStartTime = now;
+				}
+			} else {
+				// Reset colori quando non in play
+				const frameRows = document.querySelectorAll('.frameRow');
+				frameRows.forEach(row => {
+					const frameNum = row.querySelector('div');
+					if (frameNum) {
+						frameNum.style.color = '#666';
+						frameNum.style.fontWeight = 'normal';
+					}
+				});
+			}
+				
+			// Disegna i tre triangoli - bianchi con outline nera
+			const drawTriangle = (x, y, isHovered) => {
+				sketch.push();
+				sketch.fill(isHovered ? 200 : 255);
+				sketch.stroke(0);
+				sketch.strokeWeight(2);
+				sketch.triangle(
+					x, y - triangleSize/2,
+					x - triangleSize/2, y + triangleSize/2,
+					x + triangleSize/2, y + triangleSize/2
+				);
+				sketch.pop();
+			};
+			
+			// Verifica se il mouse è sopra un triangolo
+			const isMouseOverTriangle = (tx, ty) => {
+				const d = sketch.dist(sketch.mouseX, sketch.mouseY, tx, ty);
+				return d < triangleSize;
+			};
+			
+			const hover1 = isMouseOverTriangle(triangle1X, triangle1Y);
+			const hover2 = isMouseOverTriangle(triangle2X, triangle2Y);
+			const hover3 = isMouseOverTriangle(triangle3X, triangle3Y);
+			
+			drawTriangle(triangle1X, triangle1Y, hover1); // Sinistra
+			drawTriangle(triangle2X, triangle2Y, hover2); // Centro
+			drawTriangle(triangle3X, triangle3Y, hover3); // Destra			// Se c'è pinch attivo e NON in play mode, muovi il cerchio manualmente
+			if (isPinching && !isPlaying) {
+				// Se il pinch è appena iniziato, verifica se la mano è sul cerchio
+				if (!wasAlreadyPinching) {
+					// Calcola il rettangolo dell'SVG della mano
+					// Mappa 0-1 della webcam a 0-width/height, poi centra l'SVG (180x260px)
+					// IMPORTANTE: X invertito per effetto specchio webcam
+					const handSvgWidth = 180;
+					const handSvgHeight = 260;
+					const handCenterX = (1 - handPosXRaw) * sketch.width;
+					const handCenterY = handPosYRaw * sketch.height;
+					
+					// Coordinate del rettangolo dell'SVG centrato sulla posizione della mano
+					const handRectLeft = handCenterX - handSvgWidth / 2;
+					const handRectRight = handCenterX + handSvgWidth / 2;
+					const handRectTop = handCenterY - handSvgHeight / 2;
+					const handRectBottom = handCenterY + handSvgHeight / 2;
+					
+					// Funzione helper per calcolare distanza da cerchio a rettangolo
+					const distToRect = (cx, cy) => {
+						const closestX = Math.max(handRectLeft, Math.min(cx, handRectRight));
+						const closestY = Math.max(handRectTop, Math.min(cy, handRectBottom));
+						const dx = cx - closestX;
+						const dy = cy - closestY;
+						return Math.sqrt(dx*dx + dy*dy);
+					};
+					
+					// Verifica quale cerchio afferrare (priorità: primo toccato)
+					const threshold = circleRadius * 2;
+					if (distToRect(circleRedX, circleRedY) < threshold) {
+						isCircleRedGrabbed = true;
+					} else if (distToRect(circleBlueX, circleBlueY) < threshold) {
+						isCircleBlueGrabbed = true;
+					} else if (distToRect(circleGreenX, circleGreenY) < threshold) {
+						isCircleGreenGrabbed = true;
+					}					lastHandPosX = handPosX;
+					lastHandPosY = handPosY;
+					wasAlreadyPinching = true;
+				}
+				
+				// I cerchi afferrati seguono esattamente la posizione della mano
+				if (isCircleRedGrabbed) {
+					circleRedX = (1 - handPosXRaw) * sketch.width;
+					circleRedY = handPosYRaw * sketch.height;
+				}
+				if (isCircleBlueGrabbed) {
+					circleBlueX = (1 - handPosXRaw) * sketch.width;
+					circleBlueY = handPosYRaw * sketch.height;
+				}
+				if (isCircleGreenGrabbed) {
+					circleGreenX = (1 - handPosXRaw) * sketch.width;
+					circleGreenY = handPosYRaw * sketch.height;
+				}
+			} else {
+				// Quando il pinch finisce, resetta i flag
+				wasAlreadyPinching = false;
+				isCircleRedGrabbed = false;
+				isCircleBlueGrabbed = false;
+				isCircleGreenGrabbed = false;
+			}				// Funzione helper per disegnare un cerchio con gradiente
+			const drawCircleWithGlow = (x, y, r, g, b) => {
+				sketch.push();
+				const ctx = sketch.drawingContext;
+				const gradient = ctx.createRadialGradient(x, y, circleRadius * 0.5, x, y, circleRadius * 3);
+				gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.6)`);
+				gradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, 0.2)`);
+				gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+				ctx.fillStyle = gradient;
+				ctx.beginPath();
+				ctx.arc(x, y, circleRadius * 3, 0, Math.PI * 2);
+				ctx.fill();
+				sketch.fill(r, g, b);
+				sketch.noStroke();
+				sketch.circle(x, y, circleRadius * 2);
+				sketch.pop();
+			};
+			
+			// Disegna i tre cerchi con bagliore
+			drawCircleWithGlow(circleRedX, circleRedY, 255, 0, 0);      // Rosso
+			drawCircleWithGlow(circleBlueX, circleBlueY, 0, 100, 255);  // Blu
+			drawCircleWithGlow(circleGreenX, circleGreenY, 0, 255, 100); // Verde
+			
+			// Funzione helper per calcolare e inviare CC da distanza
+			const sendDistanceCC = (cx, cy, triangleX, triangleY, ccNum, lastValue) => {
+				const dx = cx - triangleX;
+				const dy = cy - triangleY;
+				const distance = Math.sqrt(dx*dx + dy*dy);
+				const maxDist = 300;
+				let ccValue = distance >= maxDist ? 0 : Math.round(127 - (distance / maxDist) * 127);
+				const now = Date.now();
+				if (ccValue !== lastValue && (now - lastMidiSentAt > midiThrottleMs)) {
+					sendMidiCC(ccNum, ccValue);
+					lastMidiSentAt = now;
+					updateMidiStatusText(`CC${ccNum}: ${ccValue} (dist: ${distance.toFixed(0)}px)`);
+					return ccValue;
+				}
+				return lastValue;
+			};
+			
+			// Calcola e invia CC per tutti e tre i cerchi con tutti e tre i triangoli
+			// Triangolo 1 (sinistra)
+			lastCC35Value = sendDistanceCC(circleRedX, circleRedY, triangle1X, triangle1Y, CC_T1_RED, lastCC35Value);
+			lastCC36Value = sendDistanceCC(circleBlueX, circleBlueY, triangle1X, triangle1Y, CC_T1_BLUE, lastCC36Value);
+			lastCC37Value = sendDistanceCC(circleGreenX, circleGreenY, triangle1X, triangle1Y, CC_T1_GREEN, lastCC37Value);
+			// Triangolo 2 (centro)
+			lastCC38Value = sendDistanceCC(circleRedX, circleRedY, triangle2X, triangle2Y, CC_T2_RED, lastCC38Value);
+			lastCC39Value = sendDistanceCC(circleBlueX, circleBlueY, triangle2X, triangle2Y, CC_T2_BLUE, lastCC39Value);
+			lastCC40Value = sendDistanceCC(circleGreenX, circleGreenY, triangle2X, triangle2Y, CC_T2_GREEN, lastCC40Value);
+			// Triangolo 3 (destra)
+			lastCC41Value = sendDistanceCC(circleRedX, circleRedY, triangle3X, triangle3Y, CC_T3_RED, lastCC41Value);
+			lastCC42Value = sendDistanceCC(circleBlueX, circleBlueY, triangle3X, triangle3Y, CC_T3_BLUE, lastCC42Value);
+			lastCC43Value = sendDistanceCC(circleGreenX, circleGreenY, triangle3X, triangle3Y, CC_T3_GREEN, lastCC43Value);
+		};
+		
+		// Mouse handlers per drag triangoli
+		sketch.mousePressed = function() {
+			// Verifica se clicchiamo su un triangolo
+			const distToT1 = sketch.dist(sketch.mouseX, sketch.mouseY, triangle1X, triangle1Y);
+			const distToT2 = sketch.dist(sketch.mouseX, sketch.mouseY, triangle2X, triangle2Y);
+			const distToT3 = sketch.dist(sketch.mouseX, sketch.mouseY, triangle3X, triangle3Y);
+			
+			if (distToT1 < triangleSize) {
+				isDraggingTriangle = true;
+				draggedTriangleIndex = 0;
+			} else if (distToT2 < triangleSize) {
+				isDraggingTriangle = true;
+				draggedTriangleIndex = 1;
+			} else if (distToT3 < triangleSize) {
+				isDraggingTriangle = true;
+				draggedTriangleIndex = 2;
+			}
+		};
+		
+		sketch.mouseDragged = function() {
+			if (isDraggingTriangle) {
+				if (draggedTriangleIndex === 0) {
+					triangle1X = sketch.mouseX;
+					triangle1Y = sketch.mouseY;
+				} else if (draggedTriangleIndex === 1) {
+					triangle2X = sketch.mouseX;
+					triangle2Y = sketch.mouseY;
+				} else if (draggedTriangleIndex === 2) {
+					triangle3X = sketch.mouseX;
+					triangle3Y = sketch.mouseY;
+				}
+			}
+		};
+		
+		sketch.mouseReleased = function() {
+			isDraggingTriangle = false;
+			draggedTriangleIndex = -1;
+		};
+	});
+
+		// Setup debug UI controls (toggle + resizer)
+			(function setupDebugControls(){
+				const wrap = document.getElementById('debugWrap');
+				const handle = document.getElementById('resizeHandle');
+				if (!wrap || !handle) return;
+
+			// Resizer
+			let isResizing = false;
+			let startX = 0, startY = 0, startW = 0, startH = 0;
+			const minW = 140, minH = 100;
+
+			handle.addEventListener('pointerdown', (ev) => {
+				ev.preventDefault();
+				isResizing = true;
+				startX = ev.clientX;
+				startY = ev.clientY;
+				startW = wrap.offsetWidth;
+				startH = wrap.offsetHeight;
+				handle.setPointerCapture && handle.setPointerCapture(ev.pointerId);
+			});
+
+			window.addEventListener('pointermove', (ev) => {
+				if (!isResizing) return;
+				const dx = ev.clientX - startX;
+				const dy = ev.clientY - startY;
+				let nw = Math.max(minW, startW + dx);
+				let nh = Math.max(minH, startH + dy);
+				wrap.style.width = nw + 'px';
+				wrap.style.height = nh + 'px';
+			});
+
+			window.addEventListener('pointerup', (ev) => {
+				if (!isResizing) return;
+				isResizing = false;
+				handle.releasePointerCapture && handle.releasePointerCapture(ev.pointerId);
+			});
+
+			// double-click reset size
+			handle.addEventListener('dblclick', () => {
+				wrap.style.width = '260px';
+				wrap.style.height = '195px';
+			});
+		})();
+
+		// Initialize Handsfree when available (the local loader injects the real build)
+		function initHandsfreeWhenReady(){
+			if (window.Handsfree){
+				console.log('caricato handsfreejs (libreria disponibile)');
+				try{
+				const debugWrapEl = document.getElementById('debugWrap');
+				// Initialize Handsfree with a small debug wrapper (bottom-left)
+				const handsfree = new Handsfree({
+					hands: {
+						enabled: true,
+						maxNumHands: 1
+					},
+					showDebug: true,
+					setup: {
+						wrap: { $el: debugWrapEl },
+						video: { $el: null, width: 320, height: 240 },
+						canvas: { hands: { $el: null, width: 320, height: 240 } }
+					}
+				});
+				// Expose instance for UI controls
+				window.handsfreeInstance = handsfree;
+
+				// Plugin che traccia solo la mano destra e rileva il pinch
+				handsfree.use('rightHandTracking', function(data){
+					const hands = data.hands;
+					if (!hands || !hands.landmarks || hands.landmarks.length === 0) {
+						isPinching = false;
+						handDetected = false;
+						return;
+					}
+
+				// Usa la mano destra (hands.landmarks[1] = Right hand nella vita reale)
+				const lm = hands.landmarks[1];
+				if (!lm || lm.length === 0) {
+					isPinching = false;
+					handDetected = false;
+					return;
+				}					handDetected = true;
+					lastHandSeen = Date.now();
+
+				// Calcola posizione media della mano (centro)
+				let cx = 0, cy = 0, cnt = 0;
+				for (let i = 0; i < lm.length; i++) {
+					if (lm[i]) { 
+						cx += lm[i].x; 
+						cy += lm[i].y; 
+						cnt++; 
+					}
+				}
+				if (cnt > 0) {
+					// I landmark sono normalizzati 0-1 rispetto al frame di input
+					const avgX = cx / cnt;
+					const avgY = cy / cnt;
+					
+					// Salva i valori raw per l'SVG (senza inversione X)
+					handPosXRaw = avgX;
+					handPosYRaw = avgY;
+					
+					// Traccia il range effettivo della mano per calibrazione
+					minHandX = Math.min(minHandX, avgX);
+					maxHandX = Math.max(maxHandX, avgX);
+					minHandY = Math.min(minHandY, avgY);
+					maxHandY = Math.max(maxHandY, avgY);
+					
+					// Rimappa il range effettivo a 0-1 per il controllo del cerchio
+					const rangeX = maxHandX - minHandX || 1;
+					const rangeY = maxHandY - minHandY || 1;
+					let mappedX = (avgX - minHandX) / rangeX;
+					let mappedY = (avgY - minHandY) / rangeY;
+					
+					// Usa i valori rimappati senza inversione
+					handPosX = mappedX;
+					handPosY = mappedY;
+				}					// Rileva pinch: distanza tra pollice (4) e indice (8)
+					if (lm[4] && lm[8]) {
+						const dx = lm[4].x - lm[8].x;
+						const dy = lm[4].y - lm[8].y;
+						const pinchDist = Math.sqrt(dx*dx + dy*dy);
+						isPinching = pinchDist < pinchThreshold;
+					} else {
+						isPinching = false;
+					}
+				});					// Plugin per aggiornare la UI della mano
+					handsfree.use('handUI', function(){
+						const handEl = document.getElementById('handRight');
+						const pinchCircle = document.getElementById('pinchCircle');
+						const handLabels = document.getElementById('handLabels');
+						const now = Date.now();
+
+						if (handDetected && (now - lastHandSeen < handResetTimeout)) {
+					// Mano rilevata: colora e muovi
+					if (handEl) {
+						handEl.style.fill = isPinching ? '#4CAF50' : '#2196F3';
+						// Mappa 0-1 della webcam a 0-width/height, centra l'SVG (180x260px)
+						// IMPORTANTE: X invertito per effetto specchio webcam
+						const handX = (1 - handPosXRaw) * window.innerWidth - 90;  // -90 = -width/2
+						const handY = handPosYRaw * window.innerHeight - 130; // -130 = -height/2
+						handEl.style.transform = `translate(${handX}px, ${handY}px)`;
+					}
+					if (pinchCircle) {
+						pinchCircle.setAttribute('fill', isPinching ? '#ff0000' : '#cccccc');
+					}
+					if (handLabels) {
+						const handX = (1 - handPosXRaw) * window.innerWidth;
+						const handY = handPosYRaw * window.innerHeight;
+						handLabels.style.transform = `translate(${handX - 220}px, ${handY - 150}px)`;
+						handLabels.style.opacity = '1';
+						document.getElementById('handLabel_pinch').textContent = `Pinch: ${isPinching ? 'YES' : 'NO'}`;
+						document.getElementById('handLabel_pos').textContent = `Pos: ${(handPosX*100).toFixed(0)}, ${(handPosY*100).toFixed(0)}`;
+					}
+						} else {
+							// Mano non rilevata: reset
+							if (handEl) {
+								handEl.style.fill = '#ddd';
+								handEl.style.transform = 'translate(0, 0)';
+							}
+							if (pinchCircle) {
+								pinchCircle.setAttribute('fill', '#ddd');
+							}
+							if (handLabels) {
+								handLabels.style.opacity = '0';
+							}
+						}
+					});
+
+					handsfree.enablePlugins('browser');
+					handsfree.showDebugger && handsfree.showDebugger();
+
+					handsfree.start(() => {
+						console.log('handsfree avviato (start callback)');
+					});
+
+					// Hook up MIDI enable button
+					const midiBtn = document.getElementById('midiEnable');
+					if (midiBtn) {
+						midiBtn.addEventListener('click', async () => {
+							await enableMidi();
+							midiBtn.disabled = true;
+						});
+					}
+
+					// Hook up save frame buttons (💾)
+					const setupSaveFrameButtons = () => {
+						document.querySelectorAll('.saveFrameBtn').forEach(btn => {
+							const newBtn = btn.cloneNode(true);
+							btn.parentNode.replaceChild(newBtn, btn);
+							
+							newBtn.addEventListener('click', () => {
+								const frameIdx = parseInt(newBtn.dataset.frame);
+								// Salva posizioni correnti nel frame
+								frames[frameIdx] = {
+									red: { x: circleRedX, y: circleRedY },
+									blue: { x: circleBlueX, y: circleBlueY },
+									green: { x: circleGreenX, y: circleGreenY }
+								};
+								// Feedback visivo
+								const originalBg = newBtn.style.background;
+								newBtn.style.background = '#66BB6A';
+								setTimeout(() => { 
+									newBtn.style.background = originalBg;
+								}, 200);
+								console.log(`Frame ${frameIdx + 1} salvato:`, frames[frameIdx]);
+							});
+						});
+					};
+					setupSaveFrameButtons();
+
+					// Hook up view frame buttons (👁)
+					const setupViewFrameButtons = () => {
+						document.querySelectorAll('.viewFrameBtn').forEach(btn => {
+							const newBtn = btn.cloneNode(true);
+							btn.parentNode.replaceChild(newBtn, btn);
+							
+							newBtn.addEventListener('click', () => {
+								const frameIdx = parseInt(newBtn.dataset.frame);
+								const frame = frames[frameIdx];
+								if (frame && frame.red && frame.blue && frame.green) {
+									// Carica le posizioni del frame nei cerchi
+									circleRedX = frame.red.x;
+									circleRedY = frame.red.y;
+									circleBlueX = frame.blue.x;
+									circleBlueY = frame.blue.y;
+									circleGreenX = frame.green.x;
+									circleGreenY = frame.green.y;
+									console.log(`Frame ${frameIdx + 1} visualizzato:`, frame);
+								} else {
+									alert('Frame vuoto! Salvalo prima con 💾');
+								}
+							});
+						});
+					};
+					setupViewFrameButtons();
+
+					// Hook up delete frame buttons
+					const setupDeleteButtons = () => {
+						document.querySelectorAll('.deleteFrameBtn').forEach(btn => {
+							const newBtn = btn.cloneNode(true);
+							btn.parentNode.replaceChild(newBtn, btn);
+							
+							newBtn.addEventListener('click', () => {
+								const frameIdx = parseInt(newBtn.dataset.frame);
+								if (frames.length <= 1) {
+									alert('Devi avere almeno 1 frame!');
+									return;
+								}
+								// Rimuovi frame dall'array
+								frames.splice(frameIdx, 1);
+								// Rimuovi elemento DOM
+								const frameRows = document.querySelectorAll('.frameRow');
+								frameRows[frameIdx].remove();
+								// Aggiorna indici
+								updateFrameIndices();
+								if (currentFrameIndex >= frames.length) {
+									currentFrameIndex = 0;
+								}
+							});
+						});
+					};
+					setupDeleteButtons();
+
+					// Setup move up/down buttons
+					const setupMoveButtons = () => {
+						const moveUpBtns = document.querySelectorAll('.moveUpBtn');
+						const moveDownBtns = document.querySelectorAll('.moveDownBtn');
+						
+						moveUpBtns.forEach(btn => {
+							const newBtn = btn.cloneNode(true);
+							btn.replaceWith(newBtn);
+							newBtn.addEventListener('click', () => {
+								const frameIdx = parseInt(newBtn.dataset.frame);
+								if (frameIdx > 0) {
+									moveFrame(frameIdx, frameIdx - 1);
+								}
+							});
+						});
+						
+						moveDownBtns.forEach(btn => {
+							const newBtn = btn.cloneNode(true);
+							btn.replaceWith(newBtn);
+							newBtn.addEventListener('click', () => {
+								const frameIdx = parseInt(newBtn.dataset.frame);
+								if (frameIdx < frames.length - 1) {
+									moveFrame(frameIdx, frameIdx + 1);
+								}
+							});
+						});
+					};
+					setupMoveButtons();
+
+					// Move frame function
+					const moveFrame = (fromIdx, toIdx) => {
+						if (fromIdx === toIdx) return;
+						
+						// Swap frames in array
+						const temp = frames[fromIdx];
+						frames[fromIdx] = frames[toIdx];
+						frames[toIdx] = temp;
+						
+						// Swap frame times
+						const frameTimeInputs = document.querySelectorAll('.frameTime');
+						const tempTime = frameTimeInputs[fromIdx].value;
+						frameTimeInputs[fromIdx].value = frameTimeInputs[toIdx].value;
+						frameTimeInputs[toIdx].value = tempTime;
+						
+						// Swap DOM elements
+						const container = document.getElementById('framesContainer');
+						const frameRows = Array.from(document.querySelectorAll('.frameRow'));
+						
+						if (fromIdx < toIdx) {
+							container.insertBefore(frameRows[fromIdx], frameRows[toIdx].nextSibling);
+						} else {
+							container.insertBefore(frameRows[fromIdx], frameRows[toIdx]);
+						}
+						
+						updateFrameIndices();
+					};
+
+					// Aggiorna indici dei frame dopo aggiunta/rimozione
+					const updateFrameIndices = () => {
+						const frameRows = document.querySelectorAll('.frameRow');
+						frameRows.forEach((row, idx) => {
+							const frameNum = row.querySelector('div');
+							const saveBtn = row.querySelector('.saveFrameBtn');
+							const viewBtn = row.querySelector('.viewFrameBtn');
+							const timeInput = row.querySelector('.frameTime');
+							const moveUpBtn = row.querySelector('.moveUpBtn');
+							const moveDownBtn = row.querySelector('.moveDownBtn');
+							const deleteBtn = row.querySelector('.deleteFrameBtn');
+							
+							if (frameNum) frameNum.textContent = idx + 1;
+							if (saveBtn) saveBtn.dataset.frame = idx;
+							if (viewBtn) viewBtn.dataset.frame = idx;
+							if (timeInput) timeInput.dataset.frame = idx;
+							if (moveUpBtn) moveUpBtn.dataset.frame = idx;
+							if (moveDownBtn) moveDownBtn.dataset.frame = idx;
+							if (deleteBtn) deleteBtn.dataset.frame = idx;
+						});
+						setupSaveFrameButtons();
+						setupViewFrameButtons();
+						setupMoveButtons();
+						setupDeleteButtons();
+					};
+
+					// Add frame button
+					const addFrameBtn = document.getElementById('addFrameBtn');
+					if (addFrameBtn) {
+						addFrameBtn.addEventListener('click', () => {
+							const newIdx = frames.length;
+							frames.push({ red: {x: 0, y: 0}, blue: {x: 0, y: 0}, green: {x: 0, y: 0} });
+							
+							const container = document.getElementById('framesContainer');
+							const newRow = document.createElement('div');
+							newRow.className = 'frameRow';
+							newRow.style.cssText = 'display:flex;align-items:center;gap:5px;margin-bottom:10px;';
+							newRow.innerHTML = `
+								<div style="font-size:10px;width:15px;text-align:center;color:#666;">${newIdx + 1}</div>
+								<button class="saveFrameBtn" data-frame="${newIdx}" title="Save current positions" style="width:28px;height:28px;background:#4CAF50;color:white;border:none;border-radius:3px;cursor:pointer;font-size:14px;">💾</button>
+								<button class="viewFrameBtn" data-frame="${newIdx}" title="View frame positions" style="width:28px;height:28px;background:#2196F3;color:white;border:none;border-radius:3px;cursor:pointer;font-size:14px;">👁</button>
+								<label style="font-size:11px;">Time:</label>
+								<input type="number" class="frameTime" data-frame="${newIdx}" min="0.1" step="0.1" value="1" style="width:50px;padding:2px;border:1px solid #ccc;border-radius:3px;">
+								<button class="moveUpBtn" data-frame="${newIdx}" title="Move up" style="width:25px;height:25px;background:#FF9800;color:white;border:none;border-radius:3px;cursor:pointer;font-size:12px;font-weight:bold;">↑</button>
+								<button class="moveDownBtn" data-frame="${newIdx}" title="Move down" style="width:25px;height:25px;background:#FF9800;color:white;border:none;border-radius:3px;cursor:pointer;font-size:12px;font-weight:bold;">↓</button>
+								<button class="deleteFrameBtn" data-frame="${newIdx}" style="width:25px;height:25px;background:#f44336;color:white;border:none;border-radius:3px;cursor:pointer;font-size:12px;font-weight:bold;">×</button>
+							`;
+							container.appendChild(newRow);
+							updateFrameIndices();
+						});
+					}
+
+					// Remove last frame button
+					const removeFrameBtn = document.getElementById('removeFrameBtn');
+					if (removeFrameBtn) {
+						removeFrameBtn.addEventListener('click', () => {
+							if (frames.length <= 1) {
+								alert('Devi avere almeno 1 frame!');
+								return;
+							}
+							frames.pop();
+							const frameRows = document.querySelectorAll('.frameRow');
+							frameRows[frameRows.length - 1].remove();
+							updateFrameIndices();
+							if (currentFrameIndex >= frames.length) {
+								currentFrameIndex = 0;
+							}
+						});
+					}
+
+					// Hook up play/pause button
+					const playPauseBtn = document.getElementById('playPauseBtn');
+					if (playPauseBtn) {
+						playPauseBtn.addEventListener('click', () => {
+							isPlaying = !isPlaying;
+							if (isPlaying) {
+								playPauseBtn.textContent = '⏸ Pause';
+								playPauseBtn.style.background = '#FF9800';
+								animationStartTime = Date.now();
+								animationProgress = 0;
+							} else {
+								playPauseBtn.textContent = '▶ Play';
+								playPauseBtn.style.background = '#4CAF50';
+							}
+						});
+					}
+
+					// Hook up threshold slider
+					const thresholdSlider = document.getElementById('thresholdSlider');
+					const thresholdValue = document.getElementById('thresholdValue');
+					if (thresholdSlider && thresholdValue) {
+						thresholdSlider.addEventListener('input', (e) => {
+							pinchThreshold = parseFloat(e.target.value);
+							thresholdValue.textContent = pinchThreshold.toFixed(2);
+						});
+					}
+
+					// Save sequence button
+					const saveSequenceBtn = document.getElementById('saveSequenceBtn');
+					if (saveSequenceBtn) {
+						saveSequenceBtn.addEventListener('click', () => {
+							// Prepara i dati della sequenza
+							const sequenceData = {
+								triangles: {
+									triangle1: { x: triangle1X, y: triangle1Y },
+									triangle2: { x: triangle2X, y: triangle2Y },
+									triangle3: { x: triangle3X, y: triangle3Y }
+								},
+								frames: frames.map((frame, idx) => {
+									const timeInput = document.querySelector(`.frameTime[data-frame="${idx}"]`);
+									return {
+										red: frame.red,
+										blue: frame.blue,
+										green: frame.green,
+										time: timeInput ? parseFloat(timeInput.value) : 1
+									};
+								})
+							};
+							
+							// Converti in testo formattato
+							let txt = `Hand Totem Sequence\n`;
+							txt += `Total Frames: ${sequenceData.frames.length}\n\n`;
+							txt += `Triangles:\n`;
+							txt += `  Triangle 1: x=${sequenceData.triangles.triangle1.x.toFixed(2)}, y=${sequenceData.triangles.triangle1.y.toFixed(2)}\n`;
+							txt += `  Triangle 2: x=${sequenceData.triangles.triangle2.x.toFixed(2)}, y=${sequenceData.triangles.triangle2.y.toFixed(2)}\n`;
+							txt += `  Triangle 3: x=${sequenceData.triangles.triangle3.x.toFixed(2)}, y=${sequenceData.triangles.triangle3.y.toFixed(2)}\n\n`;
+							sequenceData.frames.forEach((frame, idx) => {
+								txt += `Frame ${idx + 1}:\n`;
+								txt += `  Red:   x=${frame.red.x.toFixed(2)}, y=${frame.red.y.toFixed(2)}\n`;
+								txt += `  Blue:  x=${frame.blue.x.toFixed(2)}, y=${frame.blue.y.toFixed(2)}\n`;
+								txt += `  Green: x=${frame.green.x.toFixed(2)}, y=${frame.green.y.toFixed(2)}\n`;
+								txt += `  Time: ${frame.time}s\n\n`;
+							});
+							
+							// Download del file
+							const blob = new Blob([txt], { type: 'text/plain' });
+							const url = URL.createObjectURL(blob);
+							const a = document.createElement('a');
+							a.href = url;
+							a.download = `hand-totem-sequence-${Date.now()}.txt`;
+							a.click();
+							URL.revokeObjectURL(url);
+							console.log('Sequenza salvata');
+						});
+					}
+
+					// Load sequence button
+					const loadSequenceBtn = document.getElementById('loadSequenceBtn');
+					const loadSequenceInput = document.getElementById('loadSequenceInput');
+					if (loadSequenceBtn && loadSequenceInput) {
+						loadSequenceBtn.addEventListener('click', () => {
+							loadSequenceInput.click();
+						});
+						
+						loadSequenceInput.addEventListener('change', (e) => {
+							const file = e.target.files[0];
+							if (!file) return;
+							
+							const reader = new FileReader();
+							reader.onload = (ev) => {
+								try {
+									const text = ev.target.result;
+									const lines = text.split('\n');
+									
+									// Pulisci frames esistenti
+									frames.length = 0;
+									const container = document.getElementById('framesContainer');
+									container.innerHTML = '';
+									
+									// Parsing del file
+									let currentFrame = null;
+									let inTrianglesSection = false;
+									lines.forEach(line => {
+										line = line.trim();
+										
+										// Parsing triangoli
+										if (line.startsWith('Triangles:')) {
+											inTrianglesSection = true;
+										} else if (inTrianglesSection && line.startsWith('Triangle 1:')) {
+											const match = line.match(/x=([\d.]+),\s*y=([\d.]+)/);
+											if (match) {
+												triangle1X = parseFloat(match[1]);
+												triangle1Y = parseFloat(match[2]);
+											}
+										} else if (inTrianglesSection && line.startsWith('Triangle 2:')) {
+											const match = line.match(/x=([\d.]+),\s*y=([\d.]+)/);
+											if (match) {
+												triangle2X = parseFloat(match[1]);
+												triangle2Y = parseFloat(match[2]);
+											}
+										} else if (inTrianglesSection && line.startsWith('Triangle 3:')) {
+											const match = line.match(/x=([\d.]+),\s*y=([\d.]+)/);
+											if (match) {
+												triangle3X = parseFloat(match[1]);
+												triangle3Y = parseFloat(match[2]);
+											}
+											inTrianglesSection = false;
+										}
+										
+										// Parsing frame
+										if (line.startsWith('Frame ')) {
+											if (currentFrame) frames.push(currentFrame);
+											currentFrame = { red: {x:0, y:0}, blue: {x:0, y:0}, green: {x:0, y:0}, time: 1 };
+										} else if (line.startsWith('Red:')) {
+											const match = line.match(/x=([\d.]+),\s*y=([\d.]+)/);
+											if (match) currentFrame.red = { x: parseFloat(match[1]), y: parseFloat(match[2]) };
+										} else if (line.startsWith('Blue:')) {
+											const match = line.match(/x=([\d.]+),\s*y=([\d.]+)/);
+											if (match) currentFrame.blue = { x: parseFloat(match[1]), y: parseFloat(match[2]) };
+										} else if (line.startsWith('Green:')) {
+											const match = line.match(/x=([\d.]+),\s*y=([\d.]+)/);
+											if (match) currentFrame.green = { x: parseFloat(match[1]), y: parseFloat(match[2]) };
+										} else if (line.startsWith('Time:')) {
+											const match = line.match(/([\d.]+)s/);
+											if (match) currentFrame.time = parseFloat(match[1]);
+										}
+									});
+									if (currentFrame) frames.push(currentFrame);
+									
+									// Ricrea UI
+									frames.forEach((frame, idx) => {
+										const newRow = document.createElement('div');
+										newRow.className = 'frameRow';
+										newRow.style.cssText = 'display:flex;align-items:center;gap:5px;margin-bottom:10px;';
+										newRow.innerHTML = `
+											<div style="font-size:10px;width:15px;text-align:center;color:#666;">${idx + 1}</div>
+											<button class="saveFrameBtn" data-frame="${idx}" title="Save current positions" style="width:28px;height:28px;background:#4CAF50;color:white;border:none;border-radius:3px;cursor:pointer;font-size:14px;">💾</button>
+											<button class="viewFrameBtn" data-frame="${idx}" title="View frame positions" style="width:28px;height:28px;background:#2196F3;color:white;border:none;border-radius:3px;cursor:pointer;font-size:14px;">👁</button>
+											<label style="font-size:11px;">Time:</label>
+											<input type="number" class="frameTime" data-frame="${idx}" min="0.1" step="0.1" value="${frame.time}" style="width:50px;padding:2px;border:1px solid #ccc;border-radius:3px;">
+											<button class="moveUpBtn" data-frame="${idx}" title="Move up" style="width:25px;height:25px;background:#FF9800;color:white;border:none;border-radius:3px;cursor:pointer;font-size:12px;font-weight:bold;">↑</button>
+											<button class="moveDownBtn" data-frame="${idx}" title="Move down" style="width:25px;height:25px;background:#FF9800;color:white;border:none;border-radius:3px;cursor:pointer;font-size:12px;font-weight:bold;">↓</button>
+											<button class="deleteFrameBtn" data-frame="${idx}" style="width:25px;height:25px;background:#f44336;color:white;border:none;border-radius:3px;cursor:pointer;font-size:12px;font-weight:bold;">×</button>
+										`;
+										container.appendChild(newRow);
+									});
+									
+									updateFrameIndices();
+									currentFrameIndex = 0;
+									console.log('Sequenza caricata:', frames);
+								} catch (err) {
+									console.error('Errore caricamento sequenza:', err);
+									alert('Errore nel caricamento del file!');
+								}
+							};
+							reader.readAsText(file);
+						});
+					}
+
+				} catch (err){
+					console.error('Errore inizializzazione Handsfree:', err);
+				}
+			} else {
+				setTimeout(initHandsfreeWhenReady, 200);
+			}
+		}
+
+		initHandsfreeWhenReady();
+	</script>
+</body>
+</html>
