@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="it">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Hand CCs</title>
+	<!-- p5 from CDN -->
+	<script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
+</head>
+<body>
+    <button id="midiEnable" style="background:rgba(0,0,0,0.06);border:0;color:#000;padding:4px 6px;border-radius:4px;cursor:pointer">Enable MIDI</button>
+    <select id="midiOutSelect" style="background:rgba(255,255,255,0.85);color:#000;border:0;padding:4px 6px;border-radius:4px;">
+        <option value="">(no output)</option>
+    </select>
+     <script>
+
+        let midiAccess = null;
+		let midiOut = null;
+		let midiEnabled = false;
+
+        const midiBtn = document.getElementById('midiEnable');
+        if (midiBtn) {
+            midiBtn.addEventListener('click', async () => {
+                await enableMidi();
+                midiBtn.disabled = true;
+            });
+        }
+
+        async function enableMidi(){
+			try{
+				midiAccess = await navigator.requestMIDIAccess();
+				const outs = Array.from(midiAccess.outputs.values());
+				const select = document.getElementById('midiOutSelect');
+				if (select) {
+					select.innerHTML = '';
+					if (outs.length === 0) {
+						const opt = document.createElement('option'); opt.value = ''; opt.textContent = '(no output)'; select.appendChild(opt);
+					} else {
+						outs.forEach((o) => {
+							const opt = document.createElement('option');
+							opt.value = o.id;
+							opt.textContent = o.name || o.id;
+							select.appendChild(opt);
+						});
+						select.value = outs[0].id;
+						midiOut = midiAccess.outputs.get(select.value);
+						midiEnabled = !!midiOut;
+						console.log('MIDI outputs populated:', outs.map(o=>o.name||o.id));
+						select.addEventListener('change', (ev) => {
+							const id = select.value;
+							midiOut = midiAccess.outputs.get(id) || null;
+							midiEnabled = !!midiOut;
+						});
+					}
+				}
+			} catch(err){
+				console.warn('MIDI not available:', err);
+			}
+		}
+
+        function sendMidiCC(cc, value){
+			if (!midiEnabled || !midiOut) return;
+			const v = Math.max(0, Math.min(127, Math.round(value)));
+			try{
+				midiOut.send([0xB0 | 0x00, cc & 0x7F, v & 0x7F]);
+			}catch(e){
+				console.warn('MIDI send failed', e);
+			}
+		}
+     </script>
+</body>
+</html>

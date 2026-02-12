@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap');
+        :root {
+            --braun-beige: #E2E2DB;
+            --braun-white: #F4F4F0;
+            --braun-black: #1A1A1A;
+            --braun-accent: #D1D1CB;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--braun-beige); 
+            color: var(--braun-black);
+            -webkit-font-smoothing: antialiased;
+        }
+        .unit-container {
+            background-color: var(--braun-white);
+            border-radius: 4px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            border: 1px solid var(--braun-accent);
+        }
+        .input-field {
+            background-color: #FFFFFF;
+            border: 1px solid #B5B5AF;
+            border-radius: 2px;
+            font-size: 1.25rem;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: var(--braun-black);
+        }
+        .braun-btn {
+            background-color: var(--braun-black);
+            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.7rem;
+            border-radius: 2px;
+        }
+        .indicator {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        .status-light {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #CCC;
+            display: inline-block;
+        }
+        .status-light.correct { background-color: #2DCC70; box-shadow: 0 0 5px #2DCC70; }
+        .status-light.wrong { background-color: #E74C3C; box-shadow: 0 0 5px #E74C3C; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-lg unit-container p-8 md:p-12">
+        <div class="flex justify-between items-end mb-12 border-b border-gray-200 pb-6">
+            <div>
+                <h1 class="text-xl font-bold tracking-tight uppercase">CONIUGAZIONI INFORMALI</h1>
+                <p class="text-[9px] tracking-widest uppercase text-gray-500 mt-1">Focus: Forme Coniugate (Livello 50)</p>
+            </div>
+            <div class="text-right">
+                <div class="indicator">Progresso</div>
+                <div id="counter" class="text-2xl font-light tabular-nums">00 / 50</div>
+            </div>
+        </div>
+
+        <div id="quiz-main">
+            <div class="mb-10">
+                <div class="indicator">Coniugazione richiesta</div>
+                <div id="question-text" class="text-3xl font-light leading-tight">...</div>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <div class="indicator">Risposta in Hiragana</div>
+                    <input type="text" id="answer-input" 
+                        class="input-field w-full p-4 tracking-wide" 
+                        placeholder="Digitare qui..." autocomplete="off">
+                </div>
+
+                <div class="flex gap-4 items-center">
+                    <button id="check-btn" class="braun-btn px-10 py-4 flex-grow">Valida</button>
+                    <div class="flex flex-col items-center justify-center px-4 py-2 border border-gray-200 bg-gray-50 rounded">
+                        <div id="status-led" class="status-light"></div>
+                        <span class="text-[8px] font-bold mt-1 text-gray-400">STATO</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="info-panel" class="mt-8 pt-6 border-t border-gray-100 opacity-0 transition-opacity">
+                <div class="indicator">Soluzione</div>
+                <div id="info-content" class="text-2xl font-medium text-red-600"></div>
+                <div class="text-[10px] mt-2 text-gray-400 uppercase tracking-widest italic">Premi INVIO per continuare</div>
+            </div>
+        </div>
+
+        <div id="end-screen" class="hidden text-center py-10">
+            <div class="indicator">Risultato</div>
+            <div id="final-score" class="text-7xl font-light mb-8">0/50</div>
+            <button onclick="location.reload()" class="braun-btn px-12 py-4">Riprova</button>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * NOTA PER SVILUPPI FUTURI (AI HANDOVER):
+         * -------------------------------------------------------------------------
+         * OBIETTIVO: Allenare l'utente alle coniugazioni INFORMALI giapponesi.
+         * VINCOLO 1: NON includere domande sulla forma piana/dizionario (es. "Mangiare" -> たべる).
+         * VINCOLO 2: La forma piana (in hiragana) deve apparire tra parentesi nella domanda come riferimento.
+         * VINCOLO 3: Input esclusivamente in Hiragana.
+         * CONTENUTO: Il set deve includere Verbi (U, Ru, Irregolari), Aggettivi (I, Na) e Sostantivi.
+         * LOGICA UI: Feedback immediato con LED di stato e pannello soluzione solo in caso di errore.
+         * -------------------------------------------------------------------------
+         */
+
+        const quizData = [
+            // Verbi RU
+            { q: "Non mangiare (たべる)", a: "たべない" },
+            { q: "Ho mangiato (たべる)", a: "たべた" },
+            { q: "Non ho mangiato (たべる)", a: "たべなかった" },
+            { q: "Non vedere (みる)", a: "みない" },
+            { q: "Ho visto (みる)", a: "みた" },
+            { q: "Non ho visto (みる)", a: "みなかった" },
+            { q: "Ho dormito (ねる)", a: "ねた" },
+            { q: "Non dormire (ねる)", a: "ねない" },
+            { q: "Ho dimenticato (わすれる)", a: "わすれた" },
+            { q: "Non dimenticare (わすれる)", a: "わすれない" },
+            { q: "Ho aperto (あける)", a: "あけた" },
+            { q: "Non uscire (でる)", a: "でない" },
+            
+            // Verbi U
+            { q: "Non andare (いく)", a: "いかない" },
+            { q: "Sono andato (いく)", a: "いった" },
+            { q: "Non sono andato (いく)", a: "いかなかった" },
+            { q: "Ho bevuto (のむ)", a: "のんだ" },
+            { q: "Non bere (のむ)", a: "のまない" },
+            { q: "Ho letto (よむ)", a: "よんだ" },
+            { q: "Non leggere (よむ)", a: "よまない" },
+            { q: "Non parlare (はなす)", a: "はなさない" },
+            { q: "Ho parlato (はなす)", a: "はなした" },
+            { q: "Ho comprato (かう)", a: "かった" },
+            { q: "Non comprare (かう)", a: "かわない" },
+            { q: "Ho aspettato (まつ)", a: "まった" },
+            { q: "Non aspettare (まつ)", a: "またない" },
+            { q: "Ho nuotato (およぐ)", a: "およいだ" },
+            { q: "Ho giocato (あそぶ)", a: "あそんだ" },
+            { q: "Ho scritto (かく)", a: "かいた" },
+            { q: "Non scrivere (かく)", a: "かかない" },
+            { q: "C'è / Esiste inanimato (ある - negativo)", a: "ない" },
+            { q: "C'era (ある)", a: "あった" },
+
+            // Irregolari
+            { q: "Non fare (する)", a: "しない" },
+            { q: "Ho fatto (する)", a: "した" },
+            { q: "Non ho fatto (する)", a: "しなかった" },
+            { q: "Non venire (くる)", a: "こない" },
+            { q: "Sono venuto (くる)", a: "きた" },
+            { q: "Non sono venuto (くる)", a: "こなかった" },
+
+            // Aggettivi I
+            { q: "Non caldo (あつい)", a: "あつくない" },
+            { q: "Era caldo (あつい)", a: "あつかった" },
+            { q: "Non era caldo (あつい)", a: "あつくなかった" },
+            { q: "Era buono (いい)", a: "よかった" },
+            { q: "Non buono (いい)", a: "よくない" },
+            { q: "Non era buono (いい)", a: "よくなかった" },
+            { q: "Freddo al tatto - passato (つめたい)", a: "つめたかった" },
+            { q: "Non caro/alto (たかい)", a: "たかくない" },
+
+            // Aggettivi NA / Sostantivi
+            { q: "Non tranquillo (しずか)", a: "しずかじゃない" },
+            { q: "Era tranquillo (しずか)", a: "しずかだった" },
+            { q: "Era uno studente (がくせい)", a: "がくせいだった" },
+            { q: "Non era uno studente (がくせい)", a: "がくせいじゃなかった" },
+            { q: "Non è famoso (ゆうめい)", a: "ゆうめいじゃない" },
+            { q: "Era famoso (ゆうめい)", a: "ゆうめいだった" }
+        ].sort(() => Math.random() - 0.5).slice(0, 50);
+
+        let index = 0, score = 0, isWaiting = false;
+        const qText = document.getElementById('question-text'), input = document.getElementById('answer-input');
+        const checkBtn = document.getElementById('check-btn'), led = document.getElementById('status-led');
+        const counter = document.getElementById('counter'), infoPanel = document.getElementById('info-panel');
+        const infoContent = document.getElementById('info-content');
+
+        function update() {
+            if (index < quizData.length) {
+                isWaiting = false;
+                qText.textContent = quizData[index].q;
+                counter.textContent = `${String(index + 1).padStart(2, '0')} / ${quizData.length}`;
+                input.value = "";
+                infoPanel.style.opacity = "0";
+                led.className = "status-light";
+                input.focus();
+            } else {
+                document.getElementById('quiz-main').classList.add('hidden');
+                document.getElementById('end-screen').classList.remove('hidden');
+                document.getElementById('final-score').textContent = `${score} / ${quizData.length}`;
+            }
+        }
+
+        function check() {
+            if (isWaiting) { index++; update(); return; }
+            const val = input.value.trim().toLowerCase();
+            if (!val) return;
+            if (val === quizData[index].a) {
+                score++;
+                led.className = "status-light correct";
+                setTimeout(() => { index++; update(); }, 600);
+            } else {
+                led.className = "status-light wrong";
+                infoContent.textContent = quizData[index].a;
+                infoPanel.style.opacity = "1";
+                isWaiting = true;
+            }
+        }
+
+        checkBtn.addEventListener('click', check);
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') check(); });
+        window.onload = update;
+    </script>
+</body>
+</html>
