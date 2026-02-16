@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Shawn Pinciara</title>
+    <title>Shawn Pinciara – Timeline</title>
     <meta charset="utf-8">
-    
+
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Montserrat">
-    <meta name="viewport" 
+    <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -20,7 +19,7 @@
             extend: {
             colors: {
                 clifford: '#da373d',
-                sp_darkb_lue: '#154c79',
+                sp_dark_blue: '#154c79',
                 sp_mid_dark_blue: '#1b66a3',
                 sp_light_blue: '#5199d4'
             }
@@ -28,212 +27,280 @@
         }
         }
     </script>
-    <!-- <link rel="stylesheet" href="../../style.css"> -->
     <link rel="stylesheet" href="../style_bw.css">
+
+    <style>
+      /* Timeline core */
+      .timeline {
+        position: relative;
+        padding-left: 2.5rem;
+      }
+      /* Vertical line */
+      .timeline::before {
+        content: '';
+        position: absolute;
+        left: 7px;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background-color: #154c79;
+        border-radius: 2px;
+      }
+
+      /* Single entry */
+      .timeline-entry {
+        position: relative;
+        padding-left: 2rem;
+        padding-bottom: 2.5rem;
+      }
+      /* Dot on the line */
+      .timeline-entry::before {
+        content: '';
+        position: absolute;
+        left: -2.5rem;
+        top: 0.25rem;
+        width: 17px;
+        height: 17px;
+        background: #154c79;
+        border: 3px solid #fffbf5;
+        border-radius: 50%;
+        z-index: 1;
+      }
+      /* "NOW" entry gets a pulsing dot */
+      .timeline-entry.now::before {
+        background: #5199d4;
+        box-shadow: 0 0 0 4px rgba(81,153,212,0.3);
+      }
+
+      .timeline-date {
+        font-family: "Montserrat", sans-serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #5199d4;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.25rem;
+      }
+
+      .timeline-title {
+        font-family: "Montserrat", sans-serif;
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: #154c79;
+        margin-bottom: 0.5rem;
+      }
+
+      .timeline-body {
+        font-family: "Montserrat", sans-serif;
+        font-size: 0.95rem;
+        color: #154c79;
+        line-height: 1.6;
+      }
+
+      .timeline-body ul {
+        margin-left: 1.2rem;
+        margin-top: 0.3rem;
+      }
+
+      .timeline-body li {
+        margin-left: 0;
+        list-style-type: disc;
+      }
+
+      @media only screen and (max-width: 640px) {
+        .timeline {
+          padding-left: 2rem;
+        }
+        .timeline::before {
+          left: 5px;
+        }
+        .timeline-entry {
+          padding-left: 1.2rem;
+        }
+        .timeline-entry::before {
+          left: -2rem;
+          width: 14px;
+          height: 14px;
+        }
+        .timeline-title {
+          font-size: 1.1rem;
+        }
+      }
+    </style>
+  </head>
   <body>
     <div class="w-full h-full flex justify-center">
-    <div class="flex flex-col md:w-1/2 w-10/12">
-        <img class="mt-10 h-60 bg-cover bg-center lg:h-96 rounded-md object-cover" src="./src/shawn.jpg" alt="">
-        <!-- <div class="mt-10 h-60 lg:h-96 rounded-md bg-[url('./src/shawn.jpg')] bg-no-repeat bg-cover bg-center"></div> -->
-        <div><p>Shawn Pinciara, male, born the 10/02/2000, in Milan, Italy.</p></div>
-        
-        <div class="mt-10"><h1 class="h1_title">Index:</h1></div>
-        <div>
-                    <ul>
-                        <li><a href="#intro" id="toc-intro">Intro:</a></li>
-                        <li><a href="#professional-profile" id="toc-professional-profile">Professional profile:</a>
-                        <ul>
-                        <li><a href="#education-qualifications" id="toc-education-qualifications">Education &amp; qualifications:</a></li>
-                        </ul></li>
-                        <li><a href="#artistic-profile" id="toc-artistic-profile">Artistic profile:</a></li>
-                        <li><a href="#interests" id="toc-interests">Interests:</a></li>
-        </div>
+    <div class="flex flex-col w-10/12 max-w-3xl">
 
-        
+        <!-- Header -->
+        <img class="mt-10 h-60 bg-cover bg-center lg:h-96 rounded-md object-cover" src="./src/shawn.jpg" alt="">
+        <div><p>Shawn Pinciara, male, born the 10/02/2000, in Milan, Italy.</p></div>
+
+        <!-- Professional Profile -->
         <div class="mt-10">
             <h1 class="h1_title" id="professional-profile">Professional profile:</h1>
+        </div>
 
-            <h2 class="h2_title pl-4">March 2025 - NOW: High school teaching</h2>
-            <div class="pl-10">
-                <p>I'm teaching a course on the social - cultural impact of AI and  the
-                    technical aspects of neural networks in high schools. <br>
-                    Part of the PNRR Italian minister of culture project, 
-                    I've been also teaching stem technologies (such as Arduino, videomaking)
-                    to high school's teachers.
-                </p>
+        <!-- ===== TIMELINE ===== -->
+        <div class="timeline mt-8">
+
+            <!-- 1 -->
+            <div class="timeline-entry now">
+                <div class="timeline-date">June 2025 – Present</div>
+                <div class="timeline-title">Freelance – IoT &amp; Embedded Development</div>
+                <div class="timeline-body">
+                    <p>Temperature and humidity soil sensors for agricultural research: C++ embedded development for microcontrollers and IoT devices
+                    with a custom PCB and a custom enclosure, with a web dashboard to monitor the data and manage the devices remotely. LORAWAN and RS485 technologies.</p>
+                </div>
             </div>
 
-            <h2 class="h2_title pl-4">July 2024 - February 2025: HABITS Design Studio, Software/hardware prototype development </h2>
-            <div class="pl-10">
-                            <p>Main languages used: </p>
-                        <ul>
-                            <li>C++ (Mainly for microcontrollers)</li>
-                            <li>Python</li>
-                        </ul>
-                        <br>
-                        <p>Other side technologies/skills include:</p>
-                        <ul>
-                            <li>Linux embedded systems (Raspberry Pis integrations)</li>
-                            <li>Hardware electronics, soldering</li>
-                            <li>Multiple hardware toolboxes and software ones</li>
-                        </ul>
-                        <br>
-                        <p>During my stay at HABITS I'm aquiring the knowledge to bridge technologies, hacking various appliances
-                            and use them inside industrial design products prototypes.
-                            These bridges involves programming microcontrollers to create custom lighting effects or handling sensors with the 
-                            various comm protocols such as I2C,I2S,SERIAL,SPI.
-                        </p>
-                        <br>
+            <!-- 2 -->
+            <div class="timeline-entry">
+                <div class="timeline-date">March 2025 – June 2025</div>
+                <div class="timeline-title">High School Teaching – STEM &amp; AI</div>
+                <div class="timeline-body">
+                    <p>I'm teaching a course on the social-cultural impact of AI and the technical aspects of neural networks in high schools.<br>
+                    Part of the PNRR Italian minister of culture project, I've been also teaching STEM technologies (such as Arduino, videomaking) to high school teachers.</p>
+                </div>
             </div>
 
-
-            <h2 class="h2_title pl-4">2021 - 2024: Freelance Social Media Management/Social Content Creation</h2>
-            <div class="pl-10">
+            <!-- 3 -->
+            <div class="timeline-entry">
+                <div class="timeline-date">July 2024 – February 2025</div>
+                <div class="timeline-title">HABITS Design Studio – Software/Hardware Prototype Development</div>
+                <div class="timeline-body">
+                    <p>Main languages used:</p>
                     <ul>
-                                <li><p>_PlayJuggling: (for 4 years) leader in the field of gymnastic/circus equipment.</p></li>
-                                <li><p>_YoungDoIt: (for 1 years) the youth center in the city of Arese.</p></li>
-                            </ul>
-                            <p>Various range of works using social technologies to promote these companies</p>
-
-                            <br><br>
+                        <li>C++ (Mainly for microcontrollers)</li>
+                        <li>Python</li>
+                    </ul>
+                    <p>Other side technologies/skills include:</p>
+                    <ul>
+                        <li>Linux embedded systems (Raspberry Pis integrations)</li>
+                        <li>Hardware electronics, soldering</li>
+                        <li>Multiple hardware toolboxes and software ones</li>
+                    </ul>
+                    <p>During my stay at HABITS I acquired the knowledge to bridge technologies, hacking various appliances and use them inside industrial design products prototypes. These bridges involve programming microcontrollers to create custom lighting effects or handling sensors with the various comm protocols such as I2C, I2S, SERIAL, SPI.</p>
+                </div>
             </div>
 
-            <h2 class="h2_title pl-4">Università Degli Studi di Milano – University (October 2018 – 
-                April 2024) (one year of work in between)</h2>
-            <div class="pl-10">
-                <p>Degree in computer science for the new media communications, with a thesis on a capacitive 2-axis MIDI instrument
-                <a href="https://shawnpinciara.github.io/thesis/">“A multi-touch control surface implemented as a MIDI controller”</a> , despite graduating in New Media Communication, 
-                I wanted to make a formal bridge with a passion of mine (music) by writing a thesis in collaboration with the 
-                <a href="https://www.lim.di.unimi.it/index.php?lang=eng">LIM</a> (Milano Statal University’s Music Informatics Laboratory)
-                <br>
-                </p>
-                <br>
-                <p>Meanwhile studying for University I've done various freelence work on social media communication and event organizing.  
-                </p>
-                
-                <br><br>
+            <!-- 4 -->
+            <div class="timeline-entry">
+                <div class="timeline-date">2021 – 2024</div>
+                <div class="timeline-title">Freelance Social Media Management / Content Creation</div>
+                <div class="timeline-body">
+                    <ul>
+                        <li><strong>PlayJuggling</strong> (4 years): leader in the field of gymnastic/circus equipment.</li>
+                        <li><strong>YoungDoIt</strong> (1 year): the youth center in the city of Arese.</li>
+                    </ul>
+                    <p>Various range of works using social technologies to promote these companies.</p>
+                </div>
             </div>
 
-            <h2 class="h2_title pl-4">2019 - 2021: Mail Boxes Etcetera , scripting for data entry automation and web technologies</h2>
-            <div class="pl-10">
-                    <p>Main languages used: </p>
-                <ul>
-                    <li>Python</li>
-                    <li>VueJS / JS</li>
-                </ul>
-                <p>a one year contract (2019) with MBE as an IT Assistant</a>
-                    , where I was put to do data entry, 
-                    bridging datas manually through different platforms.
-                    I than started (out of personal desire basically) to automate these processes using Python and APIs to automatically 
-                    take datas form servers and dbs, 
-                    rearrange and correct them, and send them back to the other platforms. 
-                    Through this experience I learnt how much I love to make processes much more efficient.
-                    During the year at MBE I became proficient in scripting with Python and powershell bash scripting to automate data 
-                    copying between different web platforms using different APIs.
-                </p>
-                <br><br>
+            <!-- 5 -->
+            <div class="timeline-entry">
+                <div class="timeline-date">October 2018 – April 2024</div>
+                <div class="timeline-title">Università Degli Studi di Milano – University</div>
+                <div class="timeline-body">
+                    <p>Degree in computer science for the new media communications, with a thesis on a capacitive 2-axis MIDI instrument <a href="https://shawnpinciara.github.io/thesis/">"A multi-touch control surface implemented as a MIDI controller"</a>, despite graduating in New Media Communication, I wanted to make a formal bridge with a passion of mine (music) by writing a thesis in collaboration with the <a href="https://www.lim.di.unimi.it/index.php?lang=eng">LIM</a> (Milano Statal University's Music Informatics Laboratory).</p>
+                    <p>Meanwhile studying for University I've done various freelance work on social media communication and event organizing.</p>
+                </div>
             </div>
-            <h2 class="h2_title pl-4">MISC: </h2>
-            <ul>
-                <li>· HTML / CSS / Tailwind CSS / Jquery / JS:  <a href="shawnpinciara.github.io">my website</a> is made with these technologies</li>
-                <li>· Version controlling: Git / GitHub <br>
-                I'm used to work in a team using Git and I use it all the time alone too, in order to manage my projects. <a href="https://github.com/shawnpinciara/"> My Github Profile</a></li>
-                <li>· Adobe Suite: Illustrator / Premiere / Photshop / Lightroom <br> 
-                    I've been using these programs for a long time and I'm confortable in using them as a semi-professional. <br>
-                    In 2024 I've been professionally deiting one video a month of a <a href="https://youtube.com/playlist?list=PL9ePuSeK6IPAZareSP1AWAbwLUnOXS2H8&si=VnaKZLYOxRKaOv87">Worldwide Juggling News series on YouTube</a>
-                    and I'm used to do content creation as a freelancer with these softwares.
-                
-                </li>
-                <li>· Notion / Obsidian: I use these services all the time to manage all my documents and projects' documentations</li>
-                <li>· Audio-visuals: Ableton Live / TouchDesigner <br>
-                    I've been using these softwares not professionally but for years.
-                </li>
-            </ul>
-            <br><br>
-            <h1 class="h1_title">To sum up:</h1><br>
-            <div class="pl-4">
+
+            <!-- 6 -->
+            <div class="timeline-entry">
+                <div class="timeline-date">2019 – 2021</div>
+                <div class="timeline-title">Mail Boxes Etcetera – Scripting &amp; Data Entry Automation</div>
+                <div class="timeline-body">
+                    <p>Main languages used:</p>
+                    <ul>
+                        <li>Python</li>
+                        <li>VueJS / JS</li>
+                    </ul>
+                    <p>A one year contract (2019) with MBE as an IT Assistant, where I was put to do data entry, bridging data manually through different platforms. I then started to automate these processes using Python and APIs to automatically take data from servers and DBs, rearrange and correct them, and send them back to the other platforms. Through this experience I learnt how much I love to make processes much more efficient. During the year at MBE I became proficient in scripting with Python and PowerShell/Bash scripting to automate data copying between different web platforms using different APIs.</p>
+                </div>
+            </div>
+
+            <!-- 7 – MISC -->
+            <div class="timeline-entry">
+                <div class="timeline-date">Skills &amp; Tools</div>
+                <div class="timeline-title">MISC</div>
+                <div class="timeline-body">
+                    <ul>
+                        <li><strong>HTML / CSS / Tailwind CSS / jQuery / JS</strong>: <a href="https://shawnpinciara.github.io">my website</a> is made with these technologies.</li>
+                        <li><strong>Version controlling</strong>: Git / GitHub – I'm used to work in a team using Git. <a href="https://github.com/shawnpinciara/">My Github Profile</a></li>
+                        <li><strong>Adobe Suite</strong>: Illustrator / Premiere / Photoshop / Lightroom – In 2024 I've been professionally editing one video a month of a <a href="https://youtube.com/playlist?list=PL9ePuSeK6IPAZareSP1AWAbwLUnOXS2H8&si=VnaKZLYOxRKaOv87">Worldwide Juggling News series on YouTube</a>.</li>
+                        <li><strong>Notion / Obsidian</strong>: I use these services all the time to manage documents and project documentation.</li>
+                        <li><strong>Audio-visuals</strong>: Ableton Live / TouchDesigner – I've been using these softwares for years.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+        <!-- ===== END TIMELINE ===== -->
+
+        <!-- Summary -->
+        <div class="mt-10">
+            <h1 class="h1_title">To sum up:</h1>
+            <div class="pl-4 mt-2">
                 <p>I'm really interested in developing efficient tools to bridge technologies, and I'm trying to stay
                 in different environments to always be inspired.
                 <br>
                 I have different passions that I try to nurture with work, I love to always understand more about
-                a concept or an idea to continuously expand my knoledge and my skills.
+                a concept or an idea to continuously expand my knowledge and my skills.
                 <br>
-                While I'm certain of not being super skillfull in only one thing in particular, I think being multi-disciplinar
-                enrich the ability to be able to juggle differen tasks and being able to actively jump in different environments.
-            </p>
+                While I'm certain of not being super skillful in only one thing in particular, I think being multi-disciplinary
+                enriches the ability to juggle different tasks and being able to actively jump in different environments.
+                </p>
             </div>
         </div>
-        <!-- _July 2024 - now: HABITS Design Studio, Software/hardware prototype development
-Main languages used:
-    C++ (Mainly for microcontrollers)
-    Python
 
-Other side technologies/skills include:
-    Linux embedded systems (Raspberry)
-    Hardware electronics, soldering
-
-_2021 - 2024: Freelance Social Media Management/Social Content Creation
-    _PlayJuggling: (for 4 years) leader in the field of gymnastic/circus equipment.
-    _YoungDoIt: (for 1 years) the youth center in the city of Arese.
-Various range of works using social technologies to promote these companies
-
-
-_October 2018 – April 2024: (one year of work in between) Università Degli Studi di Milano – University 
-Degree in computer science for the new media communications, with a thesis on a capacitive 2-axis MIDI instrument “A multi-touch control surface implemented as a MIDI controller” , despite graduating in New Media Communication, I wanted to make a formal bridge with a passion of mine (music) by writing a thesis in collaboration with the LIM (Milano Statal University’s *Music Informatics Laboratory)*
-
-_2019 - 2021: Mail Boxes Etcetera , scripting for data entry automation and web technologies
-Main languages used:
-    Python
-    VueJS / JS
-
-a one year contract (2019) with MBE as an IT Assistant , where I was put to do data entry, bridging datas manually through different platforms. I than started (out of personal desire basically) to automate these processes using Python and APIs to automatically take datas form servers and dbs, rearrange and correct them, and send them back to the other platforms. Through this experience I learnt how much I love to make processes much more efficient. -->
-
-        <div class="mt-5">
-            <h2 class="h2_title pl-4" id="education-qualifications">Education &amp; qualifications</h2>
-                        <ul>
-                        <li><p>_Università Degli Studi di Milano – University (October 2018 – 
-                        April 2024) (one year of work in between)</p></li>
-                        <li><p>_Grammar B2, Listening/comprehension C1 English certificate (CEFR
-                        Cambridge)</p></li>
-                        <li><p>_Liceo Scientifico G. Falcone &amp; P. Borsellino – High school
-                        (2013-2018)</p></li>
-                        <li><p>_High school diploma- 13th grade</p></li>
-                        <li><p>_Scuola Media Leonardo Da Vinci – Middle school
-                        (2011-2013)</p></li>
-                        <li><p>_Middle school diploma – 8th grade</p></li>
-                        </ul>
-                         
-        </div>
-
+        <!-- Education -->
         <div class="mt-10">
-            <h1 class="h1_title" id="interests">Interests:</h1>
-                        <p>I'm interested in tech, jazz/fusion music and performing arts <br>
-                        These spaces allow me to experiment in different directions and relax.
-                        While probably these passions won't never become a job, I still try to nurture
-                        them and using that to connect with people.
-                        It has been many years now that I have been volunteering in a youth center to organize
-                        cultural events, and I think volunteering doing a thing I love is such a good "giving back" to che community
-                        and myself too.
-                        </p>
+            <h2 class="h2_title" id="education-qualifications">Education &amp; qualifications</h2>
+            <div class="timeline mt-6">
+                <div class="timeline-entry">
+                    <div class="timeline-date">October 2018 – April 2024</div>
+                    <div class="timeline-title">Università Degli Studi di Milano</div>
+                    <div class="timeline-body"><p>Degree in computer science for new media communications.</p></div>
+                </div>
+                <div class="timeline-entry">
+                    <div class="timeline-date">Certification</div>
+                    <div class="timeline-title">English Certificate (CEFR Cambridge)</div>
+                    <div class="timeline-body"><p>Grammar B2, Listening/comprehension C1.</p></div>
+                </div>
+                <div class="timeline-entry">
+                    <div class="timeline-date">2013 – 2018</div>
+                    <div class="timeline-title">Liceo Scientifico G. Falcone &amp; P. Borsellino</div>
+                    <div class="timeline-body"><p>High school diploma – 13th grade.</p></div>
+                </div>
+                <div class="timeline-entry">
+                    <div class="timeline-date">2011 – 2013</div>
+                    <div class="timeline-title">Scuola Media Leonardo Da Vinci</div>
+                    <div class="timeline-body"><p>Middle school diploma – 8th grade.</p></div>
+                </div>
+            </div>
         </div>
-    
+
+        <!-- Interests -->
+        <div class="mt-10 mb-10 pb-10">
+            <h1 class="h1_title" id="interests">Interests:</h1>
+            <p class="mt-2">I'm interested in tech, jazz/fusion music and performing arts.<br>
+            These spaces allow me to experiment in different directions and relax.
+            While probably these passions won't ever become a job, I still try to nurture
+            them and use that to connect with people.
+            It has been many years now that I have been volunteering in a youth center to organize
+            cultural events, and I think volunteering doing a thing I love is such a good "giving back" to the community
+            and myself too.
+            </p>
+        </div>
+
     </div>
 
-        
-
     <!-- spacer -->
-    <div class="pt-16"></div> 
-         
+    <div class="pt-16"></div>
 
 </div>
-    
 
-    
 </body>
-    
-    
-  
-<script>
-</script>
-
 </html>
