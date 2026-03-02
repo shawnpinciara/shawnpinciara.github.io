@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teleprompter & Recorder</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a0a;
+      color: #fff;
+      font-family: 'Georgia', serif;
+      height: 100dvh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── MAIN AREA ── */
+    #main {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* ── CAMERA (full-screen background) ── */
+    #cam-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: #000;
+      transition: opacity .35s;
+    }
+    #cam-wrap.hidden { opacity: 0; }
+
+    #cam-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+      display: block;
+    }
+
+    #cam-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #3a3a3a;
+      font-family: sans-serif;
+      font-size: 14px;
+    }
+
+    /* semi-transparent overlay → text readable over camera */
+    #cam-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: rgba(0,0,0,.52);
+      pointer-events: none;
+      transition: opacity .35s;
+    }
+
+    /* REC badge — fixed top-left */
+    #rec-badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 30;
+      background: #e53935;
+      color: #fff;
+      font-family: sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      padding: 4px 10px;
+      border-radius: 5px;
+      display: none;
+      align-items: center;
+      gap: 6px;
+    }
+    #rec-badge.active { display: flex; animation: pulse-badge 1.2s infinite; }
+    #rec-badge::before {
+      content: '';
+      width: 7px; height: 7px;
+      background: #fff;
+      border-radius: 50%;
+    }
+    @keyframes pulse-badge {
+      0%,100% { opacity: 1; }
+      50%      { opacity: .4; }
+    }
+
+    /* ── TELEPROMPTER ── */
+    #prompter-wrap {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      z-index: 10;
+      pointer-events: all;
+      transition: opacity .3s;
+    }
+    #prompter-wrap.hidden { opacity: 0; pointer-events: none; }
+
+    /* gradient overlays — sit above the scroll, don't scroll with content */
+    #prompter-wrap::before,
+    #prompter-wrap::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 18vh;
+      z-index: 2;
+      pointer-events: none;
+    }
+    #prompter-wrap::before {
+      top: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,.8) 0%, transparent 100%);
+    }
+    #prompter-wrap::after {
+      bottom: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.8) 0%, transparent 100%);
+    }
+
+    #prompter-scroll {
+      width: min(820px, 92%);
+      height: 100%;
+      overflow-y: auto;
+      position: relative;
+      scrollbar-width: none;
+    }
+    #prompter-scroll::-webkit-scrollbar { display: none; }
+
+    #prompter-text {
+      padding: 52vh 8px 88vh;
+      font-size: var(--font-size, 36px);
+      line-height: 1.6;
+      color: #f0f0f0;
+      text-shadow: 0 2px 16px rgba(0,0,0,.95);
+      white-space: pre-wrap;
+      user-select: none;
+    }
+    #prompter-text.mirror { transform: scaleX(-1); }
+
+    /* progress bar */
+    #progress-bar {
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px;
+      height: 0%;
+      background: #1e88e5;
+      z-index: 30;
+      border-radius: 0 2px 2px 0;
+      pointer-events: none;
+    }
+
+    /* ── EDIT MODAL ── */
+    #edit-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.9);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .22s;
+    }
+    #edit-modal.open { opacity: 1; pointer-events: all; }
+
+    #edit-box {
+      background: #181818;
+      border: 1px solid #2e2e2e;
+      border-radius: 16px;
+      padding: 20px;
+      width: min(640px, 94vw);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 88vh;
+    }
+    #edit-box h2 {
+      font-family: sans-serif;
+      font-size: 14px;
+      color: #888;
+      font-weight: 600;
+    }
+    #script-input {
+      flex: 1;
+      min-height: 260px;
+      background: #111;
+      border: 1px solid #2e2e2e;
+      border-radius: 10px;
+      color: #eee;
+      font-family: 'Georgia', serif;
+      font-size: 16px;
+      line-height: 1.65;
+      padding: 14px;
+      resize: none;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    #script-input:focus { border-color: #444; }
+    #edit-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ── CONTROLS BAR — always 2 rows ── */
+    #controls {
+      flex-shrink: 0;
+      background: rgba(10,10,10,.98);
+      border-top: 1px solid #1c1c1c;
+      padding: 8px 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      /* safe area for phones with home bar */
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
+    }
+
+    .ctrl-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+    .ctrl-spacer { flex: 1; min-width: 2px; }
+
+    .ctrl-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .ctrl-sep {
+      width: 1px;
+      height: 28px;
+      background: #242424;
+      flex-shrink: 0;
+    }
+    .ctrl-label {
+      font-family: sans-serif;
+      font-size: 10px;
+      color: #4a4a4a;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .ctrl-val {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #bbb;
+      min-width: 34px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 0 12px;
+      height: 40px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .02em;
+      transition: background .12s, opacity .12s, transform .08s;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation; /* removes 300ms tap delay */
+      flex-shrink: 0;
+    }
+    .btn:active { transform: scale(.93); }
+    .btn:disabled { opacity: .28; cursor: default; }
+
+    /* +/− buttons */
+    .btn-xs {
+      padding: 0;
+      width: 38px;
+      height: 38px;
+      font-size: 20px;
+      font-weight: 300;
+      border-radius: 7px;
+    }
+
+
+    .btn-rec  { background: #e53935; color: #fff; }
+    .btn-rec:hover:not(:disabled) { background: #ef5350; }
+
+    .btn-stop { background: #272727; color: #bbb; border: 1px solid #383838; }
+    .btn-stop:hover:not(:disabled) { background: #333; }
+
+    .btn-play { background: #1e88e5; color: #fff; }
+    .btn-play:hover:not(:disabled) { background: #2196f3; }
+
+    .btn-ghost {
+      background: #181818;
+      color: #999;
+      border: 1px solid #2c2c2c;
+    }
+    .btn-ghost:hover { background: #242424; color: #ddd; }
+    .btn-ghost.active { background: #1a2e1a; border-color: #4caf50; color: #81c784; }
+
+    .btn-primary { background: #4caf50; color: #fff; }
+    .btn-primary:hover { background: #66bb6a; }
+
+    /* timer */
+    #rec-timer {
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      color: #ef9a9a;
+      letter-spacing: .06em;
+      min-width: 46px;
+      display: none;
+      flex-shrink: 0;
+    }
+    #rec-timer.active { display: block; }
+
+    .icon { flex-shrink: 0; }
+
+    /* ── RESPONSIVE — narrow portrait phones ── */
+    @media (max-width: 480px) {
+      /* hide text labels, keep icons */
+      .btn-label { display: none; }
+      /* tighter padding */
+      .btn { padding: 0 9px; }
+      .ctrl-val { min-width: 28px; font-size: 12px; }
+      .ctrl-label { font-size: 9px; }
+    }
+
+    /* ── Ensure minimum 44px touch targets on touch devices ── */
+    @media (hover: none) {
+      .btn { min-height: 44px; }
+      .btn-xs { width: 42px; height: 42px; }
+    }
+
+    /* ── INIT OVERLAY ── */
+    #init-overlay {
+      position: fixed;
+      inset: 0;
+      background: #0a0a0a;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      font-family: sans-serif;
+      padding: 24px;
+    }
+    #init-overlay h1 { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: .04em; text-align: center; }
+    #init-overlay p  { font-size: 14px; color: #666; max-width: 320px; text-align: center; line-height: 1.65; }
+    #init-overlay .btn { font-size: 15px; padding: 0 28px; height: 50px; border-radius: 12px; }
+    #init-error { color: #ef9a9a; font-size: 13px; display: none; text-align: center; }
+  </style>
+</head>
+<body>
+
+<!-- INIT OVERLAY -->
+<div id="init-overlay">
+  <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#1e88e5" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.82v6.36a1 1 0 0 1-1.447.889L15 14"/>
+    <rect x="2" y="7" width="13" height="10" rx="2"/>
+  </svg>
+  <h1>Teleprompter & Recorder</h1>
+  <p>Per iniziare è necessario il permesso di accesso alla fotocamera e al microfono.</p>
+  <button class="btn btn-primary" id="start-btn" onclick="initCamera()">Consenti accesso</button>
+  <p id="init-error"></p>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="progress-bar"></div>
+  <div id="rec-badge">REC</div>
+
+  <!-- Camera full-screen background -->
+  <div id="cam-wrap">
+    <div id="cam-placeholder">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.82v6.36a1 1 0 0 1-1.447.889L15 14"/>
+        <rect x="2" y="7" width="13" height="10" rx="2"/>
+      </svg>
+      In attesa della fotocamera…
+    </div>
+    <video id="cam-video" autoplay muted playsinline></video>
+  </div>
+
+  <!-- Dark overlay for readability -->
+  <div id="cam-overlay"></div>
+
+  <!-- Teleprompter -->
+  <div id="prompter-wrap">
+    <div id="prompter-scroll">
+      <div id="prompter-text"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTROLS — 2 rows -->
+<div id="controls">
+
+  <!-- ── ROW 1: REC | Scroll | Toggles ── -->
+  <div class="ctrl-row">
+
+    <!-- Recording -->
+    <div class="ctrl-group">
+      <button class="btn btn-rec" id="rec-btn" onclick="toggleRecording()" disabled>
+        <svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+        <span class="btn-label">REC</span>
+      </button>
+      <button class="btn btn-stop" id="stop-btn" onclick="stopRecording()" disabled>
+        <svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+        <span class="btn-label">Stop</span>
+      </button>
+      <span id="rec-timer">00:00</span>
+    </div>
+
+    <div class="ctrl-sep"></div>
+
+    <!-- Scroll play/pause + reset -->
+    <div class="ctrl-group">
+      <button class="btn btn-play" id="play-btn" onclick="toggleScroll()" disabled>
+        <svg class="icon" id="play-icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+        <span class="btn-label" id="play-label">Avvia</span>
+      </button>
+      <button class="btn btn-ghost btn-xs" onclick="resetScroll()" title="Torna all'inizio">
+        <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.47"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="ctrl-spacer"></div>
+
+    <!-- Camera & Prompt toggles -->
+    <div class="ctrl-group">
+      <button class="btn btn-ghost active" id="cam-btn" onclick="toggleCamera()">
+        <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.82v6.36a1 1 0 0 1-1.447.889L15 14"/>
+          <rect x="2" y="7" width="13" height="10" rx="2"/>
+        </svg>
+        <span class="btn-label">Camera</span>
+      </button>
+      <button class="btn btn-ghost active" id="prompt-btn" onclick="togglePrompter()">
+        <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/>
+        </svg>
+        <span class="btn-label">Prompt</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── ROW 2: Speed | Font size | Edit & Mirror ── -->
+  <div class="ctrl-row">
+
+    <!-- Speed -->
+    <div class="ctrl-group">
+      <span class="ctrl-label">Vel.</span>
+      <button class="btn btn-ghost btn-xs" onclick="adjustSpeed(-1)">−</button>
+      <span class="ctrl-val" id="speed-val">3</span>
+      <button class="btn btn-ghost btn-xs" onclick="adjustSpeed(1)">+</button>
+    </div>
+
+    <div class="ctrl-sep"></div>
+
+    <!-- Font size -->
+    <div class="ctrl-group">
+      <span class="ctrl-label">Testo</span>
+      <button class="btn btn-ghost btn-xs" onclick="adjustFontSize(-4)">−</button>
+      <span class="ctrl-val" id="fontsize-val">36px</span>
+      <button class="btn btn-ghost btn-xs" onclick="adjustFontSize(4)">+</button>
+    </div>
+
+    <div class="ctrl-spacer"></div>
+
+    <!-- Edit & Mirror -->
+    <div class="ctrl-group">
+      <button class="btn btn-ghost" onclick="openEdit()">
+        <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+        <span class="btn-label">Modifica</span>
+      </button>
+      <button class="btn btn-ghost btn-xs" id="mirror-btn" onclick="toggleMirror()" title="Specchio">
+        <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="3" x2="12" y2="21"/><polyline points="7,8 2,12 7,16"/><polyline points="17,8 22,12 17,16"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- EDIT MODAL -->
+<div id="edit-modal">
+  <div id="edit-box">
+    <h2>Scrivi il tuo testo</h2>
+    <textarea id="script-input" placeholder="Inserisci qui il testo da leggere…
+
+Il testo scorrerà verso l'alto automaticamente.
+Puoi anche scorrere con il dito o il mouse."></textarea>
+    <div id="edit-actions">
+      <button class="btn btn-ghost" onclick="closeEdit()">Annulla</button>
+      <button class="btn btn-primary" onclick="saveScript()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── STATE ──
+  let stream       = null;
+  let recorder     = null;
+  let chunks       = [];
+  let isRecording  = false;
+  let recTimerInt  = null;
+  let recSeconds   = 0;
+
+  let isScrolling      = false;
+  let scrollRAF        = null;
+  let speedLevel       = 3;
+  let scrollPxPerFrame = speedLevel * 0.22;
+
+  // Responsive default font size
+  let fontSize = window.innerWidth < 540 ? 30 : 38;
+
+  let cameraVisible   = true;
+  let prompterVisible = true;
+  let mirrorMode      = false;
+
+  const DEFAULT_SCRIPT =
+`Benvenuto nel tuo teleprompter personale.
+
+Questo testo scorre automaticamente mentre registri il tuo video.
+
+Tocca "Modifica" per inserire il tuo testo.
+Usa + e − per regolare velocità e dimensione del font.
+
+Puoi anche scorrere con il dito mentre parli.
+
+Premi Avvia per iniziare lo scorrimento,
+poi REC per registrare.
+
+Buona ripresa!`;
+
+  const scrollEl = () => document.getElementById('prompter-scroll');
+
+  // Apply initial font size
+  (function applyInitialFont() {
+    document.documentElement.style.setProperty('--font-size', fontSize + 'px');
+    document.getElementById('fontsize-val').textContent = fontSize + 'px';
+  })();
+
+  // ── INIT ──
+  async function initCamera() {
+    const btn   = document.getElementById('start-btn');
+    const errEl = document.getElementById('init-error');
+    btn.disabled = true;
+    btn.textContent = 'Connessione…';
+    errEl.style.display = 'none';
+
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user' },
+        audio: true
+      });
+      const video = document.getElementById('cam-video');
+      video.srcObject = stream;
+      await video.play();
+
+      document.getElementById('init-overlay').style.display = 'none';
+      document.getElementById('rec-btn').disabled  = false;
+      document.getElementById('play-btn').disabled = false;
+
+      loadScript(DEFAULT_SCRIPT);
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'Riprova';
+      errEl.style.display = 'block';
+      errEl.textContent = e.name === 'NotAllowedError'
+        ? 'Permesso negato. Consenti fotocamera e microfono nelle impostazioni del browser.'
+        : 'Errore: ' + e.message;
+    }
+  }
+
+  // ── RECORDING ──
+  function getRecorderOptions() {
+    const candidates = [
+      'video/mp4;codecs=avc1,mp4a.40.2',
+      'video/mp4;codecs=avc1',
+      'video/mp4',
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm',
+    ];
+    for (const t of candidates) {
+      if (MediaRecorder.isTypeSupported(t)) return { mimeType: t };
+    }
+    return {};
+  }
+
+  function toggleRecording() {
+    isRecording ? stopRecording() : startRecording();
+  }
+
+  function startRecording() {
+    chunks = [];
+    recorder = new MediaRecorder(stream, getRecorderOptions());
+    recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+    recorder.onstop = exportVideo;
+    recorder.start(100);
+    isRecording = true;
+    updateRecUI(true);
+  }
+
+  function stopRecording() {
+    if (!recorder || recorder.state === 'inactive') return;
+    recorder.stop();
+    isRecording = false;
+    updateRecUI(false);
+  }
+
+  function updateRecUI(rec) {
+    const recBtn  = document.getElementById('rec-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const badge   = document.getElementById('rec-badge');
+    const timer   = document.getElementById('rec-timer');
+
+    if (rec) {
+      recBtn.innerHTML =
+        `<svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>` +
+        `<span class="btn-label">Stop</span>`;
+      recBtn.style.background = '#b71c1c';
+      stopBtn.disabled = false;
+      badge.classList.add('active');
+      timer.classList.add('active');
+      recSeconds = 0;
+      timer.textContent = '00:00';
+      clearInterval(recTimerInt);
+      recTimerInt = setInterval(() => {
+        recSeconds++;
+        const m = String(Math.floor(recSeconds / 60)).padStart(2, '0');
+        const s = String(recSeconds % 60).padStart(2, '0');
+        timer.textContent = m + ':' + s;
+      }, 1000);
+    } else {
+      recBtn.innerHTML =
+        `<svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>` +
+        `<span class="btn-label">REC</span>`;
+      recBtn.style.background = '';
+      stopBtn.disabled = true;
+      badge.classList.remove('active');
+      timer.classList.remove('active');
+      clearInterval(recTimerInt);
+    }
+  }
+
+  function exportVideo() {
+    const mimeType = recorder ? recorder.mimeType : 'video/webm';
+    const ext      = mimeType.includes('mp4') ? 'mp4' : 'webm';
+    const blob     = new Blob(chunks, { type: mimeType });
+    const url      = URL.createObjectURL(blob);
+    const a        = document.createElement('a');
+    const now      = new Date();
+    const ts = now.getFullYear()
+      + String(now.getMonth() + 1).padStart(2, '0')
+      + String(now.getDate()).padStart(2, '0')
+      + '_'
+      + String(now.getHours()).padStart(2, '0')
+      + String(now.getMinutes()).padStart(2, '0');
+    a.href     = url;
+    a.download = 'registrazione_' + ts + '.' + ext;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 15000);
+  }
+
+  // ── AUTO-SCROLL ──
+  function toggleScroll() {
+    isScrolling ? pauseScroll() : startScroll();
+  }
+
+  function startScroll() {
+    isScrolling = true;
+    document.getElementById('play-label').textContent = 'Pausa';
+    document.getElementById('play-icon').innerHTML =
+      '<rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/>';
+    document.getElementById('play-btn').style.background = '#e65100';
+    animateScroll();
+  }
+
+  function pauseScroll() {
+    isScrolling = false;
+    cancelAnimationFrame(scrollRAF);
+    document.getElementById('play-label').textContent = 'Avvia';
+    document.getElementById('play-icon').innerHTML = '<polygon points="5,3 19,12 5,21"/>';
+    document.getElementById('play-btn').style.background = '';
+  }
+
+  function resetScroll() {
+    pauseScroll();
+    scrollEl().scrollTop = 0;
+    document.getElementById('progress-bar').style.height = '0%';
+  }
+
+  function animateScroll() {
+    const el  = scrollEl();
+    const max = el.scrollHeight - el.clientHeight;
+    el.scrollTop += scrollPxPerFrame;
+    const pct = max > 0 ? (el.scrollTop / max) * 100 : 0;
+    document.getElementById('progress-bar').style.height = pct + '%';
+    if (el.scrollTop >= max) { pauseScroll(); return; }
+    scrollRAF = requestAnimationFrame(animateScroll);
+  }
+
+  // pause auto-scroll on manual interaction
+  scrollEl().addEventListener('wheel',      () => { if (isScrolling) pauseScroll(); }, { passive: true });
+  scrollEl().addEventListener('touchstart', () => { if (isScrolling) pauseScroll(); }, { passive: true });
+  scrollEl().addEventListener('mousedown',  () => { if (isScrolling) pauseScroll(); });
+
+  // sync progress bar during manual scroll
+  scrollEl().addEventListener('scroll', () => {
+    const el  = scrollEl();
+    const max = el.scrollHeight - el.clientHeight;
+    document.getElementById('progress-bar').style.height =
+      (max > 0 ? (el.scrollTop / max) * 100 : 0) + '%';
+  }, { passive: true });
+
+  // ── +/− CONTROLS ──
+  function adjustSpeed(delta) {
+    speedLevel = Math.max(1, Math.min(10, speedLevel + delta));
+    scrollPxPerFrame = speedLevel * 0.22;
+    document.getElementById('speed-val').textContent = speedLevel;
+  }
+
+  function adjustFontSize(delta) {
+    fontSize = Math.max(20, Math.min(80, fontSize + delta));
+    document.documentElement.style.setProperty('--font-size', fontSize + 'px');
+    document.getElementById('fontsize-val').textContent = fontSize + 'px';
+  }
+
+  // ── TOGGLES ──
+  function toggleCamera() {
+    cameraVisible = !cameraVisible;
+    document.getElementById('cam-wrap').classList.toggle('hidden', !cameraVisible);
+    document.getElementById('cam-overlay').style.opacity = cameraVisible ? '' : '0';
+    document.getElementById('cam-btn').classList.toggle('active', cameraVisible);
+  }
+
+  function togglePrompter() {
+    prompterVisible = !prompterVisible;
+    document.getElementById('prompter-wrap').classList.toggle('hidden', !prompterVisible);
+    document.getElementById('prompt-btn').classList.toggle('active', prompterVisible);
+  }
+
+  function toggleMirror() {
+    mirrorMode = !mirrorMode;
+    document.getElementById('prompter-text').classList.toggle('mirror', mirrorMode);
+    document.getElementById('mirror-btn').classList.toggle('active', mirrorMode);
+  }
+
+  // ── SCRIPT EDIT ──
+  function openEdit() {
+    document.getElementById('edit-modal').classList.add('open');
+    // slight delay so iOS keyboard doesn't interfere with modal animation
+    setTimeout(() => document.getElementById('script-input').focus(), 80);
+  }
+  function closeEdit() {
+    document.getElementById('edit-modal').classList.remove('open');
+  }
+  function saveScript() {
+    loadScript(document.getElementById('script-input').value);
+    closeEdit();
+    resetScroll();
+  }
+  function loadScript(text) {
+    document.getElementById('prompter-text').textContent = text;
+    document.getElementById('script-input').value = text;
+    scrollEl().scrollTop = 0;
+    document.getElementById('progress-bar').style.height = '0%';
+  }
+
+  // ── KEYBOARD SHORTCUTS ──
+  document.addEventListener('keydown', e => {
+    if (document.getElementById('edit-modal').classList.contains('open')) {
+      if (e.key === 'Escape') closeEdit();
+      return;
+    }
+    switch (e.key) {
+      case ' ':         e.preventDefault(); toggleScroll(); break;
+      case 'r': case 'R':
+        if (!document.getElementById('rec-btn').disabled) toggleRecording();
+        break;
+      case 'Escape':
+        if (isRecording) stopRecording();
+        if (isScrolling) pauseScroll();
+        break;
+      case 'ArrowLeft': resetScroll(); break;
+    }
+  });
+
+  document.getElementById('edit-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('edit-modal')) closeEdit();
+  });
+</script>
+</body>
+</html>
