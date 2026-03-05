@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <title>Incubatrice Didattica — Controllo a Isteresi</title>
+    <meta name="description" content="Visualizzazione del controllo a isteresi per incubatrice didattica">
+    <meta name="keywords" content="isteresi, termostatico, arduino, controllo temperatura">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.min.js" integrity="sha512-WJXVjqeINVpi5XXJ2jn0BSCfp0y80IKrYh731gLRnkAS9TKc5KNt/OfLtu+fCueqdWniouJ1ubM+VI/hbo7POQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js"></script>
+    <script src="https://unpkg.com/p5.touchgui@0.5.2/lib/p5.touchgui.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {}
+            }
+        }
+    </script>
+    <style>
+        /* Serial connection modal */
+        .serial-overlay {
+            position: fixed; inset: 0; z-index: 50;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .serial-overlay-bg {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.78);
+            backdrop-filter: blur(4px);
+        }
+        .serial-modal {
+            position: relative;
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            border-radius: 0.875rem;
+            padding: 1.75rem;
+            width: 100%; max-width: 400px;
+            margin: 1rem;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.55);
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .serial-modal p {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            line-height: 1.65;
+            margin-bottom: 1.25rem;
+        }
+        .serial-modal button {
+            width: 100%;
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .serial-modal button:hover { background: #2563eb; }
+        .serial-modal button:disabled {
+            background: #334155; color: #64748b; cursor: not-allowed;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+        }
+        .animate-pulse { animation: pulse-dot 1.2s ease-in-out infinite; }
+    </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100">
+
+<!-- Serial Connection Modal -->
+<div id="connectModal" class="serial-overlay" style="display:none;">
+    <div class="serial-overlay-bg"></div>
+    <div class="serial-modal">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+            <div style="width:2rem;height:2rem;background:rgba(251,113,133,0.15);border-radius:0.5rem;display:flex;align-items:center;justify-content:center;font-size:1rem;">🌡️</div>
+            <span style="font-size:0.85rem;font-weight:700;color:#f1f5f9;">L'esperimento dell'incubatrice</span>
+        </div>
+        <p id="connectModalText">Benvenuto nella dashboard per l'esperimento dell'<strong style="color:#e2e8f0;">incubatrice</strong>.<br><br>Per prima cosa, connetti l'Arduino al PC tramite il cavo USB e sceglilo tramite il pulsante qui sotto:</p>
+        <button id="connectModalBtn" onclick="manualConnect()">Scegli l'Arduino</button>
+    </div>
+</div>
+
+<!-- Main layout -->
+<div class="w-full h-screen flex flex-col p-3 gap-3 overflow-hidden">
+
+    <!-- TOP ROW: Canvas + Control Panel -->
+    <div class="flex flex-row gap-3 flex-shrink-0" style="height: 56vh; min-height: 320px;">
+
+        <!-- Canvas Panel -->
+        <div class="flex-1 bg-slate-900 rounded-xl border border-slate-800 flex flex-col overflow-hidden shadow-xl">
+            <div class="px-4 py-2 border-b border-slate-800 flex items-center gap-2 flex-shrink-0">
+                <div class="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50"></div>
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Grafico Temperatura</span>
+            </div>
+            <div class="flex-1 w-full overflow-hidden" id="p5js_canvas">
+                <main></main>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="w-64 bg-slate-900 rounded-xl border border-slate-800 flex flex-col gap-2 p-3 shadow-xl overflow-hidden flex-shrink-0" id="console_box">
+
+            <!-- Header -->
+            <div class="flex items-center gap-2 pb-1 border-b border-slate-800">
+                <div id="connectionDot" class="w-1.5 h-1.5 rounded-full bg-slate-600 animate-pulse"></div>
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Pannello di Controllo</span>
+                <span id="connectionStatus" class="text-xs text-slate-600 ml-auto">—</span>
+            </div>
+
+            <!-- Sensor Data Display -->
+            <div class="bg-slate-950 rounded-lg p-3 border border-slate-800 flex flex-col gap-2">
+                <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">Dati Sensore</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-500">Temperatura</span>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-sm font-mono font-bold text-cyan-400" id="temperatura_text">—</span>
+                        <span class="text-xs text-slate-600">°C</span>
+                    </div>
+                </div>
+                <div class="h-px bg-slate-800"></div>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-500">Isteresi ±</span>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-sm font-mono font-bold text-orange-400" id="isteresi_text">—</span>
+                        <span class="text-xs text-slate-600">°C</span>
+                    </div>
+                </div>
+                <div class="h-px bg-slate-800"></div>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-500">Setpoint</span>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-sm font-mono font-bold text-emerald-400" id="setpoint_text">—</span>
+                        <span class="text-xs text-slate-600">°C</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Console Screen -->
+            <div class="bg-slate-950 rounded-lg p-3 border border-slate-800 font-mono flex-1 overflow-hidden" id="console_screen" style="visibility: hidden;">
+                <p class="text-xs text-slate-600 mb-2 uppercase tracking-wider">Log</p>
+                <div class="flex flex-col gap-0.5">
+                    <p class="text-xs text-emerald-400 truncate" id="console_0">—</p>
+                    <p class="text-xs text-emerald-400 truncate" id="console_1">—</p>
+                    <p class="text-xs text-emerald-400 truncate" id="console_2">—</p>
+                    <p class="text-xs text-emerald-400 truncate" id="console_3">—</p>
+                    <p class="text-xs text-emerald-400 truncate" id="console_4">—</p>
+                </div>
+            </div>
+
+            <!-- Record Button -->
+            <div class="bg-slate-950 rounded-lg px-3 py-2.5 border border-slate-800 flex items-center gap-3 flex-shrink-0" id="rec_box">
+                <button
+                    class="w-9 h-9 bg-red-600 hover:bg-red-500 active:scale-95 rounded-full border border-red-500 flex-shrink-0 shadow-lg shadow-red-900/40 transition-all duration-150"
+                    onclick="recButtonPressed()"
+                    title="Avvia/Stop registrazione">
+                </button>
+                <div class="min-w-0">
+                    <p class="text-xs font-semibold text-slate-300">Registrazione</p>
+                    <p class="text-xs text-slate-600 truncate">Avvia / Interrompi</p>
+                </div>
+            </div>
+
+            <!-- Play/Pause Toggle -->
+            <button
+                id="playPauseBtn"
+                class="w-full bg-slate-700 hover:bg-slate-600 active:scale-95 rounded-lg py-2 flex items-center justify-center gap-2 transition-all duration-150 shadow-md flex-shrink-0"
+                onclick="togglePlayPause()"
+                title="Pausa">
+                <span id="playPauseIcon" class="text-slate-300 text-xs tracking-widest">❚❚</span>
+                <span id="playPauseLabel" class="text-xs text-slate-300 font-medium">Pausa</span>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- BOTTOM ROW: Explanation -->
+    <div class="flex-1 bg-slate-900 rounded-xl border border-slate-800 overflow-y-auto shadow-xl min-h-0">
+        <div class="p-5">
+            <h2 class="text-base font-bold text-slate-100 mb-4 flex items-center gap-2">
+                <span class="inline-block w-1 h-5 bg-blue-500 rounded-full"></span>
+                Il Controllo a Isteresi
+            </h2>
+            <div class="text-sm text-slate-400 leading-relaxed space-y-3 max-w-5xl">
+                <p>
+                    Il sistema funziona come un termostato intelligente basato su un controllo a retroazione
+                    <span class="text-blue-400 font-semibold">(feedback)</span>. Un sensore misura costantemente la temperatura
+                    interna e la confronta con il valore desiderato <span class="text-blue-400 font-semibold">(Setpoint)</span>.
+                    Per evitare che l'elemento riscaldante si accenda e spenga continuamente attorno al valore di setpoint
+                    (fenomeno detto <em class="text-slate-300">chattering</em>), viene utilizzata una isteresi.
+                </p>
+                <p>
+                    L'<span class="text-orange-400 font-semibold">isteresi</span> definisce un intervallo di tolleranza.
+                    Il riscaldamento si attiva solo quando la temperatura scende al di sotto del limite inferiore
+                    (Setpoint − Isteresi) e si disattiva solo quando supera il limite superiore (Setpoint + Isteresi).
+                    Questo garantisce stabilità al sistema e riduce l'usura dei componenti.
+                </p>
+
+                <!-- Formula box -->
+                <div class="bg-slate-950 rounded-lg p-4 border border-slate-800 font-mono text-sm space-y-2 my-2">
+                    <div class="flex items-center gap-3">
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span>
+                        <p class="text-slate-300">
+                            <span class="text-emerald-400 font-bold">ACCENSIONE:</span>
+                            &nbsp; T<sub>reale</sub> &lt; ( T<sub>setpoint</sub> &minus; T<sub>isteresi</sub> )
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="inline-block w-2 h-2 rounded-full bg-red-400 flex-shrink-0"></span>
+                        <p class="text-slate-300">
+                            <span class="text-red-400 font-bold">SPEGNIMENTO:</span>
+                            &nbsp; T<sub>reale</sub> &gt; ( T<sub>setpoint</sub> + T<sub>isteresi</sub> )
+                        </p>
+                    </div>
+                </div>
+
+                <p>
+                    Nota come la temperatura nel grafico non si inverte istantaneamente.
+                    Questo fenomeno è dovuto all'<span class="text-yellow-400 font-semibold">inerzia termica</span>:
+                    il sistema impiega del tempo per riscaldarsi e per raffreddarsi. Per questo motivo, la temperatura
+                    potrebbe superare leggermente i limiti dell'isteresi, creando delle piccole
+                    <span class="text-yellow-400 font-semibold">oscillazioni</span> visibili nel grafico.
+                </p>
+                <p>
+                    Per un controllo più preciso, si può sostituire il semplice sistema ON/OFF con un algoritmo
+                    <span class="text-purple-400 font-semibold">PID (Proporzionale-Integrale-Derivativo)</span>.
+                    Questo metodo non si limita ad accendere e spegnere ma modula finemente la potenza del riscaldatore.
+                    Analizza l'errore di temperatura attuale (P), quello accumulato (I) e la sua tendenza futura (D),
+                    garantendo una stabilità termica molto superiore.
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+
+<script>
+  let gui;
+  let b;
+  var sensor = 9;
+  let fake_index = 0;
+  let img;
+  let w;
+  let h;
+  let sensor_readings = [];
+  let recButtonState = false;
+  let peak_old = 1;
+  let peak_new = 0;
+  let show_peaks = false;
+  let temperature_setpoint = 28;
+  let hysteresis = 0.2;
+  var circle_x = 50;
+  var circle_xs = [];
+  var point_color = 0;
+  var console_log = [];
+  var console_text = [];
+  var console_text_i = 0;
+  var console_text_id = 0;
+  var lower_temp_range = 20;
+  var upper_temp_range = 35;
+  var play = true;
+
+  // --- CSV RECORDING ---
+  var recordedData = [];   // array di {id, temperatura_celsius}
+  var rec_id = 0;
+
+  function downloadCSV() {
+    if (recordedData.length === 0) return;
+    const header = "id,temperatura_celsius";
+    const rows = recordedData.map(r => `${r.id},${r.temperatura_celsius}`);
+    const csv = [header, ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "registrazione_incubatrice.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Dark theme palette
+  const BG_COLOR     = [15, 23, 42];    // slate-950
+  const PANEL_COLOR  = [30, 41, 59];    // slate-800
+  const GRID_COLOR   = [51, 65, 85];    // slate-700
+  const TEXT_COLOR   = [148, 163, 184]; // slate-400
+  const POINT_COLOR  = [56, 189, 248];  // sky-400
+  const SETPT_COLOR  = [148, 163, 184]; // slate-400
+  const HYST_COLOR   = [251, 113, 133]; // rose-400
+
+  // --- Web Serial API ---
+  const BAUD_RATE = 57600;
+  let port = null;
+  let writer = null;
+  let serialHandlers = {};
+  let reconnectInterval = null;
+  let isConnected = false;
+
+  function onSerial(event, handler) {
+    serialHandlers[event] = handler;
+  }
+
+  async function sendSerial(event, value) {
+    if (!writer) return;
+    try {
+      const line = JSON.stringify([event, value]) + '\n';
+      await writer.write(new TextEncoder().encode(line));
+    } catch(e) {}
+  }
+
+  function parseLine(line) {
+    try {
+      const parsed = JSON.parse(line.trim());
+      if (Array.isArray(parsed) && parsed.length === 2) {
+        const [event, value] = parsed;
+        if (serialHandlers[event]) serialHandlers[event](value);
+      }
+    } catch(e) {}
+  }
+
+  async function startReadLoop(p) {
+    const decoder = new TextDecoderStream();
+    p.readable.pipeTo(decoder.writable);
+    const reader = decoder.readable.getReader();
+    let buffer = '';
+    try {
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += value;
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
+        for (const ln of lines) {
+          if (ln.trim()) parseLine(ln);
+        }
+      }
+    } catch(e) {}
+    reader.releaseLock();
+    // Port dropped — mark disconnected
+    port = null; writer = null; isConnected = false;
+    updateConnectionUI(false);
+  }
+
+  async function connectToPort(p) {
+    try {
+      await p.open({ baudRate: BAUD_RATE });
+      port = p;
+      writer = p.writable.getWriter();
+      isConnected = true;
+      updateConnectionUI(true);
+      startReadLoop(p);
+    } catch(e) {
+      updateConnectionUI(false);
+    }
+  }
+
+  async function tryAutoConnect() {
+    if (isConnected) return;
+    try {
+      const ports = await navigator.serial.getPorts();
+      if (ports.length > 0) await connectToPort(ports[0]);
+    } catch(e) {}
+  }
+
+  function startReconnectLoop() {
+    if (reconnectInterval) return;
+    reconnectInterval = setInterval(tryAutoConnect, 1000);
+  }
+
+  async function manualConnect() {
+    const btn = document.getElementById('connectModalBtn');
+    btn.disabled = true;
+    try {
+      const p = await navigator.serial.requestPort();
+      await connectToPort(p);
+      if (isConnected) document.getElementById('connectModal').style.display = 'none';
+    } catch(e) {}
+    btn.disabled = false;
+  }
+
+  function updateConnectionUI(connected) {
+    const dot    = document.getElementById('connectionDot');
+    const status = document.getElementById('connectionStatus');
+    const modal  = document.getElementById('connectModal');
+    if (connected) {
+      dot.className    = 'w-1.5 h-1.5 rounded-full bg-emerald-400';
+      status.textContent = 'connesso';
+      status.className = 'text-xs text-emerald-500 ml-auto';
+      modal.style.display = 'none';
+    } else {
+      dot.className    = 'w-1.5 h-1.5 rounded-full bg-slate-600 animate-pulse';
+      status.textContent = '—';
+      status.className = 'text-xs text-slate-600 ml-auto';
+    }
+  }
+
+  if ('serial' in navigator) {
+    navigator.serial.addEventListener('disconnect', (e) => {
+      if (port === e.target) {
+        port = null; writer = null; isConnected = false;
+        updateConnectionUI(false);
+      }
+    });
+
+    window.addEventListener('load', () => {
+      document.getElementById('connectModal').style.display = 'flex';
+    });
+  } else {
+    window.addEventListener('load', () => {
+      document.getElementById('connectModalText').textContent =
+        'Il tuo browser non supporta la Web Serial API. Usa Google Chrome o Microsoft Edge.';
+      document.getElementById('connectModal').style.display = 'flex';
+    });
+  }
+
+  // Serial event handlers
+  onSerial('temperature_setpoint', function(data) {
+    temperature_setpoint = data;
+    document.getElementById("setpoint_text").innerHTML = parseFloat(data).toFixed(2);
+  });
+
+  onSerial('hysteresis', function(data) {
+    hysteresis = data;
+    document.getElementById("isteresi_text").innerHTML = parseFloat(data).toFixed(2);
+  });
+
+  onSerial('temperature_sensor', function(data) {
+    sensor = data;
+    document.getElementById("temperatura_text").innerHTML = parseFloat(data).toFixed(2);
+
+    if (recButtonState) {
+      recordedData.push({ id: rec_id++, temperatura_celsius: parseFloat(data).toFixed(2) });
+    }
+
+    sensor_readings.push(data);
+    if (sensor_readings.length > 5) sensor_readings.shift();
+
+    for (let i = 0; i < 5; i++) {
+      if (sensor_readings[i] !== undefined) {
+        document.getElementById("console_" + str(i)).innerHTML =
+          str(fake_index) + " T: " + str(parseFloat(sensor_readings[i]).toFixed(2)) + "°C";
+        fake_index += 1;
+      }
+    }
+  });
+
+  onSerial('light_state', function(data) {});
+
+  p5.disableFriendlyErrors = false;
+
+  function mapRange(value, inMin, inMax, outMin, outMax) {
+    return outMin + (((value - inMin) / (inMax - inMin)) * (outMax - outMin));
+  }
+
+  function setup() {
+    textFont('Courier New');
+    gui = createGui();
+    gui.loadStyle("Blue");
+    gui.setFont("Courier New");
+    noStroke();
+    container = document.getElementById('p5js_canvas');
+    w = container.offsetWidth;
+    h = container.offsetHeight;
+    createCanvas(w, h);
+    background(BG_COLOR[0], BG_COLOR[1], BG_COLOR[2]);
+  }
+
+  function draw() {
+    // Background
+    noStroke();
+    fill(BG_COLOR[0], BG_COLOR[1], BG_COLOR[2]);
+    rect(0, 0, w, h);
+
+    // Graph area background
+    fill(PANEL_COLOR[0], PANEL_COLOR[1], PANEL_COLOR[2]);
+    rect(38, 18, w - 58, h - 38, 8);
+
+    // Grid lines (horizontal)
+    stroke(GRID_COLOR[0], GRID_COLOR[1], GRID_COLOR[2]);
+    strokeWeight(0.5);
+    let gridSteps = 5;
+    for (let g = 0; g <= gridSteps; g++) {
+      let gy = mapRange(g, 0, gridSteps, h - 38, 28);
+      line(42, gy, w - 22, gy);
+      // Y axis labels
+      noStroke();
+      fill(TEXT_COLOR[0], TEXT_COLOR[1], TEXT_COLOR[2]);
+      textSize(9);
+      let tempLabel = mapRange(g, 0, gridSteps, lower_temp_range, upper_temp_range).toFixed(0);
+      text(tempLabel + "°", 4, gy + 4);
+      stroke(GRID_COLOR[0], GRID_COLOR[1], GRID_COLOR[2]);
+      strokeWeight(0.5);
+    }
+
+    // Axes
+    strokeWeight(1.5);
+    stroke(TEXT_COLOR[0], TEXT_COLOR[1], TEXT_COLOR[2]);
+    line(42, 28, 42, h - 28);        // Y axis
+    line(42, h - 28, w - 22, h - 28); // X axis
+
+    // Axis arrows
+    line(42, 28, 37, 36);
+    line(42, 28, 47, 36);
+    line(w - 22, h - 28, w - 30, h - 33);
+    line(w - 22, h - 28, w - 30, h - 23);
+
+    // Axis labels
+    noStroke();
+    fill(TEXT_COLOR[0], TEXT_COLOR[1], TEXT_COLOR[2]);
+    textSize(10);
+    text("Tempo (s)", w / 2 - 30, h - 8);
+    text("Temp. (°C)", 48, 20);
+
+    // Data points
+    if (play) {
+      circle_xs[circle_x] = sensor;
+      circle_x += 1;
+      if (circle_x > 1500) {
+        circle_x = 0;
+        circle_xs = [];
+        background(BG_COLOR[0], BG_COLOR[1], BG_COLOR[2]);
+      }
+    }
+
+    for (let i = 0; i < 1500; i++) {
+      if (circle_xs[i] === undefined) continue;
+      noStroke();
+      fill(POINT_COLOR[0], POINT_COLOR[1], POINT_COLOR[2], 220);
+      let ii = mapRange(i, 0, 1500, 50, w - 26);
+      circle(ii, mapRange(circle_xs[i], lower_temp_range, upper_temp_range, h - 38, 28), 3);
+    }
+
+    // Setpoint line
+    strokeWeight(1.5);
+    stroke(SETPT_COLOR[0], SETPT_COLOR[1], SETPT_COLOR[2]);
+    let temp_ranged = mapRange(temperature_setpoint, lower_temp_range, upper_temp_range, h - 38, 28);
+    line(50, temp_ranged, w - 26, temp_ranged);
+
+    // Hysteresis lines
+    strokeWeight(1);
+    stroke(HYST_COLOR[0], HYST_COLOR[1], HYST_COLOR[2]);
+    let hyst_up = mapRange(temperature_setpoint + hysteresis, lower_temp_range, upper_temp_range, h - 38, 28);
+    line(50, hyst_up, w - 26, hyst_up);
+    let hyst_down = mapRange(temperature_setpoint - hysteresis, lower_temp_range, upper_temp_range, h - 38, 28);
+    line(50, hyst_down, w - 26, hyst_down);
+
+    drawGui();
+  }
+
+  function windowResized() {
+    container = document.getElementById('p5js_canvas');
+    w = container.offsetWidth;
+    h = container.offsetHeight;
+    resizeCanvas(w, h);
+  }
+
+  function keyPressed() {
+    if (keyCode === 82) {
+      console.log("R was pressed");
+    } else if (keyCode === 67) {
+      console.log("C was pressed");
+    }
+  }
+
+  function recButtonPressed() {
+    if (recButtonState === false) {
+      // START
+      recButtonState = true;
+      recordedData = [];
+      rec_id = 0;
+      fake_index = 0;
+      document.getElementById("console_screen").style.visibility = "visible";
+      document.getElementById("rec_box").style.borderColor = "#ef4444";
+      document.getElementById("console_box").style.borderColor = "#ef4444";
+      sendSerial('rec_on', 255);
+    } else {
+      // STOP → scarica CSV
+      recButtonState = false;
+      document.getElementById("console_screen").style.visibility = "hidden";
+      document.getElementById("rec_box").style.borderColor = "";
+      document.getElementById("console_box").style.borderColor = "";
+      sendSerial('rec_on', 0);
+      downloadCSV();
+    }
+  }
+
+  function showPeaksPressed() {
+    if (show_peaks) {
+      show_peaks = false;
+    } else {
+      show_peaks = true;
+    }
+  }
+
+  function togglePlayPause() {
+    play = !play;
+    const btn   = document.getElementById("playPauseBtn");
+    const icon  = document.getElementById("playPauseIcon");
+    const label = document.getElementById("playPauseLabel");
+    if (play) {
+      btn.classList.replace("bg-emerald-700", "bg-slate-700");
+      btn.classList.replace("hover:bg-emerald-600", "hover:bg-slate-600");
+      icon.textContent  = "❚❚";
+      icon.className    = "text-slate-300 text-xs tracking-widest";
+      label.textContent = "Pausa";
+      label.className   = "text-xs text-slate-300 font-medium";
+    } else {
+      btn.classList.replace("bg-slate-700", "bg-emerald-700");
+      btn.classList.replace("hover:bg-slate-600", "hover:bg-emerald-600");
+      icon.textContent  = "▶";
+      icon.className    = "text-white text-sm";
+      label.textContent = "Riprendi";
+      label.className   = "text-xs text-white font-medium";
+    }
+  }
+</script>
+</html>
