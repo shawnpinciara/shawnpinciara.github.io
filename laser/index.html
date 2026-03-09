@@ -43,7 +43,7 @@
     #control-panel {
       width: 240px; flex-shrink: 0;
       display: flex; flex-direction: column;
-      border-right: 1px solid #1a1a1a;
+      border-right: 1px solid #252525;
       overflow: hidden;
     }
     #control-top {
@@ -83,7 +83,7 @@
       border-radius: 4px; padding: 3px 6px; font-family: inherit; font-size: 0.7rem; cursor: pointer;
     }
     #laser-controls { display: flex; flex-direction: column; gap: 6px; width: 100%; }
-    #laser-controls > label { font-size: 0.62rem; color: #444; letter-spacing: 0.07em; }
+    #laser-controls > label { font-size: 0.62rem; color: #888; letter-spacing: 0.09em; }
     #laser-power-row { display: flex; align-items: center; gap: 7px; }
     #laser-power { flex: 1; accent-color: #f90; }
     #power-val { font-size: 0.7rem; color: #f90; width: 28px; text-align: right; }
@@ -105,24 +105,25 @@
     .quick-btn:disabled { opacity: 0.2; cursor: not-allowed; }
 
     /* ── CENTER ── */
-    #center-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid #1a1a1a; }
-    #tab-bar { display: flex; background: #0f0f0f; border-bottom: 1px solid #1a1a1a; flex-shrink: 0; }
+    #center-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid #252525; }
+    #tab-bar { display: flex; background: #0c0c0c; border-bottom: 2px solid #252525; flex-shrink: 0; }
     .tab-btn {
-      padding: 8px 18px; background: transparent; border: none; border-bottom: 2px solid transparent;
-      color: #555; font-family: inherit; font-size: 0.72rem; cursor: pointer;
-      transition: color 0.12s, border-color 0.12s; letter-spacing: 0.04em;
+      padding: 9px 20px; background: transparent; border: none; border-bottom: 2px solid transparent;
+      color: #666; font-family: inherit; font-size: 0.74rem; cursor: pointer;
+      transition: color 0.12s, border-color 0.12s, background 0.12s; letter-spacing: 0.06em;
+      margin-bottom: -2px;
     }
-    .tab-btn.active { color: #f90; border-bottom-color: #f90; }
-    .tab-btn:hover:not(.active) { color: #aaa; }
+    .tab-btn.active { color: #f90; border-bottom-color: #f90; background: #111; }
+    .tab-btn:hover:not(.active) { color: #bbb; background: #111; }
     .tab-content { display: none; flex: 1; flex-direction: column; overflow: hidden; }
     .tab-content.active { display: flex; }
 
     /* G-code tab */
     #gcode-toolbar {
       display: flex; align-items: center; gap: 7px;
-      padding: 7px 10px; background: #0f0f0f; border-bottom: 1px solid #1a1a1a; flex-shrink: 0;
+      padding: 7px 10px; background: #111; border-bottom: 1px solid #252525; flex-shrink: 0;
     }
-    #gcode-filename { font-size: 0.68rem; color: #555; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #gcode-filename { font-size: 0.68rem; color: #666; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     #btn-load-gcode {
       padding: 4px 10px; background: #181818; border: 1px solid #2a2a2a; color: #999;
       border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.68rem; flex-shrink: 0;
@@ -141,7 +142,7 @@
     #btn-stop:hover:not(:disabled) { background: #180808; border-color: #f55; }
     #gcode-progress-row {
       display: flex; align-items: center; gap: 8px;
-      padding: 4px 10px; background: #0a0a0a; border-bottom: 1px solid #161616; flex-shrink: 0;
+      padding: 4px 10px; background: #0a0a0a; border-bottom: 1px solid #252525; flex-shrink: 0;
     }
     #progress-bar-track { flex: 1; height: 3px; background: #1e1e1e; border-radius: 2px; overflow: hidden; }
     #progress-bar-fill  { height: 100%; background: #f90; width: 0%; border-radius: 2px; transition: width 0.2s; }
@@ -170,15 +171,17 @@
     /* SVG tab */
     #svg-toolbar {
       display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-      padding: 7px 10px; background: #0f0f0f; border-bottom: 1px solid #1a1a1a; flex-shrink: 0;
+      padding: 7px 10px; background: #111; border-bottom: 1px solid #252525; flex-shrink: 0;
     }
     #btn-load-svg {
-      padding: 4px 10px; background: #181818; border: 1px solid #2a2a2a; color: #999;
+      padding: 4px 10px; background: #181818; border: 1px solid #153015; color: #4e4;
       border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.68rem; flex-shrink: 0;
     }
-    #btn-load-svg:hover { background: #222; color: #ddd; }
-    #svg-filename { font-size: 0.68rem; color: #555; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .svg-param { display: flex; align-items: center; gap: 5px; font-size: 0.64rem; color: #555; }
+    #btn-load-svg:hover:not(.loaded) { background: #0a1a0a; border-color: #4e4; }
+    #btn-load-svg.loaded { border-color: #2a2a2a; color: #666; }
+    #btn-load-svg.loaded:hover { background: #222; color: #bbb; }
+    #svg-filename { font-size: 0.68rem; color: #666; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .svg-param { display: flex; align-items: center; gap: 5px; font-size: 0.64rem; color: #777; }
     .svg-param label { white-space: nowrap; }
     .svg-param input[type=number] {
       width: 52px; background: #181818; border: 1px solid #252525; color: #bbb;
@@ -188,18 +191,21 @@
       padding: 4px 12px; background: #181818; border: 1px solid #2a2a2a; color: #888;
       border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.68rem; flex-shrink: 0;
     }
-    #btn-svg-generate:hover:not(:disabled) { background: #222; color: #ccc; }
+    #btn-svg-generate:not(:disabled) { border-color: #153015; color: #4e4; }
+    #btn-svg-generate:hover:not(:disabled) { background: #0a1a0a; border-color: #4e4; }
     #btn-svg-generate:disabled { opacity: 0.3; cursor: not-allowed; }
 
     /* SVG job control — hidden until G-code is generated */
     #svg-job-controls { display: none; align-items: center; gap: 6px; }
     #svg-job-controls.visible { display: flex; }
-    #btn-svg-run   { color: #4af; border-color: #0a2a3a; }
-    #btn-svg-run:hover:not(:disabled) { background: #04141e; border-color: #4af; }
+    #btn-svg-run   { color: #4e4; border-color: #153015; }
+    #btn-svg-run:hover:not(:disabled) { background: #0a1a0a; border-color: #4e4; }
     #btn-svg-pause { color: #fa0; border-color: #2e2000; }
     #btn-svg-pause:hover:not(:disabled) { background: #181000; border-color: #fa0; }
     #btn-svg-stop  { color: #f55; border-color: #2e0a0a; }
     #btn-svg-stop:hover:not(:disabled)  { background: #180808; border-color: #f55; }
+    #btn-draw-box  { color: #adf; border-color: #1a2a3a; }
+    #btn-draw-box:hover:not(:disabled)  { background: #0a1520; border-color: #adf; }
 
     /* SVG canvas area with rulers */
     #svg-canvas-area {
@@ -236,7 +242,7 @@
     .log-tx   { color: #f90; }
     .log-sys  { color: #555; font-style: italic; }
     .log-err  { color: #f44; }
-    #console-input-row { display: flex; border-top: 1px solid #181818; background: #0e0e0e; }
+    #console-input-row { display: flex; border-top: 1px solid #252525; background: #0e0e0e; }
     #console-prompt { padding: 8px 9px; color: #f90; font-size: 0.8rem; user-select: none; }
     #console-input {
       flex: 1; background: transparent; border: none; outline: none;
@@ -251,14 +257,14 @@
 
     /* ── Color profiles section ── */
     #profiles-section {
-      flex: 1; border-top: 1px solid #1a1a1a;
+      flex: 1; border-top: 1px solid #252525;
       display: flex; flex-direction: column; min-height: 0;
     }
     #profiles-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 5px 9px; background: #0d0d0d; border-bottom: 1px solid #161616; flex-shrink: 0;
+      padding: 6px 9px; background: #0d0d0d; border-bottom: 1px solid #252525; flex-shrink: 0;
     }
-    #profiles-header > span { font-size: 0.6rem; color: #4a4a4a; letter-spacing: 0.1em; }
+    #profiles-header > span { font-size: 0.62rem; color: #888; letter-spacing: 0.1em; }
     #profiles-header > div { display: flex; gap: 5px; }
     .ph-btn {
       padding: 2px 8px; background: #181818; border: 1px solid #2a2a2a;
@@ -270,23 +276,35 @@
     #profiles-list::-webkit-scrollbar { width: 4px; }
     #profiles-list::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 2px; }
     .profile-row {
-      display: flex; align-items: center; gap: 4px;
-      padding: 3px 2px; border-bottom: 1px solid #131313;
+      display: flex; flex-direction: column; gap: 0;
+      padding: 4px 3px; border-bottom: 1px solid #131313;
     }
+    .prof-row-top { display: flex; align-items: center; gap: 4px; }
+    .prof-row-params { display: flex; flex-direction: column; gap: 3px; margin-top: 5px; }
+    .prof-param { display: flex; align-items: center; gap: 6px; }
     .profile-swatch {
-      width: 18px; height: 18px; border-radius: 3px; border: 1px solid #333;
+      width: 16px; height: 16px; border-radius: 3px; border: 1px solid #333;
       cursor: pointer; flex-shrink: 0; transition: transform 0.1s;
     }
     .profile-swatch:hover { transform: scale(1.15); border-color: #666; }
-    .prof-lbl { font-size: 0.56rem; color: #3a3a3a; white-space: nowrap; flex-shrink: 0; }
+    .prof-name {
+      flex: 1; min-width: 0; background: #111; border: 1px solid #1e1e1e; color: #bbb;
+      border-radius: 3px; padding: 2px 5px; font-family: inherit; font-size: 0.62rem;
+    }
+    .prof-name:focus { outline: none; border-color: #f90; }
+    .prof-lbl { font-size: 0.68rem; color: #777; white-space: nowrap; flex-shrink: 0; min-width: 42px; }
+    .prof-unit { font-size: 0.64rem; color: #555; white-space: nowrap; flex-shrink: 0; }
     .prof-inp {
-      width: 42px; background: #111; border: 1px solid #1e1e1e; color: #bbb;
-      border-radius: 3px; padding: 2px 4px; font-family: inherit; font-size: 0.62rem;
+      background: #111; border: 1px solid #252525; color: #ccc;
+      border-radius: 3px; padding: 3px 5px; font-family: inherit; font-size: 0.72rem;
       text-align: right; flex-shrink: 0;
     }
     .prof-inp:focus { outline: none; border-color: #f90; }
+    .prof-inp.spd  { width: 52px; }
+    .prof-inp.pwr  { width: 44px; }
+    .prof-inp.pass { width: 36px; }
     .profile-del {
-      margin-left: auto; flex-shrink: 0; padding: 0 5px; height: 16px;
+      flex-shrink: 0; padding: 0 4px; height: 16px;
       background: transparent; border: 1px solid #222; color: #333;
       border-radius: 3px; cursor: pointer; font-size: 0.65rem; line-height: 1;
       transition: color 0.1s, border-color 0.1s;
@@ -339,7 +357,8 @@
     body.not-connected #btn-stop,
     body.not-connected #btn-svg-run,
     body.not-connected #btn-svg-pause,
-    body.not-connected #btn-svg-stop {
+    body.not-connected #btn-svg-stop,
+    body.not-connected #btn-draw-box {
       pointer-events: none; opacity: 0.15;
     }
   </style>
@@ -416,12 +435,12 @@
   <!-- CENTER -->
   <section id="center-panel">
     <div id="tab-bar">
-      <button class="tab-btn active" data-tab="gcode">G-CODE</button>
-      <button class="tab-btn" data-tab="svg">SVG → G-CODE</button>
+      <button class="tab-btn active" data-tab="svg">SVG → G-CODE</button>
+      <button class="tab-btn" data-tab="gcode">G-CODE</button>
     </div>
 
     <!-- G-code tab -->
-    <div class="tab-content active" id="tab-gcode">
+    <div class="tab-content" id="tab-gcode">
       <div id="gcode-toolbar">
         <button id="btn-load-gcode">&#128196; Load .gcode</button>
         <input type="file" id="file-input-gcode" accept=".gcode,.nc,.gc,.cnc,.txt" style="display:none">
@@ -438,20 +457,16 @@
     </div>
 
     <!-- SVG tab -->
-    <div class="tab-content" id="tab-svg">
+    <div class="tab-content active" id="tab-svg">
       <div id="svg-toolbar">
         <button id="btn-load-svg">&#128444; Load SVG</button>
         <input type="file" id="file-input-svg" accept=".svg" style="display:none">
         <span id="svg-filename">No SVG file</span>
-        <div class="svg-param"><label>Engrave speed</label>
-          <input type="number" id="p-feed"  value="800"  min="100" max="5000"> mm/min</div>
-        <div class="svg-param"><label>Rapid speed</label>
+        <div class="svg-param" title="Speed of empty travel moves between paths (G0). Does not burn material."><label>Rapid</label>
           <input type="number" id="p-rapid" value="3000" min="500" max="8000"> mm/min</div>
-        <div class="svg-param"><label>Power S</label>
-          <input type="number" id="p-power" value="200"  min="1"   max="255"></div>
-        <div class="svg-param"><label>Scale</label>
+        <div class="svg-param" title="Scale multiplier for SVG dimensions. 1 = original size, 0.5 = half, 2 = double."><label>Scale</label>
           <input type="number" id="p-scale" value="1"    min="0.01" max="100" step="0.01"> ×</div>
-        <div class="svg-param"><label>Sample step</label>
+        <div class="svg-param" title="Max length of each straight segment when approximating curves. Smaller = more accurate but more G-code lines. Typical: 0.3 mm."><label>Sample step</label>
           <input type="number" id="p-step"  value="0.3"  min="0.05" max="2"   step="0.05"> mm</div>
         <button id="btn-svg-generate" disabled>&#9656; Generate G-code</button>
 
@@ -459,6 +474,7 @@
           <button class="run-btn" id="btn-svg-run"  >&#9654; Start</button>
           <button class="run-btn" id="btn-svg-pause" disabled>&#9646;&#9646; Pause</button>
           <button class="run-btn" id="btn-svg-stop"  disabled>&#9632; Stop</button>
+          <button class="run-btn" id="btn-draw-box"  disabled>&#9633; Draw Box</button>
         </div>
       </div>
 
@@ -502,6 +518,7 @@
 // ═══════════════════════════════════════════════════════════
 let port = null, writer = null, reader = null, readLoopActive = false;
 let okResolve = null, okReject = null;
+let grblRunning = false; // true when GRBL reports Run/Jog/Home state
 
 // ═══════════════════════════════════════════════════════════
 // MACHINE POSITION (mm, machine coords)
@@ -518,6 +535,7 @@ function updatePosDisplay() {
 function parseGrblStatus(line) {
   const m = line.match(/MPos:([-\d.]+),([-\d.]+)/);
   if (m) { pos.x = parseFloat(m[1]); pos.y = parseFloat(m[2]); updatePosDisplay(); }
+  grblRunning = /^<(Run|Jog|Home)/.test(line);
 }
 
 // trackSentGcode defined later (includes laser on/off tracking)
@@ -635,10 +653,19 @@ function handleOk(line) {
   }
 }
 
-function waitForOk(ms=30000) {
+// waitForOk: times out after `idleMs` of GRBL being idle (not Run/Jog/Home).
+// While the machine is actively moving, the deadline is pushed forward automatically.
+function waitForOk(idleMs=15000) {
   return new Promise((res,rej) => {
     okResolve=res; okReject=rej;
-    setTimeout(()=>{ if(okReject){ okReject(new Error('Timeout')); okResolve=okReject=null; } }, ms);
+    let deadline = Date.now() + idleMs;
+    function check() {
+      if (!okReject) return; // already resolved/rejected
+      if (grblRunning) deadline = Date.now() + idleMs; // machine busy → extend
+      if (Date.now() >= deadline) { okReject(new Error('Timeout')); okResolve=okReject=null; return; }
+      setTimeout(check, 500);
+    }
+    setTimeout(check, idleMs);
   });
 }
 
@@ -771,6 +798,7 @@ function parseAndRenderGcode(text, name, switchTab = true) {
 const btnSvgRun   = document.getElementById('btn-svg-run');
 const btnSvgPause = document.getElementById('btn-svg-pause');
 const btnSvgStop  = document.getElementById('btn-svg-stop');
+const btnDrawBox  = document.getElementById('btn-draw-box');
 const svgJobCtrl  = document.getElementById('svg-job-controls');
 
 function setJobRunning(running) {
@@ -782,6 +810,8 @@ function setJobRunning(running) {
   btnSvgRun.disabled   = running;
   btnSvgPause.disabled = !running;
   btnSvgStop.disabled  = !running;
+  if (running) btnDrawBox.disabled = true;
+  else if (svgBboxMaxX) btnDrawBox.disabled = false;
 }
 
 async function startJob() {
@@ -844,6 +874,34 @@ btnStop   .addEventListener('click', abortJob);
 btnSvgRun .addEventListener('click', startJob);
 btnSvgPause.addEventListener('click', pauseJob);
 btnSvgStop .addEventListener('click', abortJob);
+btnDrawBox .addEventListener('click', drawBox);
+
+async function drawBox() {
+  if (!writer || !svgBboxMaxX) return;
+  const rapid = parseFloat(document.getElementById('p-rapid').value) || 3000;
+  const origX = pos.x, origY = pos.y;
+  const cmds = [
+    `G0 F${rapid}`,
+    `G0 X0.000 Y0.000`,
+    `M3 S5`,
+    `G1 F${rapid}`,
+    `G1 X${fmt(svgBboxMaxX)} Y0.000`,
+    `G1 X${fmt(svgBboxMaxX)} Y${fmt(svgBboxMaxY)}`,
+    `G1 X0.000 Y${fmt(svgBboxMaxY)}`,
+    `G1 X0.000 Y0.000`,
+    `M5`,
+    `G0 F${rapid}`,
+    `G0 X${fmt(origX)} Y${fmt(origY)}`,
+  ];
+  btnDrawBox.disabled = true;
+  log(`Draw box: ${svgBboxMaxX.toFixed(1)} × ${svgBboxMaxY.toFixed(1)} mm at S5...`, 'sys');
+  for (const cmd of cmds) {
+    log(cmd, 'tx'); trackSentGcode(cmd); await sendRaw(cmd + '\n');
+    try { await waitForOk(); } catch(err) { log(`Draw box error: ${err.message}`, 'err'); break; }
+  }
+  btnDrawBox.disabled = false;
+  log('Draw box complete.', 'sys');
+}
 
 function updateProgress(cur,tot) {
   const pct=tot>0?Math.round(cur/tot*100):0;
@@ -857,10 +915,14 @@ function updateProgress(cur,tot) {
 let svgDoc     = null;
 let svgW_mm    = 0;
 let svgH_mm    = 0;
-let svgScalePx = 1;
-let canvasW    = 0;
-let canvasH    = 0;
+let svgScalePx  = 1;
+let canvasW     = 0;
+let canvasH     = 0;
+let svgOffX     = 0; // px offset of SVG canvas inside wrap (horizontal centering)
+let svgOffY     = 0; // px offset of SVG canvas inside wrap (vertical centering)
 let previewSegs = [];
+let svgBboxMaxX = 0, svgBboxMaxY = 0;
+let svgPreviewOffX = 0, svgPreviewOffY = 0; // bounding-box origin in SVG mm coords
 
 // true while job is running — used to switch dot style
 let laserOn = false; // tracks M3/M5 from sent gcode
@@ -899,10 +961,16 @@ function loadSvgText(text, name) {
 
   // Hide job controls until G-code is generated
   svgJobCtrl.classList.remove('visible');
+  svgBboxMaxX = 0; svgBboxMaxY = 0;
+  svgPreviewOffX = 0; svgPreviewOffY = 0;
+  btnDrawBox.disabled = true;
+  document.getElementById('btn-load-svg').classList.add('loaded');
   document.getElementById('svg-filename').textContent=`${name}  (${svgW_mm.toFixed(1)} × ${svgH_mm.toFixed(1)} mm)`;
   document.getElementById('btn-svg-generate').disabled=false;
   log(`SVG loaded: ${name} — ${svgW_mm.toFixed(2)}×${svgH_mm.toFixed(2)} mm`,'sys');
   document.querySelector('[data-tab="svg"]').click();
+  // Ensure canvas resizes after tab layout is painted (handles hidden-tab race condition)
+  requestAnimationFrame(() => { resizeCanvas(); drawAll(); });
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -912,20 +980,29 @@ function resizeCanvas() {
   if (!svgW_mm) return;
   const wrap=document.getElementById('svg-canvas-wrap');
   const wW=wrap.clientWidth, wH=wrap.clientHeight;
+  if (!wW || !wH) return; // wrap not yet visible — ResizeObserver will call again
   const ar=svgW_mm/svgH_mm;
   let dW, dH;
   if (ar>wW/wH) { dW=wW; dH=wW/ar; } else { dH=wH; dW=wH*ar; }
+  dW=Math.round(dW); dH=Math.round(dH);
+  svgOffX=Math.round((wW-dW)/2); svgOffY=Math.round((wH-dH)/2);
+
+  // Center image and overlay canvas inside wrap
   svgBg.style.width=dW+'px'; svgBg.style.height=dH+'px';
+  svgBg.style.left=svgOffX+'px'; svgBg.style.top=svgOffY+'px';
   svgOverlay.width=dW; svgOverlay.height=dH;
   svgOverlay.style.width=dW+'px'; svgOverlay.style.height=dH+'px';
+  svgOverlay.style.left=svgOffX+'px'; svgOverlay.style.top=svgOffY+'px';
   canvasW=dW; canvasH=dH; svgScalePx=dW/svgW_mm;
-  rulerH.width=dW; rulerH.height=28; rulerH.style.width=dW+'px';
-  rulerV.width=28;  rulerV.height=dH; rulerV.style.height=dH+'px';
+
+  // Rulers span the full wrap width/height so ticks align with the centered SVG
+  rulerH.width=wW; rulerH.height=28; rulerH.style.width=wW+'px';
+  rulerV.width=28;  rulerV.height=wH; rulerV.style.height=wH+'px';
   drawRulers();
 }
 
 function drawRulers() {
-  if (!svgW_mm) return;
+  if (!svgW_mm || !canvasW || !canvasH) return;
   const TICK='#3a3a3a', LBL='#555', FONT='8px Courier New';
 
   const ctxH=rulerH.getContext('2d');
@@ -934,7 +1011,7 @@ function drawRulers() {
   ctxH.font=FONT; ctxH.fillStyle=LBL; ctxH.textAlign='center';
   const sH=pickRulerStep(svgW_mm,canvasW);
   for (let mm=0; mm<=svgW_mm+sH; mm+=sH/5) {
-    const px=mm*svgScalePx; if(px>canvasW+1)break;
+    const px=svgOffX+mm*svgScalePx; if(px>svgOffX+canvasW+1)break;
     const maj=Math.abs(mm%sH)<0.001;
     ctxH.strokeStyle=TICK; ctxH.lineWidth=maj?1:0.5;
     ctxH.beginPath(); ctxH.moveTo(px,maj?14:20); ctxH.lineTo(px,28); ctxH.stroke();
@@ -947,7 +1024,7 @@ function drawRulers() {
   ctxV.font=FONT; ctxV.fillStyle=LBL; ctxV.textAlign='right';
   const sV=pickRulerStep(svgH_mm,canvasH);
   for (let mm=0; mm<=svgH_mm+sV; mm+=sV/5) {
-    const py=canvasH-mm*svgScalePx; if(py<-1)break;
+    const py=svgOffY+canvasH-mm*svgScalePx; if(py<svgOffY-1)break;
     const maj=Math.abs(mm%sV)<0.001;
     ctxV.strokeStyle=TICK; ctxV.lineWidth=maj?1:0.5;
     ctxV.beginPath(); ctxV.moveTo(maj?14:20,py); ctxV.lineTo(28,py); ctxV.stroke();
@@ -974,13 +1051,14 @@ function drawOverlay() {
   const ctx=svgOverlay.getContext('2d');
   ctx.clearRect(0,0,canvasW,canvasH);
 
-  // G-code path preview
+  // G-code path preview (add bounding-box offset to align with SVG background)
+  const pv = (x, y) => mmToPx(x + svgPreviewOffX, y + svgPreviewOffY);
   for (const seg of previewSegs) {
     if (!seg.pts.length) continue;
     ctx.beginPath();
-    const p0=mmToPx(seg.pts[0].x,seg.pts[0].y);
+    const p0=pv(seg.pts[0].x,seg.pts[0].y);
     ctx.moveTo(p0.x,p0.y);
-    for (let i=1;i<seg.pts.length;i++) { const p=mmToPx(seg.pts[i].x,seg.pts[i].y); ctx.lineTo(p.x,p.y); }
+    for (let i=1;i<seg.pts.length;i++) { const p=pv(seg.pts[i].x,seg.pts[i].y); ctx.lineTo(p.x,p.y); }
     if (seg.on) { ctx.strokeStyle='rgba(255,140,0,0.55)'; ctx.lineWidth=1.2; ctx.setLineDash([]); }
     else        { ctx.strokeStyle='rgba(70,70,70,0.3)';   ctx.lineWidth=0.7; ctx.setLineDash([4,4]); }
     ctx.stroke(); ctx.setLineDash([]);
@@ -1042,9 +1120,7 @@ document.getElementById('btn-svg-generate').addEventListener('click', convertSvg
 async function convertSvgToGcode() {
   if (!svgDoc) return;
 
-  const feed  = parseFloat(document.getElementById('p-feed').value)  || 800;
   const rapid = parseFloat(document.getElementById('p-rapid').value) || 3000;
-  const power = parseInt  (document.getElementById('p-power').value) || 200;
   const scale = parseFloat(document.getElementById('p-scale').value) || 1;
   const step  = parseFloat(document.getElementById('p-step').value)  || 0.3;
 
@@ -1092,26 +1168,27 @@ async function convertSvgToGcode() {
   document.body.removeChild(tmpDiv);
   if (!allSegs.length) { log('No paths found in SVG.','err'); return; }
 
-  // ── Check color profiles ──────────────────────────────────
-  const unmatchedColors = new Set();
-  if (profiles.length > 0) {
-    for (const seg of allSegs) {
-      if (!seg.color) { unmatchedColors.add('(no color)'); continue; }
-      const found = profiles.find(p => p.color.toLowerCase() === seg.color.toLowerCase());
-      if (!found) unmatchedColors.add(seg.color);
-    }
-    if (unmatchedColors.size > 0) {
-      const list = [...unmatchedColors].join('\n  ');
-      const ok = confirm(`⚠️ Paths with unmatched color profiles:\n  ${list}\n\nContinue with default values (F${feed} R${rapid} S${power})?`);
-      if (!ok) { log('Generation cancelled — missing profiles.','sys'); return; }
-    }
-  }
+  // ── Filter segments: only keep those matching a profile ──
+  const skippedColors = new Set();
+  const matchedSegs = allSegs.filter(seg => {
+    if (!profiles.length) return true; // no profiles defined → keep all (legacy)
+    if (!seg.color) { skippedColors.add('(no color)'); return false; }
+    const found = profiles.find(p => p.color.toLowerCase() === seg.color.toLowerCase());
+    if (!found) { skippedColors.add(seg.color); return false; }
+    return true;
+  });
 
-  // offset to origin
+  if (skippedColors.size > 0)
+    log(`Skipped colors (no profile): ${[...skippedColors].join(', ')}`, 'sys');
+  if (!matchedSegs.length) { log('No segments match any color profile — nothing to generate.','err'); return; }
+
+  // offset to origin (matched segs only)
   let minX=Infinity,minY=Infinity;
-  for (const {pts} of allSegs) for (const p of pts){ if(p.x<minX)minX=p.x; if(p.y<minY)minY=p.y; }
+  for (const {pts} of matchedSegs) for (const p of pts){ if(p.x<minX)minX=p.x; if(p.y<minY)minY=p.y; }
   let maxX=0,maxY=0;
-  for (const {pts} of allSegs) for (const p of pts){ p.x-=minX; p.y-=minY; if(p.x>maxX)maxX=p.x; if(p.y>maxY)maxY=p.y; }
+  for (const {pts} of matchedSegs) for (const p of pts){ p.x-=minX; p.y-=minY; if(p.x>maxX)maxX=p.x; if(p.y>maxY)maxY=p.y; }
+  svgBboxMaxX = maxX; svgBboxMaxY = maxY;
+  svgPreviewOffX = minX; svgPreviewOffY = minY;
 
   const lines=[
     `; SVG → G-code — ${document.getElementById('svg-filename').textContent}`,
@@ -1121,34 +1198,49 @@ async function convertSvgToGcode() {
   ];
 
   previewSegs=[]; let curX=0,curY=0;
-  for (const {pts, color} of allSegs) {
-    // Look up profile by color
-    const prof = profiles.length>0 && color
+  for (const {pts, color} of matchedSegs) {
+    const prof = profiles.length
       ? profiles.find(p=>p.color.toLowerCase()===color.toLowerCase())
       : null;
-    const segFeed  = prof ? prof.feed  : feed;
-    const segRapid = prof ? prof.rapid : rapid;
-    const segPower = prof ? prof.power : power;
+    const feedRate = prof ? Math.round(prof.speed * 60) : 3000;
+    const sValue   = prof ? Math.round(prof.power / 100 * 255) : 128;
+    const passes   = prof ? Math.max(1, Math.round(prof.passes)) : 1;
+    const label    = prof ? (prof.name || prof.color) : color;
 
     const p0=pts[0];
-    lines.push(`; color: ${color||'none'}${prof?' → profile match':' → default'}`);
-    lines.push(`G0 F${segRapid}`);
+    lines.push(`; ${label} — ${passes} pass${passes>1?'es':''}`);
+
+    // rapid travel to start of path (shown once in preview)
+    lines.push(`G0 F${rapid}`);
     lines.push(`G0 X${fmt(p0.x)} Y${fmt(p0.y)}`);
     previewSegs.push({on:false,pts:[{x:curX,y:curY},p0]});
-    lines.push(`M3 S${segPower}`,`G1 F${segFeed}`);
+
+    // engrave path N passes
     const ep=[p0];
-    for (let i=1;i<pts.length;i++){ lines.push(`G1 X${fmt(pts[i].x)} Y${fmt(pts[i].y)}`); ep.push(pts[i]); }
-    lines.push('M5');
+    for (let i=1;i<pts.length;i++) ep.push(pts[i]);
     previewSegs.push({on:true,pts:ep});
+
+    for (let pass=0; pass<passes; pass++) {
+      if (pass>0) {
+        // return to start for subsequent passes
+        lines.push(`G0 F${rapid}`);
+        lines.push(`G0 X${fmt(p0.x)} Y${fmt(p0.y)}`);
+      }
+      lines.push(`M3 S${sValue}`,`G1 F${feedRate}`);
+      for (let i=1;i<pts.length;i++) lines.push(`G1 X${fmt(pts[i].x)} Y${fmt(pts[i].y)}`);
+      lines.push('M5');
+    }
+
     curX=pts[pts.length-1].x; curY=pts[pts.length-1].y;
   }
   lines.push('M5','G0 X0.000 Y0.000','; End of program');
 
-  log(`G-code generated: ${lines.length} lines, ${allSegs.length} segments, ${maxX.toFixed(1)}×${maxY.toFixed(1)} mm`,'sys');
+  log(`G-code generated: ${lines.length} lines, ${matchedSegs.length} segments, ${maxX.toFixed(1)}×${maxY.toFixed(1)} mm`,'sys');
 
   // Load G-code WITHOUT switching tab, then show SVG run controls
-  parseAndRenderGcode(lines.join('\n'), 'da_svg.gcode', false);
+  parseAndRenderGcode(lines.join('\n'), 'from_svg.gcode', false);
   svgJobCtrl.classList.add('visible');
+  btnDrawBox.disabled = false;
   setJobRunning(false); // reset button states
   drawAll();
 }
@@ -1196,7 +1288,14 @@ let activeSwatchId = null;
 
 function addProfile(data = {}) {
   const id = nextPid++;
-  const p = { id, color: data.color||'#ff0000', feed: data.feed||800, rapid: data.rapid||3000, power: data.power||200 };
+  const p = {
+    id,
+    name:   data.name   || '',
+    color:  data.color  || '#ff0000',
+    speed:  data.speed  !== undefined ? data.speed  : 5,
+    power:  data.power  !== undefined ? data.power  : 50,
+    passes: data.passes !== undefined ? data.passes : 1,
+  };
   profiles.push(p);
   renderProfileRow(p);
   return p;
@@ -1212,18 +1311,35 @@ function renderProfileRow(p) {
   const row=document.createElement('div');
   row.className='profile-row'; row.id=`prof-${p.id}`;
   row.innerHTML=`
-    <div class="profile-swatch" id="sw-${p.id}" style="background:${p.color}" title="Click to pick color"></div>
-    <span class="prof-lbl">F</span>
-    <input class="prof-inp" id="pf-feed-${p.id}"  type="number" value="${p.feed}"  min="1" max="10000" title="Feed mm/min">
-    <span class="prof-lbl">R</span>
-    <input class="prof-inp" id="pf-rapid-${p.id}" type="number" value="${p.rapid}" min="1" max="10000" title="Rapid mm/min">
-    <span class="prof-lbl">S</span>
-    <input class="prof-inp" id="pf-power-${p.id}" type="number" value="${p.power}" min="0" max="255"   title="Laser power S">
-    <button class="profile-del" data-id="${p.id}">✕</button>`;
+    <div class="prof-row-top">
+      <input class="prof-name" id="pf-name-${p.id}" type="text" placeholder="Name">
+      <div class="profile-swatch" id="sw-${p.id}" style="background:${p.color}" title="Click to pick color"></div>
+      <button class="profile-del" data-id="${p.id}">✕</button>
+    </div>
+    <div class="prof-row-params">
+      <div class="prof-param" title="Engraving speed in mm/s (converted to mm/min in G-code)">
+        <span class="prof-lbl">Speed</span>
+        <input class="prof-inp spd" id="pf-speed-${p.id}" type="number" value="${p.speed}" min="0.1" max="500" step="0.1">
+        <span class="prof-unit">mm/s</span>
+      </div>
+      <div class="prof-param" title="Laser power from 0% (off) to 100% (full power)">
+        <span class="prof-lbl">Power</span>
+        <input class="prof-inp pwr" id="pf-power-${p.id}" type="number" value="${p.power}" min="0" max="100">
+        <span class="prof-unit">%</span>
+      </div>
+      <div class="prof-param" title="Number of times to repeat this path. Each pass returns to the start before re-engraving.">
+        <span class="prof-lbl">Passes</span>
+        <input class="prof-inp pass" id="pf-passes-${p.id}" type="number" value="${p.passes}" min="1" max="50" step="1">
+      </div>
+    </div>`;
   list.appendChild(row);
 
+  document.getElementById(`pf-name-${p.id}`).value = p.name;
   document.getElementById(`sw-${p.id}`).addEventListener('click', e => openColorPicker(p.id, e.currentTarget));
-  ['feed','rapid','power'].forEach(f => {
+  document.getElementById(`pf-name-${p.id}`).addEventListener('input', e => {
+    const pr=profiles.find(x=>x.id===p.id); if(pr) pr.name=e.target.value;
+  });
+  [['speed',1],['power',1],['passes',1]].forEach(([f]) => {
     document.getElementById(`pf-${f}-${p.id}`).addEventListener('change', e => {
       const pr=profiles.find(x=>x.id===p.id); if(pr) pr[f]=parseFloat(e.target.value)||0;
     });
@@ -1302,7 +1418,7 @@ cpR.addEventListener('input',rgbChanged); cpG.addEventListener('input',rgbChange
 
 // ── Save / Load ────────────────────────────────────────────
 document.getElementById('btn-save-profiles').addEventListener('click', () => {
-  const data=profiles.map(p=>({color:p.color,feed:p.feed,rapid:p.rapid,power:p.power}));
+  const data=profiles.map(p=>({name:p.name,color:p.color,speed:p.speed,power:p.power,passes:p.passes}));
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
   a.download='laser_profiles.json'; a.click(); URL.revokeObjectURL(a.href);
@@ -1387,6 +1503,8 @@ window.addEventListener('load',()=>{
   log('Laser CNC 3018 Controller ready.','sys');
   log('Connect the machine or load an SVG / G-code file.','sys');
   connect();
+  // SVG tab is default — init canvas size
+  setTimeout(()=>{ resizeCanvas(); drawAll(); }, 100);
 });
 </script>
 </body>
