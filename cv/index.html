@@ -102,6 +102,15 @@
         margin-top: 0.3rem;
       }
 
+      .timeline-entry {
+        page-break-inside: avoid;
+      }
+
+      .page-section {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
       .timeline-body li {
         margin-left: 0;
         list-style-type: disc;
@@ -126,9 +135,32 @@
           font-size: 1.1rem;
         }
       }
+
+      @media print {
+        body {
+          font-size: 8px;
+        }
+        .download-btn {
+          display: none !important;
+        }
+        img {
+          height: 240px !important;
+          width: 100% !important;
+          object-fit: cover;
+          object-position: center;
+        }
+      }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+      // expose jsPDF globally for html2pdf usage
+      window.jsPDF = window.jspdf && window.jspdf.jsPDF ? window.jspdf.jsPDF : window.jsPDF;
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   </head>
   <body>
+    <div class="fixed top-4 right-4 download-btn bg-transparent border-2 border-sp_mid_dark_blue text-sp_mid_dark_blue px-4 py-2 rounded hover:bg-sp_mid_dark_blue hover:text-white cursor-pointer z-50" onclick="downloadPDF()">Download as pdf</div>
     <div class="w-full h-full flex justify-center">
     <div class="flex flex-col w-10/12 max-w-3xl">
 
@@ -149,8 +181,10 @@
                 <div class="timeline-date">June 2025 – Present</div>
                 <div class="timeline-title">Freelance – IoT &amp; Embedded Development</div>
                 <div class="timeline-body">
-                    <p>Temperature and humidity soil sensors for agricultural research: C++ embedded development for microcontrollers and IoT devices
-                    with a custom PCB and a custom enclosure, with a web dashboard to monitor the data and manage the devices remotely. LORAWAN and RS485 technologies.</p>
+                    <p>Temperature and humidity soil sensors for agricultural research: 
+                        C++ embedded development for microcontrollers and IoT devices
+                    with a custom PCB and enclosure for external use, with a web dashboard to monitor 
+                    the data and manage the devices remotely. LORAWAN and RS485 technologies.</p>
                 </div>
             </div>
 
@@ -159,8 +193,11 @@
                 <div class="timeline-date">March 2025 – June 2025</div>
                 <div class="timeline-title">High School Teaching – STEM &amp; AI</div>
                 <div class="timeline-body">
-                    <p>I'm teaching a course on the social-cultural impact of AI and the technical aspects of neural networks in high schools.<br>
-                    Part of the PNRR Italian minister of culture project, I've been also teaching STEM technologies (such as Arduino, 3D printing, video making) to high school teachers.</p>
+                    <p>School teaching for the social-cultural impact of AI and the 
+                        technical aspects of neural networks.<br>
+                    Part of the PNRR Italian minister of culture project, 
+                    I had been also teaching STEM technologies 
+                    (such as Arduino, 3D printing, coding) to high school teachers.</p>
                 </div>
             </div>
 
@@ -171,7 +208,7 @@
                 <div class="timeline-body">
                     <p>Main languages used:</p>
                     <ul>
-                        <li>C++ (Mainly for microcontrollers)</li>
+                        <li>C++ (optimized for microcontrollers)</li>
                         <li>Python</li>
                     </ul>
                     <p>Other side technologies/skills include:</p>
@@ -180,7 +217,11 @@
                         <li>Hardware electronics, soldering</li>
                         <li>Multiple hardware toolboxes and software ones</li>
                     </ul>
-                    <p>During my stay at HABITS I acquired the knowledge to bridge technologies, hacking various appliances and use them inside industrial design products prototypes. These bridges involve programming microcontrollers to create custom lighting effects or handling sensors with the various comm protocols such as I2C, I2S, SERIAL, SPI.</p>
+                    <p>During my stay at HABITS I acquired the knowledge to bridge technologies, 
+                        hacking various appliances and use them inside industrial design products 
+                        prototypes. These bridges involve programming microcontrollers 
+                        to create custom lighting effects or handling sensors with the various 
+                        comm protocols such as I2C, I2S, SERIAL, SPI, RS485</p>
                 </div>
             </div>
 
@@ -217,7 +258,7 @@
                         <li>Python</li>
                         <li>VueJS / JS</li>
                     </ul>
-                    <p>A one year contract (2019) with MBE as an IT Assistant, where I was put to do data entry, bridging data manually through different platforms. I then started to automate these processes using Python and APIs to automatically take data from servers and DBs, rearrange and correct them, and send them back to the other platforms. Through this experience I learnt how much I love to make processes much more efficient. During the year at MBE I became proficient in scripting with Python and PowerShell/Bash scripting to automate data copying between different web platforms using different APIs.</p>
+                    <p>One year contract (2019) with MBE as an IT Assistant, where I was put to do data entry, bridging data manually through different platforms. I then started to automate these processes using Python and APIs to automatically take data from servers and DBs, rearrange and correct them, and send them back to the other platforms. Through this experience I learnt how much I love to make processes much more efficient. During the year at MBE I became proficient in scripting with Python and PowerShell/Bash scripting to automate data copying between different web platforms using different APIs.</p>
                 </div>
             </div>
 
@@ -241,7 +282,7 @@
         <!-- ===== END TIMELINE ===== -->
 
         <!-- Summary -->
-        <div class="mt-10">
+        <div class="mt-10 page-section">
             <h1 class="h1_title">To sum up:</h1>
             <div class="pl-4 mt-2">
                 <p>I'm really interested in developing efficient tools to bridge technologies, and I'm trying to stay
@@ -257,7 +298,7 @@
         </div>
 
         <!-- Education -->
-        <div class="mt-10">
+        <div class="mt-10 page-section">
             <h2 class="h2_title" id="education-qualifications">Education &amp; qualifications</h2>
             <div class="timeline mt-6">
                 <div class="timeline-entry">
@@ -270,21 +311,11 @@
                     <div class="timeline-title">English Certificate (CEFR Cambridge)</div>
                     <div class="timeline-body"><p>Grammar B2, Listening/comprehension C1.</p></div>
                 </div>
-                <div class="timeline-entry">
-                    <div class="timeline-date">2013 – 2018</div>
-                    <div class="timeline-title">Liceo Scientifico G. Falcone &amp; P. Borsellino</div>
-                    <div class="timeline-body"><p>High school diploma – 13th grade.</p></div>
-                </div>
-                <div class="timeline-entry">
-                    <div class="timeline-date">2011 – 2013</div>
-                    <div class="timeline-title">Scuola Media Leonardo Da Vinci</div>
-                    <div class="timeline-body"><p>Middle school diploma – 8th grade.</p></div>
-                </div>
             </div>
         </div>
 
         <!-- Interests -->
-        <div class="mt-10 mb-10 pb-10">
+        <div class="mt-10 mb-10 pb-10 page-section">
             <h1 class="h1_title" id="interests">Interests:</h1>
             <p class="mt-2">I'm interested in tech, jazz/fusion music and performing arts.<br>
             These spaces allow me to experiment in different directions and relax.
@@ -302,6 +333,31 @@
     <div class="pt-16"></div>
 
 </div>
+<script>
+function downloadPDF() {
+    // Hide the download button for PDF
+    const btn = document.querySelector('.download-btn');
+    btn.style.display = 'none';
+    
+    // Remove background color for PDF
+    document.body.style.backgroundColor = 'white';
+    
+    const element = document.body;
 
+    // Temporarily expand the main content to reduce side margins in the PDF
+
+    html2canvas(element, { scale: 2, useCORS: true }).then((canvas) => {
+        const imgData = canvas.toDataURL('image/jpeg', 0.98);
+        const pdf = new jsPDF({ unit: 'px', format: [canvas.width, canvas.height] });
+        pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+        pdf.save('ShawnPinciara_CV.pdf');
+
+        // Show the button again
+        btn.style.display = 'block';
+        // Refresh the page
+        location.reload();
+    });
+}
+</script>
 </body>
 </html>
