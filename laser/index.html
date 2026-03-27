@@ -194,6 +194,14 @@
     #btn-svg-generate:not(:disabled) { border-color: #153015; color: #4e4; }
     #btn-svg-generate:hover:not(:disabled) { background: #0a1a0a; border-color: #4e4; }
     #btn-svg-generate:disabled { opacity: 0.3; cursor: not-allowed; }
+    #btn-svg-generate.stale:not(:disabled) {
+      border-color: #f90; color: #f90; animation: stale-pulse 1.2s ease-in-out infinite;
+    }
+    #btn-svg-generate.stale:hover:not(:disabled) { background: #2a1a00; }
+    @keyframes stale-pulse {
+      0%,100% { box-shadow: 0 0 0px #f90; }
+      50%      { box-shadow: 0 0 7px #f90; }
+    }
 
     /* SVG job control — hidden until G-code is generated */
     #svg-job-controls { display: none; align-items: center; gap: 6px; }
@@ -300,9 +308,9 @@
       text-align: right; flex-shrink: 0;
     }
     .prof-inp:focus { outline: none; border-color: #f90; }
-    .prof-inp.spd  { width: 52px; }
-    .prof-inp.pwr  { width: 44px; }
-    .prof-inp.pass { width: 36px; }
+    .prof-inp.spd  { width: 68px; }
+    .prof-inp.pwr  { width: 60px; }
+    .prof-inp.pass { width: 50px; }
     .profile-del {
       flex-shrink: 0; padding: 0 4px; height: 16px;
       background: transparent; border: 1px solid #222; color: #333;
@@ -337,6 +345,33 @@
       width: 38px; background: #111; border: 1px solid #2a2a2a; color: #ddd;
       border-radius: 3px; padding: 2px 3px; font-family: monospace; font-size: 0.65rem; text-align: right;
     }
+
+    /* ── Generate profiles popup ── */
+    #gen-popup-overlay {
+      display: none; position: fixed; inset: 0; z-index: 400;
+      background: rgba(0,0,0,0.55); align-items: center; justify-content: center;
+    }
+    #gen-popup-overlay.open { display: flex; }
+    #gen-popup {
+      background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
+      padding: 18px 20px; min-width: 260px; max-width: 360px;
+      box-shadow: 0 6px 32px rgba(0,0,0,0.9);
+    }
+    #gen-popup h2 { font-size: 0.75rem; color: #f90; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .gen-prof-row {
+      display: flex; align-items: center; gap: 9px;
+      padding: 6px 0; border-bottom: 1px solid #222; font-size: 0.72rem;
+    }
+    .gen-prof-row:last-of-type { border-bottom: none; }
+    .gen-swatch { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; border: 1px solid #444; }
+    .gen-prof-name { flex: 1; color: #ccc; }
+    .gen-prof-params { color: #777; white-space: nowrap; font-size: 0.67rem; }
+    #gen-popup-close {
+      margin-top: 14px; width: 100%; padding: 6px;
+      background: #111; border: 1px solid #f90; border-radius: 4px;
+      color: #f90; font-family: inherit; font-size: 0.75rem; cursor: pointer;
+    }
+    #gen-popup-close:hover { background: #2a1a00; }
 
     /* drop overlay */
     #drop-overlay {
@@ -462,9 +497,7 @@
         <button id="btn-load-svg">&#128444; Load SVG</button>
         <input type="file" id="file-input-svg" accept=".svg" style="display:none">
         <span id="svg-filename">No SVG file</span>
-        <div class="svg-param" title="Speed of empty travel moves between paths (G0). Does not burn material."><label>Rapid</label>
-          <input type="number" id="p-rapid" value="3000" min="500" max="8000"> mm/min</div>
-        <div class="svg-param" title="Scale multiplier for SVG dimensions. 1 = original size, 0.5 = half, 2 = double."><label>Scale</label>
+<div class="svg-param" title="Scale multiplier for SVG dimensions. 1 = original size, 0.5 = half, 2 = double."><label>Scale</label>
           <input type="number" id="p-scale" value="1"    min="0.01" max="100" step="0.01"> ×</div>
         <div class="svg-param" title="Max length of each straight segment when approximating curves. Smaller = more accurate but more G-code lines. Typical: 0.3 mm."><label>Sample step</label>
           <input type="number" id="p-step"  value="0.3"  min="0.05" max="2"   step="0.05"> mm</div>
@@ -509,6 +542,15 @@
     <input type="number" id="cp-r" min="0" max="255" placeholder="R">
     <input type="number" id="cp-g" min="0" max="255" placeholder="G">
     <input type="number" id="cp-b" min="0" max="255" placeholder="B">
+  </div>
+</div>
+
+<!-- Generate profiles popup -->
+<div id="gen-popup-overlay">
+  <div id="gen-popup">
+    <h2>PROFILI USATI PER LA GENERAZIONE</h2>
+    <div id="gen-popup-list"></div>
+    <button id="gen-popup-close">OK</button>
   </div>
 </div>
 
@@ -878,7 +920,7 @@ btnDrawBox .addEventListener('click', drawBox);
 
 async function drawBox() {
   if (!writer || !svgBboxMaxX) return;
-  const rapid = parseFloat(document.getElementById('p-rapid').value) || 3000;
+  const rapid = 3000;
   const origX = pos.x, origY = pos.y;
   const cmds = [
     `G0 F${rapid}`,
@@ -1120,7 +1162,7 @@ document.getElementById('btn-svg-generate').addEventListener('click', convertSvg
 async function convertSvgToGcode() {
   if (!svgDoc) return;
 
-  const rapid = parseFloat(document.getElementById('p-rapid').value) || 3000;
+  const rapid = 3000;
   const scale = parseFloat(document.getElementById('p-scale').value) || 1;
   const step  = parseFloat(document.getElementById('p-step').value)  || 0.3;
 
@@ -1198,6 +1240,7 @@ async function convertSvgToGcode() {
   ];
 
   previewSegs=[]; let curX=0,curY=0;
+  const usedProfileIds = new Set();
   for (const {pts, color} of matchedSegs) {
     const prof = profiles.length
       ? profiles.find(p=>p.color.toLowerCase()===color.toLowerCase())
@@ -1206,12 +1249,12 @@ async function convertSvgToGcode() {
     const sValue   = prof ? Math.round(prof.power / 100 * 255) : 128;
     const passes   = prof ? Math.max(1, Math.round(prof.passes)) : 1;
     const label    = prof ? (prof.name || prof.color) : color;
+    if (prof) usedProfileIds.add(prof.id);
 
     const p0=pts[0];
     lines.push(`; ${label} — ${passes} pass${passes>1?'es':''}`);
 
     // rapid travel to start of path (shown once in preview)
-    lines.push(`G0 F${rapid}`);
     lines.push(`G0 X${fmt(p0.x)} Y${fmt(p0.y)}`);
     previewSegs.push({on:false,pts:[{x:curX,y:curY},p0]});
 
@@ -1223,11 +1266,12 @@ async function convertSvgToGcode() {
     for (let pass=0; pass<passes; pass++) {
       if (pass>0) {
         // return to start for subsequent passes
-        lines.push(`G0 F${rapid}`);
         lines.push(`G0 X${fmt(p0.x)} Y${fmt(p0.y)}`);
       }
-      lines.push(`M3 S${sValue}`,`G1 F${feedRate}`);
-      for (let i=1;i<pts.length;i++) lines.push(`G1 X${fmt(pts[i].x)} Y${fmt(pts[i].y)}`);
+      // M3 sets laser power (S), G1 with F sets feed rate independently
+      lines.push(`M3 S${sValue}`);
+      lines.push(`G1 F${feedRate} X${fmt(pts[1].x)} Y${fmt(pts[1].y)}`);
+      for (let i=2;i<pts.length;i++) lines.push(`G1 X${fmt(pts[i].x)} Y${fmt(pts[i].y)}`);
       lines.push('M5');
     }
 
@@ -1236,6 +1280,12 @@ async function convertSvgToGcode() {
   lines.push('M5','G0 X0.000 Y0.000','; End of program');
 
   log(`G-code generated: ${lines.length} lines, ${matchedSegs.length} segments, ${maxX.toFixed(1)}×${maxY.toFixed(1)} mm`,'sys');
+
+  document.getElementById('btn-svg-generate').classList.remove('stale');
+
+  // Show popup with used profiles
+  const usedProfs = profiles.filter(p => usedProfileIds.has(p.id));
+  showGenPopup(usedProfs);
 
   // Load G-code WITHOUT switching tab, then show SVG run controls
   parseAndRenderGcode(lines.join('\n'), 'from_svg.gcode', false);
@@ -1342,6 +1392,7 @@ function renderProfileRow(p) {
   [['speed',1],['power',1],['passes',1]].forEach(([f]) => {
     document.getElementById(`pf-${f}-${p.id}`).addEventListener('change', e => {
       const pr=profiles.find(x=>x.id===p.id); if(pr) pr[f]=parseFloat(e.target.value)||0;
+      markGenerateStale();
     });
   });
   row.querySelector('.profile-del').addEventListener('click', ()=>removeProfile(p.id));
@@ -1499,12 +1550,57 @@ document.addEventListener('drop',e=>{
 // ═══════════════════════════════════════════════════════════
 btnConnect.addEventListener('click',()=>{ if(port) disconnect(); else connect(); });
 
+// ── Generate stale indicator ────────────────────────────────
+function markGenerateStale() {
+  const btn = document.getElementById('btn-svg-generate');
+  if (!btn.disabled) btn.classList.add('stale');
+}
+
+// ── Generate profiles popup ─────────────────────────────────
+const genPopupOverlay = document.getElementById('gen-popup-overlay');
+document.getElementById('gen-popup-close').addEventListener('click', ()=>genPopupOverlay.classList.remove('open'));
+genPopupOverlay.addEventListener('click', e=>{ if(e.target===genPopupOverlay) genPopupOverlay.classList.remove('open'); });
+
+function showGenPopup(usedProfs) {
+  const list = document.getElementById('gen-popup-list');
+  list.innerHTML = '';
+  usedProfs.forEach(p => {
+    const sVal = Math.round(p.power / 100 * 255);
+    const fVal = Math.round(p.speed * 60);
+    const row = document.createElement('div');
+    row.className = 'gen-prof-row';
+    row.innerHTML = `
+      <div class="gen-swatch" style="background:${p.color}"></div>
+      <span class="gen-prof-name">${p.name || p.color}</span>
+      <span class="gen-prof-params">F${fVal} mm/min &nbsp;|&nbsp; S${sVal} &nbsp;|&nbsp; ${p.passes}×</span>`;
+    list.appendChild(row);
+  });
+  genPopupOverlay.classList.add('open');
+}
+
 window.addEventListener('load',()=>{
   log('Laser CNC 3018 Controller ready.','sys');
   log('Connect the machine or load an SVG / G-code file.','sys');
   connect();
   // SVG tab is default — init canvas size
   setTimeout(()=>{ resizeCanvas(); drawAll(); }, 100);
+
+  // Auto-load default profiles
+  fetch('laser_profiles.json')
+    .then(r=>r.json())
+    .then(data=>{
+      document.getElementById('profiles-list').innerHTML='';
+      profiles=[]; nextPid=1;
+      data.forEach(d=>addProfile(d));
+      log(`${data.length} profiles loaded (default).`,'sys');
+    })
+    .catch(()=>{});
+
+  // Auto-load default SVG
+  fetch('test.svg')
+    .then(r=>r.text())
+    .then(text=>loadSvgText(text,'test.svg'))
+    .catch(()=>{});
 });
 </script>
 </body>

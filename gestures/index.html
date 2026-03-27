@@ -936,6 +936,21 @@
 					const addFrameBtn = document.getElementById('addFrameBtn');
 					if (addFrameBtn) {
 						addFrameBtn.addEventListener('click', () => {
+							// Auto-salva il frame precedente prima di aggiungerne uno nuovo
+							const prevIdx = frames.length - 1;
+							if (prevIdx >= 0) {
+								frames[prevIdx] = {
+									red: { x: circleRedX, y: circleRedY },
+									blue: { x: circleBlueX, y: circleBlueY },
+									green: { x: circleGreenX, y: circleGreenY }
+								};
+								const prevSaveBtn = document.querySelector(`.saveFrameBtn[data-frame="${prevIdx}"]`);
+								if (prevSaveBtn) {
+									const orig = prevSaveBtn.style.background;
+									prevSaveBtn.style.background = '#66BB6A';
+									setTimeout(() => { prevSaveBtn.style.background = orig; }, 400);
+								}
+							}
 							const newIdx = frames.length;
 							frames.push({ red: {x: 0, y: 0}, blue: {x: 0, y: 0}, green: {x: 0, y: 0} });
 							

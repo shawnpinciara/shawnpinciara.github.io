@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Cut",
+    "color": "#ff0000",
+    "speed": 30,
+    "power": 50,
+    "passes": 1
+  },
+  {
+    "name": "EngravePaper",
+    "color": "#00ff00",
+    "speed": 100,
+    "power": 70,
+    "passes": 1
+  }
+]
