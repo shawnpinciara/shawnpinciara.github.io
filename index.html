@@ -5,71 +5,209 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="style.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Montserrat">
-    <meta name="viewport" 
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
+      tailwind.config = {
         theme: {
-            extend: {
+          extend: {
             colors: {
-                clifford: '#da373d',
-                sp_darkb_lue: '#154c79',
-                sp_mid_dark_blue: '#1b66a3',
-                sp_light_blue: '#5199d4'
+              clifford: '#da373d',
+              sp_darkb_lue: '#154c79',
+              sp_mid_dark_blue: '#1b66a3',
+              sp_light_blue: '#5199d4'
             }
-            }
+          }
         }
-        }
+      }
     </script>
-  <body class="animated-background bg-gradient-to-br from-sp_darkb_lue  to-sp_mid_dark_blue cursor-zoom-in" style="overflow: hidden">
-    <!-- MENU -->
-    <!-- <div class="menu_container">
-        <div class="menu">
-            <div class="menu_item home_menu_item">
-                 <a href="#home_screen"><img class="points_home" src="./src/points_home.png"> 
-                </a>
-            </div>  
-             <div class="menu_item"><a class="a_menu" href="https://shawnpinciara.github.io/">Home</a></div> 
-            <div class="menu_item"><a class="a_menu" href="projects/index.html">Projects</a></div>
-            <div class="menu_item"><a class="a_menu" href="#donate">Contacts</a></div> 
-             <div class="menu_item"><a class="a_menu" href="#display" class="menu_hamburger"><img class="hamburger_icon" src="./src/menu.svg"></a></div>
+    <style>
+      .snap-container {
+        height: 100vh;
+        overflow-y: scroll;
+        scroll-snap-type: y mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .snap-container::-webkit-scrollbar { display: none; }
+
+      .snap-section {
+        height: 100vh;
+        min-height: 100vh;
+        scroll-snap-align: start;
+        overflow: hidden;
+        position: relative;
+      }
+
+      @keyframes bounce-arrow {
+        0%, 100% { transform: translateY(0px); opacity: 0.75; }
+        50% { transform: translateY(9px); opacity: 0.35; }
+      }
+      .bounce-arrow { animation: bounce-arrow 1.6s ease-in-out infinite; }
+
+      .proj-photo-gallery {
+        flex-shrink: 0;
+        height: 70vh;
+        position: relative;
+        margin: 0;
+        cursor: pointer;
+      }
+      .proj-photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0.5rem;
+        position: absolute;
+        background-color: #fffbeb;
+        transition: 400ms ease-in-out;
+      }
+      .proj-photo-1 { z-index: 22; transform: rotate(5deg);  margin-left: 0.5rem; margin-bottom: 0.5rem; }
+      .proj-photo-2 { z-index: 19; transform: rotate(2deg);  margin-left: 0.25rem; margin-bottom: 0.25rem; }
+      .proj-photo-3 { z-index: 17; transform: rotate(0deg); }
+      .proj-photo-4 { z-index: 10; transform: rotate(-3deg); margin-left: -0.25rem; }
+
+      /* Light sections: whitish bg, blue text */
+      .snap-section-light { background-color: #e8f2fb; }
+      .snap-section-light .proj-title,
+      .snap-section-light h1 { color: #154c79; }
+      .snap-section-light p   { color: #1b66a3; }
+      .snap-section-light a,
+      .snap-section-light .a  { color: #154c79; }
+    </style>
+  </head>
+  <body style="overflow: hidden">
+
+    <div class="snap-container">
+
+      <!-- ===== HOME ===== -->
+      <div class="snap-section animated-background bg-gradient-to-br from-sp_darkb_lue to-sp_mid_dark_blue cursor-zoom-in">
+        <div id="dewi-ani"    class="absolute"></div>
+        <div id="points-ani"  class="absolute"></div>
+        <div id="redneko-ani" class="absolute"></div>
+        <div id="totem-ani" class="absolute"></div>
+
+        <div class="absolute inset-0 flex justify-center items-center px-8 lg:px-20">
+          <p class="p_home">Hello, I'm <a class="a_home" href="https://www.linkedin.com/in/shawn-pinciara/" target="_blank">Shawn Pinciara</a>,<br>
+            born <a class="a_home" href="https://en.wikipedia.org/wiki/2000" target="_blank">in the new millenium</a>, graduated in
+            <a class="a_home" href="https://www.unimi.it/en/education/computer-science-new-media-communications" target="_blank">Computer Science for New Media Communications'</a> and <br>
+            <a class="a_home" href="./cv/#artistic-profile">part-time artist</a>.<br>
+            You can have a look to <a class="a_home" href="./cv">my CV</a>, wonder through any <a class="a_home" href="projects/index.html">projects I made</a> or just see <br>
+            what <a class="a_home" href="https://instagram.com/shawnpinciara" target="_blank">I have been up to</a>.<br>
+            Contact me through <a class="a_home" href="mailto:shawnpinciara@gmail.com" target="_blank">email</a> or
+            send me a <a class="a_home" href="https://instagram.com/shawnpinciara" target="_blank">dm</a>.
+          </p>
         </div>
-    </div> -->
-    <!-- MENU END -->
 
+        <!-- scroll indicator -->
+        <div class="absolute bottom-8 w-full flex flex-col items-center pointer-events-none">
+          <p style="font-family: 'Montserrat', sans-serif; font-size: 0.78rem; color: white; opacity: 0.7; margin-bottom: 0.5rem; letter-spacing: 0.03em;">
+            Scroll to look at some projects
+          </p>
+          <div class="bounce-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24"
+                 fill="none" stroke="white" stroke-width="2.2"
+                 stroke-linecap="round" stroke-linejoin="round" opacity="0.7">
+              <line x1="12" y1="4" x2="12" y2="20"/>
+              <polyline points="18 14 12 20 6 14"/>
+            </svg>
+          </div>
+        </div>
+      </div>
 
-    <div class="absolute flex h-screen w-screen justify-center items-center px-8 lg:px-20">
-            <p class="p_home">Hello, I’m <a class="a_home" href="https://www.linkedin.com/in/shawn-pinciara/" target=”_blank”>Shawn Pinciara</a>,<br>
-                born <a class="a_home" href="https://en.wikipedia.org/wiki/2000" target=”_blank”>in the new millenium</a>, graduated in 
-                <a class="a_home" href="https://www.unimi.it/en/education/computer-science-new-media-communications" target=”_blank”>Computer
-                Science for New Media Communications’</a> and <br> <a class="a_home"
-                href="./cv/#artistic-profile" >part-time
-                artist</a>.<br>You can have a look to <a class="a_home" href="./cv">my CV</a>, wonder
-                through any <a class="a_home" href="projects/index.html">projects I made</a> or just see <br> what
-                <a class="a_home" href="https://instagram.com/shawnpinciara" target=”_blank”>I have been up to</a>.
-                <br>Contact me through <a class="a_home" href="mailto:shawnpinciara@gmail.com" target=”_blank”>email</a> or
-                send me a <a class="a_home" href="https://instagram.com/shawnpinciara" target=”_blank”>dm</a>.
-            </p>
+      <!-- ===== TOTEM — blue ===== -->
+      <div class="snap-section bg-gradient-to-br from-sp_darkb_lue to-sp_mid_dark_blue flex flex-col p-8">
+        <div class="proj-photo-gallery" id="totem-gallery">
+          <img class="proj-photo proj-photo-3" src="./projects/src/totem.webp" alt="TOTEM">
+        </div>
+        <div class="flex flex-col flex-1 justify-center py-5 px-2">
+          <h1 class="proj-title h1_title">TOTEM</h1>
+          <p class="mt-3 text-sm leading-relaxed">A musical box prototyped for musicians who want to embed a musical idea into a device — a Raspberry Pi running Pure Data live, packed with sensors to perceive the world and lights to give feedback.</p>
+        </div>
+      </div>
+
+      <!-- ===== DEWI — light ===== -->
+      <div class="snap-section snap-section-light flex flex-col p-8">
+        <div class="proj-photo-gallery" id="dewi-gallery">
+          <img class="proj-photo proj-photo-1" src="./projects/src/dewi_1.png"  alt="DEWI">
+          <img class="proj-photo proj-photo-2" src="./projects/src/dewi_2.png"  alt="DEWI">
+          <img class="proj-photo proj-photo-3" src="./projects/src/dewi_4.png"  alt="DEWI">
+          <img class="proj-photo proj-photo-4" src="./projects/src/dewi5.webp"  alt="DEWI">
+        </div>
+        <div class="flex flex-col flex-1 justify-center py-5 px-2">
+          <h1 class="proj-title h1_title">DEWI</h1>
+          <p class="mt-3 text-sm leading-relaxed">Wind instruments are physically limited by fixed hole positions. The DEWI experiments with new finger positioning and note mapping, efficiently decreasing the number of buttons needed across 4 octaves.</p>
+          <a class="a mt-4 block" href="./dewi/">Go to the project page →</a>
+        </div>
+      </div>
+
+      <!-- ===== REDNEKO — blue ===== -->
+      <div class="snap-section bg-gradient-to-br from-sp_darkb_lue to-sp_mid_dark_blue flex flex-col p-8">
+        <div class="proj-photo-gallery" id="redneko-gallery">
+          <img class="proj-photo proj-photo-2" src="./projects/src/redneko_3.jpg" alt="REDNEKO">
+          <img class="proj-photo proj-photo-3" src="./projects/src/redneko_2.jpg" alt="REDNEKO">
+          <img class="proj-photo proj-photo-4" src="./projects/src/redneko_1.jpg" alt="REDNEKO">
+        </div>
+        <div class="flex flex-col flex-1 justify-center py-5 px-2">
+          <h1 class="proj-title h1_title">REDNEKO</h1>
+          <p class="mt-3 text-sm leading-relaxed">A mini synthesizer, low power and low cost, built to play 7th chord inversions with interchangeable waveforms. Usable just with the joystick — strike chords with different velocities.</p>
+          <a class="a mt-4 block" href="./redneko/">Go to the project page →</a>
+        </div>
+      </div>
+
+      <!-- ===== POINTS — light ===== -->
+      <div class="snap-section snap-section-light flex flex-col p-8">
+        <div class="proj-photo-gallery" id="points-gallery">
+          <img class="proj-photo proj-photo-2" src="./projects/src/points2.jpg" alt="POINTS">
+          <img class="proj-photo proj-photo-3" src="./projects/src/points1.jpg" alt="POINTS">
+          <img class="proj-photo proj-photo-4" src="./projects/src/points.jpg"  alt="POINTS">
+        </div>
+        <div class="flex flex-col flex-1 justify-center py-5 px-2">
+          <h1 class="proj-title h1_title">POINTS</h1>
+          <p class="mt-3 text-sm leading-relaxed">Points CS empowers occupational therapists and patients with tools to teach and learn coordination in a fun, affordable, and effective way.</p>
+          <a class="a mt-4 block" href="https://pointscs.github.io/">Go to the website →</a>
+        </div>
+      </div>
+
+      <!-- ===== JUGGLING — blue ===== -->
+      <div class="snap-section bg-gradient-to-br from-sp_darkb_lue to-sp_mid_dark_blue flex flex-col p-8">
+        <div class="proj-photo-gallery" id="juggling-gallery">
+          <img class="proj-photo proj-photo-1" src="./projects/src/juggling_videos.png"   alt="Juggling">
+          <img class="proj-photo proj-photo-3" src="./projects/src/juggling_videos_2.webp" alt="Juggling">
+          <img class="proj-photo proj-photo-4" src="./projects/src/juggling_videos_1.webp" alt="Juggling">
+        </div>
+        <div class="flex flex-col flex-1 justify-center py-5 px-2">
+          <h1 class="proj-title h1_title">Juggling Videography</h1>
+          <p class="mt-3 text-sm leading-relaxed">Juggling shorts I created and directed over the years, both my own work and for other people.</p>
+          <a class="a mt-4 block" href="./juggling_videos">Go to the page →</a>
+        </div>
+      </div>
+
     </div>
 
-    
+    <script src="script.js"></script>
+    <script>
+      function cycleGallery(gallery) {
+        var imgs = Array.from(gallery.querySelectorAll('img'));
+        if (imgs.length < 2) return;
+        var srcs = imgs.map(function(img) { return img.src; });
+        srcs.push(srcs.shift());
+        imgs.forEach(function(img, i) { img.src = srcs[i]; });
+      }
 
-    <!-- icons animations -->
-    <div id="dewi-ani" class="absolute"></div>
-    <div id="points-ani" class="absolute"></div>
-    <div id="redneko-ani" class="absolute"></div>
-    
-
-    
-</body>
-      
-<script src="script.js"></script>
-
+      document.querySelectorAll('.proj-photo-gallery').forEach(function(gallery) {
+        gallery.addEventListener('click', function() { cycleGallery(this); });
+        function scheduleNext() {
+          setTimeout(function() { cycleGallery(gallery); scheduleNext(); },
+                     5000 + Math.random() * 10000);
+        }
+        scheduleNext();
+      });
+    </script>
+  </body>
 </html>

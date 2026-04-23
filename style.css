@@ -80,6 +80,19 @@
         background-repeat: no-repeat;
         background-size: cover;
     }
+
+    #totem-ani {
+        offset-path: ellipse(40% 33%);
+        animation: moveTotem 54000ms infinite linear;
+        width: 130px;
+        height: 95px;
+        opacity: 0.7;
+        /* background: cyan; */
+        background-image: url("./src/totem.svg");
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
       
     @keyframes moveDewi {
         0% {
@@ -136,6 +149,32 @@
     @keyframes moveRedneko {
         0% {
             offset-distance: 35%;
+            offset-rotate: calc(var(--rot) + 0deg);
+                /* offset to y axis */
+            offset-anchor: 0% 0%; 
+        }
+        25%{
+            offset-anchor: 0% 50%;
+            offset-rotate: calc(var(--rot) + 72deg);
+        }
+        50% {
+            offset-anchor: 0% 0%;
+            offset-rotate: calc(var(--rot) + 144deg);
+        }
+        75%{
+            offset-anchor: 0% 50%;
+            offset-rotate: calc(var(--rot) + 216deg);
+        }
+        100% {
+            offset-anchor: 0% 0%;
+            offset-distance: 135%;
+            offset-rotate: calc(var(--rot) + 360deg);
+        }
+    }
+
+    @keyframes moveTotem {
+        0% {
+            offset-distance: 75%;
             offset-rotate: calc(var(--rot) + 0deg);
                 /* offset to y axis */
             offset-anchor: 0% 0%; 

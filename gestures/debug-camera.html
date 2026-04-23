@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Camera Debug</title>
+  <style>
+    body { font-family: monospace; background: #111; color: #0f0; padding: 20px; }
+    video { width: 320px; height: 240px; background: #333; border: 1px solid #0f0; display: block; margin: 10px 0; }
+    .ok  { color: #0f0; }
+    .err { color: #f44; }
+    .warn { color: #fa0; }
+    pre  { white-space: pre-wrap; word-break: break-all; font-size: 12px; }
+  </style>
+</head>
+<body>
+<h2>Camera Debug</h2>
+<div id="log"></div>
+<video id="v" autoplay playsinline muted></video>
+<div id="devices"></div>
+
+<script>
+  const log = document.getElementById('log');
+  function line(msg, cls) {
+    const d = document.createElement('div');
+    d.className = cls || '';
+    d.textContent = msg;
+    log.appendChild(d);
+  }
+
+  // 1. Browser info
+  line('UA: ' + navigator.userAgent);
+  line('Protocol: ' + location.protocol);
+
+  // 2. mediaDevices support
+  if (!navigator.mediaDevices) {
+    line('❌ navigator.mediaDevices NON disponibile', 'err');
+    line('   → Chromium vecchio? Prova --unsafely-treat-insecure-origin-as-secure', 'warn');
+  } else {
+    line('✓ navigator.mediaDevices presente', 'ok');
+  }
+
+  // 3. WASM support
+  if (typeof WebAssembly === 'undefined') {
+    line('❌ WebAssembly NON supportato (MediaPipe non funzionerà)', 'err');
+  } else {
+    line('✓ WebAssembly supportato', 'ok');
+  }
+
+  // 4. Elenca dispositivi
+  async function listDevices() {
+    try {
+      const devs = await navigator.mediaDevices.enumerateDevices();
+      const cams = devs.filter(d => d.kind === 'videoinput');
+      if (cams.length === 0) {
+        line('⚠ Nessuna videocamera rilevata prima del permesso', 'warn');
+      } else {
+        cams.forEach((c, i) => line(`  Cam ${i}: ${c.label || '(label dopo permesso)'} — ${c.deviceId.slice(0,12)}...`, 'ok'));
+      }
+      document.getElementById('devices').innerHTML = '<pre>' + JSON.stringify(devs, null, 2) + '</pre>';
+    } catch(e) {
+      line('❌ enumerateDevices: ' + e, 'err');
+    }
+  }
+
+  // 5. Prova getUserMedia con vari constraint (fallback progressivo)
+  async function tryCamera() {
+    const constraints = [
+      { video: { width: 640, height: 480 }, audio: false },
+      { video: { width: 320, height: 240 }, audio: false },
+      { video: true, audio: false },
+    ];
+
+    for (const c of constraints) {
+      try {
+        line('→ Provo: ' + JSON.stringify(c));
+        const stream = await navigator.mediaDevices.getUserMedia(c);
+        document.getElementById('v').srcObject = stream;
+        line('✓ Camera OK con: ' + JSON.stringify(c), 'ok');
+        // Elenca di nuovo (ora con label)
+        await listDevices();
+        return;
+      } catch(e) {
+        line('  ✗ ' + e.name + ': ' + e.message, 'err');
+      }
+    }
+    line('❌ Nessun constraint ha funzionato', 'err');
+    line('   Possibili cause:', 'warn');
+    line('   - Chromium avviato senza --use-fake-ui-for-media-stream', 'warn');
+    line('   - Pagina servita su file:// (serve http://localhost)', 'warn');
+    line('   - Permesso camera negato nel sistema operativo', 'warn');
+  }
+
+  listDevices().then(() => tryCamera());
+</script>
+</body>
+</html>
