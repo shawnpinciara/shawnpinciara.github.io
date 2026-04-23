@@ -29,6 +29,7 @@
     <style>
       .snap-container {
         height: 100vh;
+        height: 100dvh;
         overflow-y: scroll;
         scroll-snap-type: y mandatory;
         -webkit-overflow-scrolling: touch;
@@ -39,7 +40,7 @@
 
       .snap-section {
         height: 100vh;
-        min-height: 100vh;
+        height: 100dvh;
         scroll-snap-align: start;
         overflow: hidden;
         position: relative;
@@ -52,8 +53,8 @@
       .bounce-arrow { animation: bounce-arrow 1.6s ease-in-out infinite; }
 
       .proj-photo-gallery {
-        flex-shrink: 0;
-        height: 70vh;
+        flex: 1;
+        min-height: 0;
         position: relative;
         margin: 0;
         cursor: pointer;
@@ -92,7 +93,7 @@
         <div id="redneko-ani" class="absolute"></div>
         <div id="totem-ani" class="absolute"></div>
 
-        <div class="absolute inset-0 flex justify-center items-center px-8 lg:px-20">
+        <div class="absolute inset-0 flex justify-center items-center px-8 lg:px-20 pb-16">
           <p class="p_home">Hello, I'm <a class="a_home" href="https://www.linkedin.com/in/shawn-pinciara/" target="_blank">Shawn Pinciara</a>,<br>
             born <a class="a_home" href="https://en.wikipedia.org/wiki/2000" target="_blank">in the new millenium</a>, graduated in
             <a class="a_home" href="https://www.unimi.it/en/education/computer-science-new-media-communications" target="_blank">Computer Science for New Media Communications'</a> and <br>
@@ -105,7 +106,7 @@
         </div>
 
         <!-- scroll indicator -->
-        <div class="absolute bottom-8 w-full flex flex-col items-center pointer-events-none">
+        <div class="absolute bottom-8 w-full flex flex-col items-center pointer-events-none z-10">
           <p style="font-family: 'Montserrat', sans-serif; font-size: 0.78rem; color: white; opacity: 0.7; margin-bottom: 0.5rem; letter-spacing: 0.03em;">
             Scroll to look at some projects
           </p>
@@ -125,7 +126,7 @@
         <div class="proj-photo-gallery" id="totem-gallery">
           <img class="proj-photo proj-photo-3" src="./projects/src/totem.webp" alt="TOTEM">
         </div>
-        <div class="flex flex-col flex-1 justify-center py-5 px-2">
+        <div class="flex flex-col py-4 px-2">
           <h1 class="proj-title h1_title">TOTEM</h1>
           <p class="mt-3 text-sm leading-relaxed">A musical box prototyped for musicians who want to embed a musical idea into a device — a Raspberry Pi running Pure Data live, packed with sensors to perceive the world and lights to give feedback.</p>
         </div>
@@ -139,7 +140,7 @@
           <img class="proj-photo proj-photo-3" src="./projects/src/dewi_4.png"  alt="DEWI">
           <img class="proj-photo proj-photo-4" src="./projects/src/dewi5.webp"  alt="DEWI">
         </div>
-        <div class="flex flex-col flex-1 justify-center py-5 px-2">
+        <div class="flex flex-col py-4 px-2">
           <h1 class="proj-title h1_title">DEWI</h1>
           <p class="mt-3 text-sm leading-relaxed">Wind instruments are physically limited by fixed hole positions. The DEWI experiments with new finger positioning and note mapping, efficiently decreasing the number of buttons needed across 4 octaves.</p>
           <a class="a mt-4 block" href="./dewi/">Go to the project page →</a>
@@ -153,7 +154,7 @@
           <img class="proj-photo proj-photo-3" src="./projects/src/redneko_2.jpg" alt="REDNEKO">
           <img class="proj-photo proj-photo-4" src="./projects/src/redneko_1.jpg" alt="REDNEKO">
         </div>
-        <div class="flex flex-col flex-1 justify-center py-5 px-2">
+        <div class="flex flex-col py-4 px-2">
           <h1 class="proj-title h1_title">REDNEKO</h1>
           <p class="mt-3 text-sm leading-relaxed">A mini synthesizer, low power and low cost, built to play 7th chord inversions with interchangeable waveforms. Usable just with the joystick — strike chords with different velocities.</p>
           <a class="a mt-4 block" href="./redneko/">Go to the project page →</a>
@@ -167,7 +168,7 @@
           <img class="proj-photo proj-photo-3" src="./projects/src/points1.jpg" alt="POINTS">
           <img class="proj-photo proj-photo-4" src="./projects/src/points.jpg"  alt="POINTS">
         </div>
-        <div class="flex flex-col flex-1 justify-center py-5 px-2">
+        <div class="flex flex-col py-4 px-2">
           <h1 class="proj-title h1_title">POINTS</h1>
           <p class="mt-3 text-sm leading-relaxed">Points CS empowers occupational therapists and patients with tools to teach and learn coordination in a fun, affordable, and effective way.</p>
           <a class="a mt-4 block" href="https://pointscs.github.io/">Go to the website →</a>
@@ -181,7 +182,7 @@
           <img class="proj-photo proj-photo-3" src="./projects/src/juggling_videos_2.webp" alt="Juggling">
           <img class="proj-photo proj-photo-4" src="./projects/src/juggling_videos_1.webp" alt="Juggling">
         </div>
-        <div class="flex flex-col flex-1 justify-center py-5 px-2">
+        <div class="flex flex-col py-4 px-2">
           <h1 class="proj-title h1_title">Juggling Videography</h1>
           <p class="mt-3 text-sm leading-relaxed">Juggling shorts I created and directed over the years, both my own work and for other people.</p>
           <a class="a mt-4 block" href="./juggling_videos">Go to the page →</a>
