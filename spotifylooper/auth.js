@@ -64,7 +64,7 @@ async function handleRedirect() {
     }),
   });
 
-  if (!r.ok) throw new Error('Token exchange fallito');
+  if (!r.ok) throw new Error('Token exchange failed');
 
   const d = await r.json();
   console.log('Token ottenuto, scope:', d.scope, 'expires_in:', d.expires_in);

@@ -51,7 +51,7 @@ async function api(method, path, body) {
       const body = await r.text().catch(() => '');
       console.error('API error', r.status, method, path, body);
       let msg;
-      try { const j = JSON.parse(body); msg = j.error?.message || j.error_description || 'Errore ' + r.status; } catch(_) { msg = 'Errore ' + r.status; }
+      try { const j = JSON.parse(body); msg = j.error?.message || j.error_description || 'Error ' + r.status; } catch(_) { msg = 'Error ' + r.status; }
       throw new Error(msg);
     }
     return r.json().catch(() => null);
@@ -89,14 +89,14 @@ async function loadPlaylists() {
     const html = [];
     html.push(`<div class="item" data-id="liked">
       <div class="item-img" style="background:linear-gradient(135deg,#450af5,#c4efd9);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:22px">&#9829;</div>
-      <div class="item-info"><div class="item-name">Brani salvati</div><div class="item-sub">Salvati &middot; Spotify</div></div>
+      <div class="item-info"><div class="item-name">Liked Songs</div><div class="item-sub">Saved &middot; Spotify</div></div>
     </div>`);
 
     for (const pl of data.items) {
       const img = pl.images?.[0]?.url || '';
       html.push(`<div class="item" data-id="${pl.id}">
         <img class="item-img" src="${img}" alt="" loading="lazy" crossorigin="anonymous" onerror="this.style.display='none'">
-        <div class="item-info"><div class="item-name">${esc(pl.name)}</div><div class="item-sub">${pl.tracks?.total || 0} brani</div></div>
+        <div class="item-info"><div class="item-name">${esc(pl.name)}</div><div class="item-sub">${pl.tracks?.total || 0} tracks</div></div>
       </div>`);
     }
     el.innerHTML = html.join('');
@@ -119,9 +119,9 @@ function esc(s) { const d = document.createElement('div'); d.textContent = s; re
 /* ---- liked tracks ---- */
 async function loadLikedTracks() {
   show('tracks-screen');
-  $('tracks-title').textContent = 'Brani salvati';
+  $('tracks-title').textContent = 'Liked Songs';
   state.playlistId = 'liked';
-  state.playlistName = 'Brani salvati';
+  state.playlistName = 'Liked Songs';
   const el = $('tracks-list');
   el.innerHTML = '<div class="loading-content"><div class="spinner"></div></div>';
 
@@ -131,7 +131,7 @@ async function loadLikedTracks() {
     renderTracks(data.items.map(i => i.track), null);
   } catch (e) {
     if (e.message === 'SESSION_EXPIRED') { clearToken(); clearRefreshTk(); showLogin(); return; }
-    el.innerHTML = '<p style="color:#8A867F;text-align:center;padding:20px;font-size:13px">Errore caricamento</p>';
+    el.innerHTML = '<p style="color:#8A867F;text-align:center;padding:20px;font-size:13px">Error loading</p>';
     toast(e.message);
   }
 }
@@ -153,9 +153,9 @@ async function loadTracks(playlistId, name) {
   } catch (e) {
     if (e.message === 'SESSION_EXPIRED') { clearToken(); clearRefreshTk(); showLogin(); return; }
     if (e.message === 'Forbidden' || e.message.includes('403')) {
-      el.innerHTML = '<p style="color:#8A867F;text-align:center;padding:30px;font-size:13px">Playlist non accessibile via API (potrebbe essere una playlist generata da Spotify o di un altro utente).</p>';
+      el.innerHTML = '<p style="color:#8A867F;text-align:center;padding:30px;font-size:13px">Playlist not accessible via API (it may be a Spotify-generated playlist or from another user).</p>';
     } else {
-      el.innerHTML = '<p style="color:#8A867F;text-align:center;padding:20px;font-size:13px">Errore caricamento brani</p>';
+      el.innerHTML = '<p style="color:#8A867F;text-align:center;padding:20px;font-size:13px">Error loading tracks</p>';
       toast(e.message);
     }
   }
@@ -164,7 +164,7 @@ async function loadTracks(playlistId, name) {
 function renderTracks(tracks, contextUri) {
   const el = $('tracks-list');
   if (!tracks.length) {
-    el.innerHTML = '<p style="color:#b3b3b3;text-align:center;padding:20px">Nessun brano</p>';
+    el.innerHTML = '<p style="color:#b3b3b3;text-align:center;padding:20px">No tracks</p>';
     return;
   }
 
@@ -231,7 +231,7 @@ async function playTrack(uri, contextUri) {
       $('no-device-msg').classList.remove('hidden');
       $('player-ui').classList.add('hidden');
       state.deviceActive = false;
-      toast('Nessun dispositivo attivo. Apri Spotify e riprova.');
+      toast('No active device. Open Spotify and try again.');
     } else {
       toast(e.message);
       show('tracks-screen');
@@ -372,13 +372,13 @@ async function doSeek(posMs) {
 }
 
 function seekBy(sec) {
-  if (!state.deviceActive) { toast('Nessun dispositivo attivo'); return; }
+  if (!state.deviceActive) { toast('No active device'); return; }
   doSeek(state.positionMs + sec * 1000);
 }
 
 /* ---- playback controls ---- */
 async function togglePlayPause() {
-  if (!state.deviceActive) { toast('Nessun dispositivo attivo'); return; }
+  if (!state.deviceActive) { toast('No active device'); return; }
   try {
     if (state.isPlaying) {
       await api('PUT', '/me/player/pause');
@@ -392,7 +392,7 @@ async function togglePlayPause() {
 }
 
 async function nextTrack() {
-  if (!state.deviceActive) { toast('Nessun dispositivo attivo'); return; }
+  if (!state.deviceActive) { toast('No active device'); return; }
   try { await api('POST', '/me/player/next'); resetLoop(); } catch (e) { toast(e.message); }
 }
 
@@ -432,7 +432,7 @@ function updateLoopBtn() {
 }
 
 function handleLoopBtn() {
-  if (!state.deviceActive) { toast('Nessun dispositivo attivo'); return; }
+  if (!state.deviceActive) { toast('No active device'); return; }
 
   switch (state.loopState) {
     case LOOP_IDLE:
@@ -446,7 +446,7 @@ function handleLoopBtn() {
     case LOOP_REC:
       state.punchOut = state.positionMs;
       if (state.punchOut <= state.punchIn) {
-        toast('Il loop deve essere di almeno 1 secondo');
+        toast('Loop must be at least 1 second');
         state.punchOut = null;
         return;
       }
@@ -469,7 +469,7 @@ function handleLoopBtn() {
       state.loopState = LOOP_IDLE;
       $('loop-overlay').classList.remove('active');
       updateLoopBtn();
-      toast('Loop fermato');
+      toast('Loop stopped');
       break;
   }
 }
@@ -525,13 +525,13 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const devices = await api('GET', '/me/player/devices');
       if (devices?.devices?.length) {
-        toast('Dispositivo trovato!');
+        toast('Device found!');
         $('player-ui').classList.remove('hidden');
         state.deviceActive = true;
         startPolling();
       } else {
         $('no-device-msg').classList.remove('hidden');
-        toast('Nessun dispositivo Spotify attivo');
+        toast('No active Spotify device');
       }
     } catch (_) {
       $('no-device-msg').classList.remove('hidden');
