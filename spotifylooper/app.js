@@ -131,7 +131,7 @@ async function loadLikedTracks() {
     renderTracks(data.items.map(i => i.track), null);
   } catch (e) {
     if (e.message === 'SESSION_EXPIRED') { clearToken(); clearRefreshTk(); showLogin(); return; }
-    el.innerHTML = '<p style="color:#b3b3b3;text-align:center">Errore</p>';
+    el.innerHTML = '<p style="color:#8A867F;text-align:center;padding:20px;font-size:13px">Errore caricamento</p>';
     toast(e.message);
   }
 }
@@ -152,8 +152,12 @@ async function loadTracks(playlistId, name) {
     renderTracks(tracks, `spotify:playlist:${playlistId}`);
   } catch (e) {
     if (e.message === 'SESSION_EXPIRED') { clearToken(); clearRefreshTk(); showLogin(); return; }
-    el.innerHTML = '<p style="color:#b3b3b3;text-align:center">Errore</p>';
-    toast(e.message);
+    if (e.message === 'Forbidden' || e.message.includes('403')) {
+      el.innerHTML = '<p style="color:#8A867F;text-align:center;padding:30px;font-size:13px">Playlist non accessibile via API (potrebbe essere una playlist generata da Spotify o di un altro utente).</p>';
+    } else {
+      el.innerHTML = '<p style="color:#8A867F;text-align:center;padding:20px;font-size:13px">Errore caricamento brani</p>';
+      toast(e.message);
+    }
   }
 }
 
@@ -389,18 +393,7 @@ async function togglePlayPause() {
 
 async function nextTrack() {
   if (!state.deviceActive) { toast('Nessun dispositivo attivo'); return; }
-  try {
-    await api('POST', '/me/player/next');
-    resetLoop();
-  } catch (e) { toast(e.message); }
-}
-
-async function prevTrack() {
-  if (!state.deviceActive) { toast('Nessun dispositivo attivo'); return; }
-  try {
-    await api('POST', '/me/player/previous');
-    resetLoop();
-  } catch (e) { toast(e.message); }
+  try { await api('POST', '/me/player/next'); resetLoop(); } catch (e) { toast(e.message); }
 }
 
 function resetLoop() {
@@ -550,8 +543,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   $('playpause-btn').addEventListener('click', togglePlayPause);
-  $('prev-btn').addEventListener('click', prevTrack);
-  $('next-btn').addEventListener('click', nextTrack);
 
   $('loop-btn').addEventListener('click', handleLoopBtn);
 
