@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Spotify Looper</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="login-screen" class="screen">
+  <div class="login-content">
+    <div class="logo">&#9835;</div>
+    <h1>Spotify Looper</h1>
+    <p class="subtitle">Crea loop sui tuoi brani preferiti</p>
+    <button id="login-btn" class="btn btn-primary">Accedi con Spotify</button>
+  </div>
+</div>
+
+<div id="loading-screen" class="screen hidden">
+  <div class="loading-content">
+    <div class="spinner"></div>
+    <p>Caricamento...</p>
+  </div>
+</div>
+
+<div id="playlists-screen" class="screen hidden">
+  <div class="screen-header">
+    <h1>Le tue playlist</h1>
+    <button id="logout-btn" class="btn btn-sm">Esci</button>
+  </div>
+  <div id="playlists-list" class="list"></div>
+</div>
+
+<div id="tracks-screen" class="screen hidden">
+  <div class="screen-header">
+    <button id="back-from-tracks" class="btn btn-icon">&larr;</button>
+    <h1 id="tracks-title">Playlist</h1>
+  </div>
+  <div id="tracks-list" class="list"></div>
+</div>
+
+<div id="player-screen" class="screen hidden">
+  <div class="screen-header">
+    <button id="back-from-player" class="btn btn-icon">&larr;</button>
+    <h1>In riproduzione</h1>
+  </div>
+
+  <div id="player-content">
+    <div id="no-device-msg" class="hidden">
+      <p>Apri Spotify sul telefono o computer e avvia un brano.</p>
+      <button id="retry-btn" class="btn btn-primary mt-16">Riprova</button>
+    </div>
+
+    <div id="player-ui" class="hidden">
+      <div id="track-display">
+        <img id="track-img" src="" alt="copertina" crossorigin="anonymous">
+        <h2 id="track-name">--</h2>
+        <p id="track-artist">--</p>
+      </div>
+
+      <div id="progress-area">
+        <div id="progress-wrap">
+          <div id="loop-overlay"></div>
+          <input type="range" id="progress-bar" value="0" min="0" max="1000" step="1">
+        </div>
+        <div id="time-display">
+          <span id="time-current">0:00</span>
+          <span id="time-total">0:00</span>
+        </div>
+      </div>
+
+      <div id="btn-seek-row">
+        <button class="btn btn-seek" data-offset="-15">-15s</button>
+        <button class="btn btn-seek" data-offset="-10">-10s</button>
+        <button class="btn btn-seek" data-offset="-5">-5s</button>
+        <button class="btn btn-seek" data-offset="5">+5s</button>
+        <button class="btn btn-seek" data-offset="10">+10s</button>
+        <button class="btn btn-seek" data-offset="15">+15s</button>
+        <button class="btn btn-seek" data-offset="30">+30s</button>
+      </div>
+
+      <div id="loop-section">
+        <button id="loop-btn" class="btn btn-loop btn-loop-idle">START RECORD LOOP</button>
+        <div id="loop-ts" class="hidden">0:00 &rarr; 0:00</div>
+      </div>
+
+      <div id="btn-play-row">
+        <button id="prev-btn" class="btn btn-circle">&lsaquo;&lsaquo;</button>
+        <button id="playpause-btn" class="btn btn-circle btn-lg">&#9654;</button>
+        <button id="next-btn" class="btn btn-circle">&rsaquo;&rsaquo;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="hidden"></div>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
