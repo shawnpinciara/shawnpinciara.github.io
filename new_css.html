@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Playground — snap + flex overflow</title>
+  <style>
+
+    /* =====================================================================
+       CONCETTO 1: SCROLL SNAP
+       Come scorrere "a pagine" senza JavaScript.
+       ===================================================================== */
+
+    /*
+      Il CONTENITORE deve:
+        - avere un'altezza fissa (non "auto")
+        - essere lui a fare overflow/scroll (non il body)
+        - dichiarare scroll-snap-type
+    */
+    .snap-container {
+      height: 100vh;
+      height: 100dvh;           /* dvh = esclude la chrome bar su iOS */
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      /*
+        "y"         → snap verticale
+        "mandatory" → lo snap scatta SEMPRE (come pagine di un libro)
+        "proximity" → scatta solo se sei già vicino a una sezione (più morbido)
+      */
+    }
+
+    /*
+      Ogni SEZIONE figlia deve:
+        - essere alta quanto il contenitore (100dvh)
+        - dichiarare scroll-snap-align
+    */
+    .snap-section {
+      height: 100vh;
+      height: 100dvh;
+      scroll-snap-align: start;
+      /*
+        "start"  → allinea il bordo TOP della sezione al bordo TOP del container
+        "center" → allinea il centro
+        "end"    → allinea il bordo BOTTOM
+      */
+
+      /* roba estetica, non necessaria per lo snap */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: sans-serif;
+      font-size: 2rem;
+      font-weight: bold;
+      color: white;
+    }
+
+    .s1 { background: #154c79; }
+    .s2 { background: #1b66a3; }
+    .s3 { background: #e8f2fb; color: #154c79; }
+    .s4 { background: #5199d4; }
+
+
+    /* =====================================================================
+       CONCETTO 2: FLEX OVERFLOW — "testo naturale + gallery che riempie il resto"
+       Il problema classico: il testo è lungo → schiaccia o espelle la gallery.
+       ===================================================================== */
+
+    /*
+      Demo: una sezione divisa in gallery (sopra) + testo (sotto).
+      Vogliamo che:
+        - il TESTO prenda l'altezza che gli serve (niente di più)
+        - la GALLERY prenda TUTTO il resto
+        - se il testo è troppo lungo, viene clippato senza rompere il layout
+    */
+
+    .flex-demo-section {
+      height: 100vh;
+      height: 100dvh;
+      scroll-snap-align: start;
+
+      display: flex;
+      flex-direction: column;   /* figli impilati verticalmente */
+      padding: 2rem;
+      background: #2d6a4f;
+      gap: 1rem;
+    }
+
+    .gallery-box {
+      flex: 1;
+      /*
+        flex: 1  →  "prendi tutto lo spazio rimasto dopo il testo"
+        equivale a: flex-grow:1, flex-shrink:1, flex-basis:0
+      */
+      min-height: 40dvh;
+      /*
+        min-height garantisce che la gallery abbia sempre almeno questo spazio.
+        Senza questo, se il testo è lunghissimo la gallery potrebbe
+        essere schiacciata a zero anche se flex:1 è settato.
+      */
+      background: rgba(255,255,255,0.2);
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-family: sans-serif;
+    }
+
+    .text-box {
+      flex-shrink: 0;
+      /*
+        flex-shrink: 0  →  il testo NON si restringe mai.
+        Prende l'altezza esatta del suo contenuto.
+      */
+      overflow: hidden;
+      /*
+        overflow: hidden  →  se il testo è più lungo dello spazio disponibile,
+        viene clippato silenziosamente invece di "spingere" la gallery fuori schermo.
+        Alternativa: overflow: auto → aggiunge uno scroll interno al testo.
+      */
+      color: white;
+      font-family: sans-serif;
+    }
+
+    .text-box h2 { margin: 0 0 0.5rem; font-size: 1.5rem; }
+    .text-box p  { margin: 0; font-size: 0.9rem; line-height: 1.6; }
+
+    /* --- SLIDER: cambia la lunghezza del testo per vedere l'effetto --- */
+    .controls {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      font-family: sans-serif;
+      font-size: 0.85rem;
+      z-index: 99;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .controls label { display: flex; flex-direction: column; gap: 0.2rem; }
+  </style>
+</head>
+<body style="margin:0; overflow:hidden;">
+
+  <!-- CONTROLLI (solo per giocare) -->
+  <div class="controls">
+    <label>
+      Lunghezza testo
+      <input type="range" min="1" max="20" value="4" id="text-len">
+    </label>
+    <label>
+      snap-type:
+      <select id="snap-type">
+        <option value="y mandatory">mandatory</option>
+        <option value="y proximity">proximity</option>
+        <option value="none">none (disabilitato)</option>
+      </select>
+    </label>
+    <label>
+      snap-align:
+      <select id="snap-align">
+        <option value="start">start</option>
+        <option value="center">center</option>
+        <option value="end">end</option>
+      </select>
+    </label>
+  </div>
+
+  <!-- CONTENITORE SNAP -->
+  <div class="snap-container" id="snap-container">
+
+    <div class="snap-section s1">Sezione 1 — scroll-snap-align: start</div>
+    <div class="snap-section s2">Sezione 2</div>
+    <div class="snap-section s3">Sezione 3 — sfondo chiaro</div>
+    <div class="snap-section s4">Sezione 4</div>
+
+    <!-- SEZIONE DEMO FLEX OVERFLOW -->
+    <div class="flex-demo-section">
+      <div class="gallery-box">
+        📷 gallery<br>
+        <small style="font-size:0.6rem; margin-top:0.5rem; opacity:0.8">
+          flex:1 + min-height:40dvh<br>prende lo spazio rimasto
+        </small>
+      </div>
+      <div class="text-box" id="text-box">
+        <h2>Titolo progetto</h2>
+        <p id="demo-text">Testo descrizione. Usa lo slider in alto a destra per allungarlo e vedere come la gallery si adatta senza mai uscire dallo schermo.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const fakeText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus. ";
+
+    document.getElementById('text-len').addEventListener('input', function() {
+      const n = parseInt(this.value);
+      document.getElementById('demo-text').textContent = fakeText.repeat(n);
+    });
+
+    document.getElementById('snap-type').addEventListener('change', function() {
+      document.getElementById('snap-container').style.scrollSnapType = this.value;
+    });
+
+    document.getElementById('snap-align').addEventListener('change', function() {
+      document.querySelectorAll('.snap-section, .flex-demo-section').forEach(el => {
+        el.style.scrollSnapAlign = this.value;
+      });
+    });
+  </script>
+
+</body>
+</html>

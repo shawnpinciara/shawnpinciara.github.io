@@ -35,17 +35,6 @@
         position: relative;
         padding-left: 2.5rem;
       }
-      /* Vertical line */
-      .timeline::before {
-        content: '';
-        position: absolute;
-        left: 7px;
-        top: 0;
-        bottom: 0;
-        width: 3px;
-        background-color: #154c79;
-        border-radius: 2px;
-      }
 
       /* Single entry */
       .timeline-entry {
@@ -116,12 +105,78 @@
         list-style-type: disc;
       }
 
+      .timeline-item {
+        position: relative;
+      }
+      /* Vertical line segment, drawn per entry so hidden entries leave no line */
+      .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: calc(-2.5rem + 7px);
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background-color: #154c79;
+        border-radius: 2px;
+      }
+
+      .timeline-toggle {
+        position: absolute;
+        left: -2.5rem;
+        top: 0.25rem;
+        width: 17px;
+        height: 17px;
+        padding: 0;
+        border-radius: 50%;
+        background: #fffbf5;
+        border: 3px solid #154c79;
+        color: #154c79;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Montserrat", sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+        opacity: 0;
+        z-index: 2;
+        transition: opacity 0.15s;
+      }
+
+      .timeline-item:hover .timeline-toggle,
+      .timeline-toggle:focus-visible {
+        opacity: 1;
+      }
+
+      .timeline-item.timeline-hidden .timeline-toggle {
+        opacity: 0.85;
+        border-color: #da373d;
+        color: #da373d;
+      }
+
+      .timeline-item.timeline-hidden .timeline-entry {
+        display: none;
+      }
+
+      #pdf-capture-root .timeline-entry,
+      #pdf-capture-root .page-section {
+        page-break-inside: auto !important;
+        break-inside: auto !important;
+      }
+
+      @media (hover: none) {
+        .timeline-toggle {
+          opacity: 0.35;
+        }
+      }
+
       @media only screen and (max-width: 640px) {
         .timeline {
           padding-left: 2rem;
         }
-        .timeline::before {
-          left: 5px;
+        .timeline-item::before {
+          left: calc(-2rem + 5px);
         }
         .timeline-entry {
           padding-left: 1.2rem;
@@ -130,6 +185,13 @@
           left: -2rem;
           width: 14px;
           height: 14px;
+        }
+        .timeline-toggle {
+          left: -2rem;
+          width: 14px;
+          height: 14px;
+          border-width: 2px;
+          font-size: 0.65rem;
         }
         .timeline-title {
           font-size: 1.1rem;
@@ -185,25 +247,24 @@
             <!-- 1 -->
             <div class="timeline-entry now">
                 <div class="timeline-date">June 2025 – Present</div>
-                <div class="timeline-title">Freelance - IoT &amp; Embedded Development</div>
+                <div class="timeline-title">Freelance - Embedded Development  &amp; fast prototyping</div>
                 <div class="timeline-body">
-                    <p>Temperature and humidity soil sensors for agricultural research: 
-                        C++ embedded development for microcontrollers and IoT devices
-                    with PCB design for external use, with a web dashboard to monitor 
-                    the data and manage the devices remotely. LORAWAN and RS485 technologies.</p>
+                    <p>C++ embedded development for microcontrollers using RS485, Wi-Fi, 
+   Bluetooth, I2C, and I2S protocols. Fast prototyping with custom PCB design, 
+   laser cutting, and 3D printing. End-to-end IoT integration with custom web 
+   dashboards for remote monitoring and device management.</p>
                 </div>
             </div>
 
             <!-- 2 -->
             <div class="timeline-entry">
                 <div class="timeline-date">March 2025 – Present</div>
-                <div class="timeline-title">Freelance - High School Teaching</div>
+                <div class="timeline-title">Freelance - Teaching</div>
                 <div class="timeline-body">
-                    <p>School teaching for the social-cultural impact of AI and the 
-                        technical aspects of neural networks.
-                    Part of the PNRR Italian minister of culture project, 
-                    I had been also teaching STEM technologies 
-                    (such as Arduino, 3D printing, coding) to both high school students and teachers.</p>
+                    <p>STEM education and technical training for K-12 students and educators. 
+   Hands-on courses covering computational thinking, coding, 3D printing, and 
+   the Arduino environment, as well as dedicated AI modules exploring neural 
+   networks and the socio-cultural impact of AI (PNRR projects).</p>
                 </div>
             </div>
 
@@ -212,6 +273,12 @@
                 <div class="timeline-date">July 2024 – February 2025</div>
                 <div class="timeline-title">HABITS Design Studio – Software/Hardware Prototype Development</div>
                 <div class="timeline-body">
+                  <p>Fast hardware prototyping for industrial design, specializing in custom 
+   lighting and smart appliances. Integration of displays, sensors, and 
+   microcontrollers using I2C, I2S, SPI, Serial, and RS485 protocols, alongside 
+   hardware hacking and reverse-engineering of commercial appliances for 
+   design prototypes.</p>
+   <br>
                     <p>Main languages used:</p>
                     <ul>
                         <li>C++ (optimized for microcontrollers)</li>
@@ -223,11 +290,7 @@
                         <li>Hardware electronics, soldering</li>
                         <li>Multiple hardware toolboxes and software ones</li>
                     </ul>
-                    <p>During my stay at HABITS I acquired the knowledge to bridge technologies, 
-                        hacking various appliances and use them inside industrial design products 
-                        prototypes. These bridges involve programming microcontrollers 
-                        to create custom lighting effects or handling sensors with the various 
-                        comm protocols such as I2C, I2S, SERIAL, SPI, RS485</p>
+                    
                 </div>
             </div>
 
@@ -246,27 +309,36 @@
 
             <!-- 5 -->
             <div class="timeline-entry">
-                <div class="timeline-date">October 2018 – April 2024</div>
-                <div class="timeline-title">Università Degli Studi di Milano – University</div>
-                <div class="timeline-body">
-                    <p>Bachelor Degree in Computer Science For Fhe New Media Communications, with a thesis on a capacitive 2-axis MIDI instrument <a href="https://shawnpinciara.github.io/thesis/">"A multi-touch control surface implemented as a MIDI controller"</a>, despite graduating in New Media Communication, I wanted to make a formal bridge with a passion of mine (music) by writing a thesis in collaboration with the <a href="https://www.lim.di.unimi.it/index.php?lang=eng">LIM</a> (Milano Statal University's Music Informatics Laboratory).</p>
-                    <p>Meanwhile studying for University I've done various freelance work on social media communication and event organizing.</p>
-                </div>
-            </div>
-
-            <!-- 6 -->
-            <div class="timeline-entry">
                 <div class="timeline-date">2019 – 2021</div>
                 <div class="timeline-title">Mail Boxes Etcetera – Scripting &amp; Data Entry Automation</div>
                 <div class="timeline-body">
                     <p>Main languages used:</p>
                     <ul>
                         <li>Python</li>
-                        <li>VueJS / JS</li>
+                        <li>Powershell</li>
+                        <li>Bash</li>
                     </ul>
-                    <p>One year contract (2019) with MBE as an IT Assistant, where I was put to do data entry, bridging data manually through different platforms. I then started to automate these processes using Python and APIs to automatically take data from servers and DBs, rearrange and correct them, and send them back to the other platforms. Through this experience I learnt how much I love to make processes much more efficient. During the year at MBE I became proficient in scripting with Python and PowerShell/Bash scripting to automate data copying between different web platforms using different APIs.</p>
-                </div>
+                    <p>Automation scripting for data management and IoT processes. Creation of 
+   automated API pipelines using Python, PowerShell, and Bash to extract, 
+   clean, and transfer data seamlessly across heterogeneous servers, databases, 
+   and web platforms, eliminating manual workflows and maximizing efficiency.</p>
+                  </div>
             </div>
+
+            <!-- 6 -->
+            <div class="timeline-entry">
+                <div class="timeline-date">October 2018 – April 2024</div>
+                <div class="timeline-title">Università Degli Studi di Milano – University</div>
+                <div class="timeline-body">
+    <p>Bachelor’s Degree in Computer Science for New Media Communication. Graduated 
+       with a thesis on a 2-axis capacitive MIDI instrument (<a href="https://shawnpinciara.github.io/thesis/" target="_blank">"A multi-touch control surface implemented as a MIDI controller"</a>), 
+       developed in collaboration with the <a href="https://www.lim.di.unimi.it/index.php?lang=eng" target="_blank">LIM</a> 
+       (Music Informatics Laboratory, University of Milan) to bridge computer science with electronic music technology.</p>
+    <p>Concurrently managed freelance projects covering social media communication and event organization.</p>
+</div>
+            </div>
+
+            
 
             <!-- 7 – MISC -->
             <div class="timeline-entry">
@@ -331,28 +403,74 @@ While these passions may not become my primary career, I continue to nurture the
 
 </div>
 <script>
+document.querySelectorAll('.timeline-entry').forEach(function (entry) {
+  var wrapper = document.createElement('div');
+  wrapper.className = 'timeline-item';
+  entry.parentNode.insertBefore(wrapper, entry);
+  wrapper.appendChild(entry);
+
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'timeline-toggle';
+  btn.setAttribute('aria-label', 'Hide/show entry');
+  btn.textContent = '\u00d7';
+  btn.addEventListener('click', function () {
+    wrapper.classList.toggle('timeline-hidden');
+  });
+  wrapper.insertBefore(btn, entry);
+});
+
 function downloadPDF() {
     // Hide the download button for PDF
     const btn = document.querySelector('.download-btn');
     btn.style.display = 'none';
-    
+
     // Remove background color for PDF
     document.body.style.backgroundColor = 'white';
-    
-    const element = document.body;
 
-    // Temporarily expand the main content to reduce side margins in the PDF
+    // Build a copy of the page without the hidden entries, laid out exactly on
+    // top of the live content (behind it, z-index:-1) so it is invisible to the
+    // user but renders correctly. The live page is never modified.
+    const clone = document.body.cloneNode(true);
+    clone.id = 'pdf-capture-root';
+    clone.style.position = 'absolute';
+    clone.style.top = '0';
+    clone.style.left = '0';
+    clone.style.zIndex = '-1';
+    clone.style.width = document.body.offsetWidth + 'px';
+    clone.querySelectorAll('.timeline-item.timeline-hidden').forEach(function (el) {
+        el.remove();
+    });
+    clone.querySelectorAll('.timeline-toggle, .download-btn').forEach(function (el) {
+        el.remove();
+    });
+    document.body.appendChild(clone);
 
-    html2canvas(element, { scale: 2, useCORS: true }).then((canvas) => {
-        const imgData = canvas.toDataURL('image/jpeg', 0.98);
-        const pdf = new jsPDF({ unit: 'px', format: [canvas.width, canvas.height] });
-        pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
-        pdf.save('ShawnPinciara_CV.pdf');
-
-        // Show the button again
-        btn.style.display = 'block';
-        // Refresh the page
-        location.reload();
+    requestAnimationFrame(function () {
+        if (typeof html2canvas === 'undefined') {
+            console.error('html2canvas not loaded');
+            if (clone.parentNode) clone.parentNode.removeChild(clone);
+            btn.style.display = 'block';
+            document.body.style.backgroundColor = '';
+            return;
+        }
+        html2canvas(clone, { scale: 2, useCORS: true })
+            .then(function (canvas) {
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                const pdf = new jsPDF({ unit: 'px', format: [canvas.width, canvas.height] });
+                pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+                pdf.save('ShawnPinciara_CV.pdf');
+            })
+            .catch(function (err) {
+                console.error(err);
+            })
+            .finally(function () {
+                if (clone && clone.parentNode) {
+                    clone.parentNode.removeChild(clone);
+                }
+                btn.style.display = 'block';
+                document.body.style.backgroundColor = '';
+            });
     });
 }
 </script>
