@@ -75,7 +75,7 @@ function parseQuiz(){
       const s=seg[i];
       const letter=s.slice(-1);
       const text=s.slice(0,-1);
-      if(letter===letter.toUpperCase()&&/^[A-D]$/.test(letter))correct=letter;
+      if(letter===letter.toUpperCase()&&/^[A-D]$/.test(letter)&&!correct)correct=letter;
       opts.push({letter,text});
     }
     return{text:question.replace(/_/g,' ').replace(/^\w/,c=>c.toUpperCase()),opts,correct};
