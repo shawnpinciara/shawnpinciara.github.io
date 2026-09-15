@@ -32,14 +32,15 @@ code{background:rgba(0,0,0,.3);padding:4px 12px;border-radius:8px;font-size:.9em
 .student-item{background:rgba(255,255,255,.05);border-radius:10px;padding:10px 15px;margin:5px 0;display:flex;justify-content:space-between;align-items:center}
 .student-item .score{color:#00cec9;font-weight:700}
 .q-progress{color:#a8b2d1;margin-bottom:15px;font-size:.95em}
-.q-text{font-size:1.35em;margin-bottom:30px;line-height:1.5}
+.q-text{font-size:1.35em;margin-bottom:10px;line-height:1.5}
 .options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
-.opt-btn{padding:18px;font-size:1.2em;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);border-radius:14px;color:#fff;cursor:pointer;transition:all .3s;font-weight:600}
+.opt-btn{padding:18px;font-size:1.1em;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);border-radius:14px;color:#fff;cursor:pointer;transition:all .3s;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px}
 .opt-btn:hover:not(.disabled){background:rgba(255,255,255,.15);border-color:#00d2ff;transform:scale(1.03)}
 .opt-btn.correct{background:rgba(0,200,100,.3);border-color:#00cec9}
 .opt-btn.wrong{background:rgba(220,50,50,.3);border-color:#d63031}
 .opt-btn.disabled{pointer-events:none;opacity:.6}
 .opt-btn.selected{background:rgba(123,47,247,.3);border-color:#7b2ff7}
+.opt-letter{font-size:1.4em;font-weight:700;min-width:28px}
 .leaderboard{width:100%;margin-top:20px}
 .leaderboard-row{display:flex;justify-content:space-between;padding:12px 20px;background:rgba(255,255,255,.05);border-radius:10px;margin:5px 0;align-items:center}
 .leaderboard-row .rank{font-weight:700;color:#00d2ff;width:30px;font-size:1.2em}
@@ -65,14 +66,22 @@ let S={role:null,roomCode:'',questions:[],peer:null,myId:'',
 function parseQuiz(){
   const h=location.hash.slice(1);
   if(!h)return[];
-  return h.split(';').filter(p=>p.includes(',')).map(part=>{
-    const[slug,ans]=part.split(',');
-    const ci=ans.search(/[A-Z]/);
-    return{text:slug.replace(/_/g,' ').replace(/^\w/,c=>c.toUpperCase()),opts:['A','B','C','D'],correct:ci>=0?ans[ci]:ans[0]};
+  return h.split(';').filter(p=>p.includes('|')).map(part=>{
+    const seg=part.split('|');
+    const question=seg[0];
+    const opts=[];
+    let correct='';
+    for(let i=1;i<seg.length&&i<=4;i++){
+      const s=seg[i];
+      const letter=s.slice(-1);
+      const text=s.slice(0,-1);
+      if(letter===letter.toUpperCase()&&/^[A-D]$/.test(letter))correct=letter;
+      opts.push({letter,text});
+    }
+    return{text:question.replace(/_/g,' ').replace(/^\w/,c=>c.toUpperCase()),opts,correct};
   });
 }
 function genCode(){return Math.random().toString(36).slice(2,8).toUpperCase()}
-
 function setHTML(html){document.getElementById('app').innerHTML=html}
 
 function initRole(){
@@ -84,8 +93,8 @@ function initRole(){
         <button class="btn btn-primary btn-lg" onclick="doRole('teacher')">👨‍🏫 Insegnante</button>
         <button class="btn btn-secondary btn-lg" onclick="doRole('student')">👨‍🎓 Studente</button>
       </div>
-      <p class="info-text" style="margin-top:30px">Formato: <code>pagina.html#Domanda,Abcd;Dom2,aBcD</code></p>
-      <p class="info-text">La lettera <strong>MAIUSCOLA</strong> indica la risposta corretta</p>
+      <p class="info-text" style="margin-top:25px">Formato link: <code>pagina.html#Domanda|risposta1A|risposta2b|risposta3c|risposta4d;Domanda2|opt1b|opt2A|opt3c|opt4d</code></p>
+      <p class="info-text">La lettera <strong>MAIUSCOLA</strong> alla fine di ogni opzione indica la risposta corretta</p>
     </div></div>`);
 }
 
@@ -249,12 +258,24 @@ function renderStudQuiz(){
   const q=S.questions[S.curQ];
   if(!q){renderStudWait();return}
   const answered=!!S.myAns[S.curQ];
+  const optBtns=q.opts.map((o,i)=>{
+    const letter='ABCD'[i];
+    const isCorrect=q.correct===letter;
+    const isSelected=S.myAns[S.curQ]===letter;
+    let cls='opt-btn';
+    if(isSelected&&isCorrect)cls+=' correct';
+    else if(isSelected&&!isCorrect)cls+=' wrong';
+    else if(answered&&isCorrect)cls+=' correct';
+    else if(answered)cls+=' disabled';
+    else if(isSelected)cls+=' selected';
+    return`<button class="${cls}" ${answered?'disabled':''} onclick="answer('${letter}')"><span class="opt-letter">${letter}</span>${esc(o.text)}</button>`;
+  }).join('');
   setHTML(`<div class="screen active">
     <h1>🧠 Quiz P2P</h1>
     <div class="card">
       <div class="q-progress">Domanda ${S.curQ+1} di ${qs}</div>
       <div class="q-text">${esc(q.text)}</div>
-      <div class="options">${q.opts.map(l=>`<button class="opt-btn ${S.myAns[S.curQ]===l?'selected':''}" ${answered?'disabled':''} onclick="answer('${l}')">${l}</button>`).join('')}</div>
+      <div class="options">${optBtns}</div>
       ${answered?'<p style="color:#00cec9;font-size:1.1em">✅ Risposta inviata!</p>':''}
       ${S.curQ>=qs-1&&S.myAns.filter(a=>a).length>=qs?'<button class="btn btn-success" style="margin-top:10px" onclick="sendDone()">📤 Fine quiz</button>':''}
       <div id="sRes"></div>
