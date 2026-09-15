@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quiz P2P</title>
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#fff;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
@@ -24,6 +25,7 @@ h2{font-size:1.5em;margin-bottom:20px;color:#a8b2d1}
 .btn-success:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,184,148,.4)}
 .btn-danger{background:linear-gradient(90deg,#e17055,#d63031);color:#fff}
 .btn-lg{padding:20px 50px;font-size:1.3em}
+.btn-sm{padding:8px 20px;font-size:.9em}
 .input{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:14px 20px;color:#fff;font-size:1.1em;width:100%;text-align:center;outline:none;margin:10px 0;transition:border .3s}
 .input:focus{border-color:#00d2ff}
 .input::placeholder{color:rgba(255,255,255,.4)}
@@ -51,6 +53,8 @@ code{background:rgba(0,0,0,.3);padding:4px 12px;border-radius:8px;font-size:.9em
 .info-text{color:#a8b2d1;margin:8px 0;font-size:.9em}
 .error-text{color:#d63031;margin:8px 0;font-size:.9em}
 .flex-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.spinner{width:30px;height:30px;border:3px solid rgba(255,255,255,.2);border-top-color:#00d2ff;border-radius:50%;animation:spin 1s linear infinite;margin:10px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -59,9 +63,19 @@ code{background:rgba(0,0,0,.3);padding:4px 12px;border-radius:8px;font-size:.9em
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-let S={role:null,roomCode:'',questions:[],peer:null,myId:'',
-  conn:null,connections:{},names:{},curQ:0,myAns:[],answers:{},
-  results:[],finished:false};
+const FIREBASE_CONFIG={
+  apiKey:"AIzaSyDemoKeyReplaceWithYours",
+  authDomain:"demo.firebaseapp.com",
+  databaseURL:"https://demo-default-rtdb.firebaseio.com",
+  projectId:"demo",
+  storageBucket:"demo.appspot.com",
+  messagingSenderId:"000000000000",
+  appId:"1:000000000000:web:0000000000000000"
+};
+
+let S={role:null,roomCode:'',questions:[],myId:'',
+  conn:null,connections:{},names:{},curQ:0,myAns:[],
+  results:[],db:null,roomRef:null};
 
 function parseQuiz(){
   const h=location.hash.slice(1);
@@ -84,6 +98,16 @@ function parseQuiz(){
 function genCode(){return Math.random().toString(36).slice(2,8).toUpperCase()}
 function setHTML(html){document.getElementById('app').innerHTML=html}
 
+function initFirebase(){
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    S.db=firebase.database();
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
 function initRole(){
   setHTML(`<div class="screen active">
     <h1>🧠 Quiz P2P</h1>
@@ -93,56 +117,53 @@ function initRole(){
         <button class="btn btn-primary btn-lg" onclick="doRole('teacher')">👨‍🏫 Insegnante</button>
         <button class="btn btn-secondary btn-lg" onclick="doRole('student')">👨‍🎓 Studente</button>
       </div>
-      <p class="info-text" style="margin-top:25px">Formato link: <code>pagina.html#Domanda|risposta1A|risposta2b|risposta3c|risposta4d;Domanda2|opt1b|opt2A|opt3c|opt4d</code></p>
-      <p class="info-text">La lettera <strong>MAIUSCOLA</strong> alla fine di ogni opzione indica la risposta corretta</p>
+      <p class="info-text" style="margin-top:25px">Formato link: <code>pagina.html#Domanda|testoA|testoBb|testoCc|testoDd;Dom2|opt1a|opt2A|opt3c|opt4d</code></p>
+      <p class="info-text">La lettera <strong>MAIUSCOLA</strong> indica la risposta corretta</p>
     </div></div>`);
 }
 
 function doRole(r){
   S.role=r;S.questions=parseQuiz();
+  if(!initFirebase()){
+    alert('Errore Firebase. Controlla la configurazione nel codice sorgente.');
+    return;
+  }
   if(r==='teacher'){S.roomCode=genCode();initTeacher()}
   else initStudJoin();
 }
 
 function initTeacher(){
-  S.peer=new Peer(S.roomCode,{host:'peerjs-server.herokuapp.com',secure:true,port:443});
-  S.peer.on('open',pid=>{
-    S.myId=S.roomCode;S.connections={};S.names={};S.answers={};S.finished=false;
+  S.roomRef=S.db.ref('rooms/'+S.roomCode);
+  S.roomRef.set({teacher:{id:'teacher',name:'Insegnante'},questions:S.questions,answers:{},started:false,finished:false});
+  
+  S.roomRef.on('value',snap=>{
+    const data=snap.val();
+    if(!data)return;
+    S.connections={};
+    if(data.connections)S.connections=data.connections;
+    if(data.answers)S.answers=data.answers;
+    if(data.started)startQuizFromFirebase();
+    if(data.finished&&data.results)showResultsFromFirebase(data.results);
     renderTeacher();
   });
-  S.peer.on('connection',c=>{
-    c.on('open',()=>{
-      S.connections[c.peer]={conn:c};
-      S.names[c.peer]='Studente '+(Object.keys(S.connections).length);
-      c.on('data',d=>onTeacherData(d,c.peer));
-      c.on('close',()=>{delete S.connections[c.peer];delete S.answers[c.peer];renderTeacher()});
-      renderTeacher();
-    });
-  });
-  S.peer.on('error',e=>alert('Errore connessione: '+e.type));
+  renderTeacher();
 }
 
-function onTeacherData(d,sid){
-  if(d.type==='answer'){
-    if(!S.answers[sid])S.answers[sid]=[];
-    S.answers[sid][d.qi]=d.ans;
-    S.names[sid]=d.name||S.names[sid];
-    const allDone=Object.keys(S.connections).every(sid2=>(S.answers[sid2]||[]).length>=S.questions.length);
-    renderTeacher();
-    if(allDone&&!S.finished&&Object.keys(S.connections).length>0)setTimeout(finishQuiz,1500);
-  }
+function onTeacherData(path,data){
+  S.roomRef.update(data);
 }
 
 function renderTeacher(){
   const qs=S.questions.length;
-  const ids=Object.keys(S.connections);
+  const conns=S.connections||{};
+  const ids=Object.keys(conns);
   let studentList='';
   if(ids.length===0){
     studentList='<p style="color:#a8b2d1;padding:10px">⏳ In attesa di studenti...</p>';
   }else{
     studentList=ids.map((sid,i)=>{
-      const nm=S.names[sid]||`Studente ${i+1}`;
-      const ans=S.answers[sid];
+      const nm=(conns[sid]&&conns[sid].name)||`Studente ${i+1}`;
+      const ans=S.answers&&S.answers[sid]?S.answers[sid]:null;
       const sc=ans?ans.filter((a,qi)=>a===S.questions[qi].correct).length:null;
       return`<div class="student-item"><span>${esc(nm)}</span><span class="score">${sc!==null?sc+'/'+qs:''}</span></div>`;
     }).join('');
@@ -169,23 +190,34 @@ function copyCode(){
 }
 
 function startQuiz(){
-  if(Object.keys(S.connections).length===0){alert('Nessuno studente connesso!');return}
-  S.finished=false;S.answers={};
-  Object.values(S.connections).forEach(({conn})=>conn.send({type:'quiz',questions:S.questions}));
+  const conns=S.connections||{};
+  if(Object.keys(conns).length===0){alert('Nessuno studente connesso!');return}
+  S.roomRef.update({started:true,answers:{},finished:false});
   $('endBtn').style.display='inline-block';
 }
 
+function startQuizFromFirebase(){
+  const endBtn=$('endBtn');
+  if(endBtn)endBtn.style.display='inline-block';
+}
+
 function finishQuiz(){
-  S.finished=true;S.results=[];
-  Object.keys(S.connections).forEach(sid=>{
-    const ans=S.answers[sid]||[];
+  const conns=S.connections||{};
+  const ids=Object.keys(conns);
+  const results=[];
+  ids.forEach(sid=>{
+    const ans=S.answers&&S.answers[sid]?S.answers[sid]:[];
     const sc=ans.reduce((acc,a,i)=>a===S.questions[i].correct?acc+1:acc,0);
-    S.results.push({name:S.names[sid]||sid,score:sc,total:S.questions.length});
-    if(S.connections[sid]?.conn)S.connections[sid].conn.send({type:'results',results:S.results});
+    results.push({name:(conns[sid]&&conns[sid].name)||sid,score:sc,total:S.questions.length});
   });
+  S.roomRef.update({finished:true,results:results});
   $('endBtn').style.display='none';
   renderTeacher();
-  const el=$('tRes');if(el)el.innerHTML=`<div class="leaderboard"><h2 style="margin-bottom:15px">📊 Classifica Finale</h2>${rankHTML(S.results)}</div>`;
+  const el=$('tRes');if(el)el.innerHTML=`<div class="leaderboard"><h2 style="margin-bottom:15px">📊 Classifica Finale</h2>${rankHTML(results)}</div>`;
+}
+
+function showResultsFromFirebase(results){
+  const el=$('sRes');if(el)el.innerHTML=`<div class="leaderboard"><h2 style="margin-bottom:15px">📊 Classifica</h2>${rankHTML(results)}</div>`;
 }
 
 function rankHTML(res){
@@ -216,35 +248,67 @@ function joinRoom(){
 
 function initStudent(roomId){
   S.roomCode=roomId;
-  S.peer=new Peer({host:'peerjs-server.herokuapp.com',secure:true,port:443});
-  S.peer.on('open',pid=>{
-    S.myId=pid;
-    S.conn=S.peer.connect(roomId);
-    S.conn.on('open',()=>{
-      S.conn.send({type:'join',name:'Studente'});
-      S.conn.on('data',d=>onStudentData(d));
-      S.conn.on('close',()=>{S.conn=null;S.myAns=[];initStudJoin()});
-      S.conn.on('error',()=>{$('jErr').textContent='Connessione fallita'});
-      renderStudWait();
-    });
+  const roomRef=S.db.ref('rooms/'+roomId);
+  const studentId='student_'+Math.random().toString(36).slice(2,6);
+  S.roomRef=roomRef;S.myId=studentId;
+  
+  // Write student info
+  roomRef.update({connections:{[studentId]:{name:'Studente',id:studentId}}});
+  
+  // Listen for changes
+  roomRef.on('value',snap=>{
+    const data=snap.val();
+    if(!data)return;
+    S.connections=data.connections||{};
+    S.answers=data.answers||{};
+    if(data.started&&!S.questions.length&&data.questions){
+      S.questions=data.questions;S.curQ=0;S.myAns=[];S.results=[];
+      renderStudQuiz();
+    }
+    if(data.finished&&data.results){
+      showResultsFromFirebase(data.results);
+    }
+    renderStudWait();
   });
-  S.peer.on('error',e=>{$('jErr').textContent='Errore di connessione'});
-}
-
-function onStudentData(d){
-  if(d.type==='quiz'){
-    S.questions=d.questions;S.curQ=0;S.myAns=[];S.results=[];
-    renderStudQuiz();
-  }else if(d.type==='results'){
-    S.results=d.results;
-    const el=$('sRes');if(el)el.innerHTML=`<div class="leaderboard"><h2 style="margin-bottom:15px">📊 Classifica</h2>${rankHTML(d.results)}</div>`;
-  }
+  
+  // Listen for quiz start
+  roomRef.child('started').on('value',snap=>{
+    if(snap.val()===true&&data&&data.questions){
+      S.questions=data.questions;S.curQ=0;S.myAns=[];S.results=[];
+      renderStudQuiz();
+    }
+  });
+  
+  // Listen for answers
+  roomRef.child('answers').on('value',snap=>{
+    if(snap.val()){
+      S.answers=snap.val();
+      const ans=S.answers[S.myId];
+      if(ans&&ans.length>=S.questions.length&&S.myAns.length>=S.questions.length){
+        // Check if all questions answered
+      }
+    }
+  });
+  
+  // Listen for results
+  roomRef.child('results').on('value',snap=>{
+    if(snap.val()){
+      showResultsFromFirebase(snap.val());
+    }
+  });
+  
+  renderStudWait();
 }
 
 function renderStudWait(){
   setHTML(`<div class="screen active">
     <h1>🧠 Quiz P2P</h1>
-    <div class="card"><h2>⏳ Attendi l'inizio del quiz...</h2><p class="info-text">L'insegnante avvierà il quiz a breve</p></div></div>`);
+    <div class="card">
+      <div class="spinner"></div>
+      <h2 style="margin-top:10px">⏳ Attendi l'inizio del quiz...</h2>
+      <p class="info-text">L'insegnante avvierà il quiz a breve</p>
+      <p class="info-text" style="font-size:.8em">Codice stanza: <code>${S.roomCode}</code></p>
+    </div></div>`);
 }
 
 function renderStudQuiz(){
@@ -283,16 +347,19 @@ function renderStudQuiz(){
 }
 
 function answer(l){
-  if(S.myAns[S.curQ]||!S.conn||!S.conn.open)return;
+  if(S.myAns[S.curQ]||!S.roomRef)return;
   S.myAns[S.curQ]=l;
-  S.conn.send({type:'answer',qi:S.curQ,ans:l,name:'Studente'});
+  const newAnswers={...S.answers};
+  if(!newAnswers[S.myId])newAnswers[S.myId]=[];
+  newAnswers[S.myId][S.curQ]=l;
+  S.roomRef.update({answers:newAnswers});
   S.curQ++;
   renderStudQuiz();
 }
 
 function sendDone(){
-  if(!S.conn||!S.conn.open)return;
-  S.conn.send({type:'answer',qi:-1,ans:'DONE',name:'Studente'});
+  if(!S.roomRef||S.myAns.filter(a=>a).length<S.questions.length)return;
+  S.roomRef.update({done:true});
 }
 
 initRole();
