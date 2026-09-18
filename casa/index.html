@@ -581,6 +581,48 @@
         askRender();
       });
 
+      function casaPhotoName() {
+        const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        return `casa-${ts}.jpg`;
+      }
+
+      function openPhotoInTab(dataUrl, name) {
+        // Open synchronously inside the click handler so mobile browsers allow it
+        let win = null;
+        try {
+          win = window.open('', '_blank');
+        } catch (err) {
+          win = null;
+        }
+
+        if (win && win.document) {
+          try {
+            const html =
+              '<!doctype html><html><head><meta charset="utf-8">' +
+              '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+              '<title>' + name + '</title>' +
+              '<style>html,body{margin:0;height:100%;background:#10131a}' +
+              'img{width:100%;height:100%;object-fit:contain;display:block}</style>' +
+              '</head><body><img alt="Casa" src="' + dataUrl + '"></body></html>';
+            win.document.open();
+            win.document.write(html);
+            win.document.close();
+            win.focus();
+            return;
+          } catch (err) {
+            // fall through to download
+          }
+        }
+
+        // Fallback: trigger a download (desktop or popup blocked)
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+
       const photoBtn = document.getElementById('photo');
       photoBtn.addEventListener('click', () => {
         if (!model) return;
@@ -588,19 +630,16 @@
         applyCamera();
         updateClipping();
         renderer.render(scene, camera);
-        let url;
+
+        let dataUrl;
         try {
-          url = renderer.domElement.toDataURL('image/png');
+          dataUrl = renderer.domElement.toDataURL('image/jpeg', 0.9);
         } catch (err) {
           return;
         }
-        const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `casa-${ts}.png`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
+
+        openPhotoInTab(dataUrl, casaPhotoName());
+
         photoBtn.classList.remove('flash');
         void photoBtn.offsetWidth;
         photoBtn.classList.add('flash');
