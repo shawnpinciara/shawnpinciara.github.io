@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <title>Casa — Shawn Pinciara</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <style>
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #10131a;
+        font-family: 'Montserrat', sans-serif;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      #scene {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        touch-action: none;
+        cursor: grab;
+      }
+      #scene:active { cursor: grabbing; }
+
+      .topbar {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: calc(env(safe-area-inset-top, 0px) + 0.7rem) 1rem 0.7rem;
+        background: linear-gradient(to bottom, rgba(8, 12, 20, 0.72), rgba(8, 12, 20, 0));
+        color: #eaf1fb;
+        pointer-events: none;
+        z-index: 5;
+      }
+      .topbar .title {
+        font-weight: 600;
+        font-size: 1.05rem;
+        letter-spacing: 0.04em;
+      }
+      .topbar a {
+        pointer-events: auto;
+        color: #eaf1fb;
+        text-decoration: none;
+        font-size: 0.82rem;
+        font-weight: 500;
+        padding: 0.4rem 0.75rem;
+        border: 1px solid rgba(234, 241, 251, 0.35);
+        border-radius: 999px;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+      }
+
+      .panel {
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        z-index: 6;
+        padding: 0.85rem 1rem calc(env(safe-area-inset-bottom, 0px) + 0.9rem);
+        background: rgba(10, 14, 22, 0.82);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-top-left-radius: 1.15rem;
+        border-top-right-radius: 1.15rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.45);
+        color: #dbe6f5;
+      }
+      .controls-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.65rem;
+      }
+      .controls-head .hint {
+        font-size: 0.68rem;
+        line-height: 1.3;
+        opacity: 0.72;
+        transition: opacity 0.6s ease;
+      }
+      .controls-head .hint.fade { opacity: 0; }
+      .controls-head button {
+        font-family: inherit;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #dbe6f5;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 999px;
+        padding: 0.35rem 0.75rem;
+        cursor: pointer;
+      }
+      .controls-head button:active { background: rgba(255, 255, 255, 0.2); }
+
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin: 0.42rem 0;
+      }
+      .row .lbl {
+        flex: 0 0 5.6rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .row .val {
+        flex: 0 0 3.4rem;
+        text-align: right;
+        font-size: 0.68rem;
+        font-variant-numeric: tabular-nums;
+        opacity: 0.75;
+      }
+      input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        flex: 1 1 auto;
+        height: 26px;
+        background: transparent;
+        margin: 0;
+      }
+      input[type="range"]::-webkit-slider-runnable-track {
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.2);
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        margin-top: -7px;
+        border-radius: 50%;
+        background: #7fb3e8;
+        border: 2px solid #eaf1fb;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      }
+      input[type="range"]::-moz-range-track {
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.2);
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #7fb3e8;
+        border: 2px solid #eaf1fb;
+      }
+      input[type="range"]:disabled { opacity: 0.35; }
+
+      .switch {
+        flex: 0 0 auto;
+        position: relative;
+        width: 38px;
+        height: 22px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.2);
+        transition: background 0.2s ease;
+        cursor: pointer;
+      }
+      .switch::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #eaf1fb;
+        transition: transform 0.2s ease;
+      }
+      .switch.on { background: #4a86c8; }
+      .switch.on::after { transform: translateX(16px); }
+
+      #overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        background: #10131a;
+        color: #cfe0f5;
+        transition: opacity 0.5s ease;
+      }
+      #overlay.hide { opacity: 0; pointer-events: none; }
+      .spinner {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: 3px solid rgba(127, 179, 232, 0.25);
+        border-top-color: #7fb3e8;
+        animation: spin 0.9s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      #overlay .msg { font-size: 0.78rem; opacity: 0.8; letter-spacing: 0.03em; }
+
+      #banner {
+        position: fixed;
+        left: 50%;
+        top: calc(env(safe-area-inset-top, 0px) + 3.4rem);
+        transform: translateX(-50%);
+        z-index: 8;
+        max-width: 90vw;
+        padding: 0.55rem 0.85rem;
+        border-radius: 0.6rem;
+        background: rgba(120, 60, 30, 0.92);
+        color: #ffe9d6;
+        font-size: 0.7rem;
+        line-height: 1.35;
+        text-align: center;
+        display: none;
+      }
+      #banner.show { display: block; }
+    </style>
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+
+    <div class="topbar">
+      <div class="title">Casa</div>
+      <a href="../index.html">Home</a>
+    </div>
+
+    <div id="banner"></div>
+
+    <div class="panel">
+      <div class="controls-head">
+        <div class="hint" id="hint">1 dito: ruota &nbsp;·&nbsp; 2 dita: sposta e zooma</div>
+        <button id="reset" type="button">Reset</button>
+      </div>
+
+      <div class="row">
+        <div class="lbl">Lente</div>
+        <input type="range" id="lens" min="8" max="85" step="1" value="24">
+        <div class="val" id="lensVal">24 mm</div>
+      </div>
+
+      <div class="row">
+        <div class="switch on" id="ceilSwitch"></div>
+        <div class="lbl">Soffitto</div>
+        <input type="range" id="ceil" min="0" max="1" step="0.01" value="1">
+        <div class="val" id="ceilVal">—</div>
+      </div>
+
+      <div class="row">
+        <div class="switch on" id="wallSwitch"></div>
+        <div class="lbl">Pareti</div>
+        <input type="range" id="wall" min="-1" max="1" step="0.01" value="0">
+        <div class="val" id="wallVal">0.0 m</div>
+      </div>
+    </div>
+
+    <div id="overlay">
+      <div class="spinner"></div>
+      <div class="msg" id="loadMsg">Carico la casa…</div>
+    </div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+
+    <script type="module">
+      import * as THREE from 'three';
+      import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+      import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
+
+      const canvas = document.getElementById('scene');
+      const overlay = document.getElementById('overlay');
+      const loadMsg = document.getElementById('loadMsg');
+      const banner = document.getElementById('banner');
+      const hint = document.getElementById('hint');
+
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x10131a);
+
+      const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.02, 5000);
+
+      // ---- Global clipping planes (soffitto + parete frontale) ----
+      const BIG = 1e6;
+      const ceilingPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), BIG);
+      const wallPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), BIG);
+      renderer.clippingPlanes = [ceilingPlane, wallPlane];
+
+      // ---- Camera / controls state ----
+      const camState = {
+        yaw: 0,
+        pitch: 0,
+        pos: new THREE.Vector3(),
+      };
+      const camEuler = new THREE.Euler(0, 0, 0, 'YXZ');
+      const LOOK = 0.006;
+
+      let box = new THREE.Box3(new THREE.Vector3(-1, -1, -1), new THREE.Vector3(1, 1, 1));
+      let center = new THREE.Vector3();
+      let radius = 1;
+      let wallRange = 1;
+
+      // UI state
+      const ui = {
+        ceiling: true,
+        wall: true,
+        ceilingHeight: 1,
+        wallOffset: 0,
+        lens: 24,
+      };
+
+      let model = null;
+      let needsRender = true;
+      const askRender = () => { needsRender = true; };
+
+      function clampPitch() {
+        const lim = THREE.MathUtils.degToRad(88);
+        camState.pitch = THREE.MathUtils.clamp(camState.pitch, -lim, lim);
+      }
+
+      function applyCamera() {
+        camEuler.set(camState.pitch, camState.yaw, 0, 'YXZ');
+        camera.quaternion.setFromEuler(camEuler);
+        camera.position.copy(camState.pos);
+      }
+
+      function basis() {
+        camEuler.set(camState.pitch, camState.yaw, 0, 'YXZ');
+        return {
+          forward: new THREE.Vector3(0, 0, -1).applyEuler(camEuler),
+          right: new THREE.Vector3(1, 0, 0).applyEuler(camEuler),
+          up: new THREE.Vector3(0, 1, 0).applyEuler(camEuler),
+        };
+      }
+
+      // Frame the whole model, taking the portrait aspect into account
+      function frameModel() {
+        const vfov = THREE.MathUtils.degToRad(camera.fov);
+        const hfov = 2 * Math.atan(Math.tan(vfov / 2) * camera.aspect);
+        const fitFov = Math.min(vfov, hfov);
+        const dist = radius / Math.sin(fitFov / 2) * 1.12;
+        const dir = new THREE.Vector3(0.75, 0.42, 1.0).normalize();
+        const pos = new THREE.Vector3().copy(center).addScaledVector(dir, dist);
+        camState.pos.copy(pos);
+        const look = new THREE.Vector3().subVectors(center, pos).normalize();
+        camState.yaw = Math.atan2(-look.x, -look.z);
+        camState.pitch = Math.asin(THREE.MathUtils.clamp(look.y, -1, 1));
+      }
+
+      function worldPerPixel() {
+        const d = camState.pos.distanceTo(center);
+        const h = renderer.domElement.clientHeight || 1;
+        return 2 * d * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) / h;
+      }
+
+      function look(dx, dy) {
+        camState.yaw += dx * LOOK;
+        camState.pitch += dy * LOOK;
+        clampPitch();
+        askRender();
+      }
+
+      function pan(dx, dy) {
+        const w = worldPerPixel();
+        const b = basis();
+        camState.pos.addScaledVector(b.right, -dx * w);
+        camState.pos.addScaledVector(b.up, dy * w);
+        clampFloor();
+        askRender();
+      }
+
+      function zoom(distDelta) {
+        const b = basis();
+        const d = THREE.MathUtils.clamp(camState.pos.distanceTo(center), radius * 0.15, radius * 2.5);
+        camState.pos.addScaledVector(b.forward, distDelta * d * 0.004);
+        clampFloor();
+        askRender();
+      }
+
+      function clampFloor() {
+        const minY = box.min.y + 0.03;
+        if (camState.pos.y < minY) camState.pos.y = minY;
+      }
+
+      // ---- Touch controls ----
+      let lastSingle = null; // {x,y}
+      let lastTwo = null;    // {x,y,dist}
+
+      function syncTouches(e) {
+        const t = e.touches;
+        if (t.length === 1) {
+          lastSingle = { x: t[0].clientX, y: t[0].clientY };
+          lastTwo = null;
+        } else if (t.length >= 2) {
+          const midX = (t[0].clientX + t[1].clientX) / 2;
+          const midY = (t[0].clientY + t[1].clientY) / 2;
+          const dist = Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+          lastTwo = { x: midX, y: midY, dist };
+          lastSingle = null;
+        } else {
+          lastSingle = null;
+          lastTwo = null;
+        }
+      }
+
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        stopHint();
+        syncTouches(e);
+      }, { passive: false });
+
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const t = e.touches;
+        if (t.length === 1 && lastSingle) {
+          const dx = t[0].clientX - lastSingle.x;
+          const dy = t[0].clientY - lastSingle.y;
+          look(dx, dy);
+          lastSingle = { x: t[0].clientX, y: t[0].clientY };
+        } else if (t.length >= 2) {
+          const midX = (t[0].clientX + t[1].clientX) / 2;
+          const midY = (t[0].clientY + t[1].clientY) / 2;
+          const dist = Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+          if (lastTwo) {
+            pan(midX - lastTwo.x, midY - lastTwo.y);
+            zoom(dist - lastTwo.dist);
+          }
+          lastTwo = { x: midX, y: midY, dist };
+        } else {
+          syncTouches(e);
+        }
+      }, { passive: false });
+
+      canvas.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        syncTouches(e);
+      }, { passive: false });
+
+      canvas.addEventListener('touchcancel', (e) => {
+        e.preventDefault();
+        syncTouches(e);
+      }, { passive: false });
+
+      // ---- Mouse controls (desktop) ----
+      let dragging = null; // 'look' | 'pan'
+      let lastMouse = null;
+
+      canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+      canvas.addEventListener('mousedown', (e) => {
+        stopHint();
+        dragging = (e.button === 0 && !e.shiftKey) ? 'look' : 'pan';
+        lastMouse = { x: e.clientX, y: e.clientY };
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!dragging || !lastMouse) return;
+        const dx = e.clientX - lastMouse.x;
+        const dy = e.clientY - lastMouse.y;
+        if (dragging === 'look') look(dx, dy);
+        else pan(dx, dy);
+        lastMouse = { x: e.clientX, y: e.clientY };
+      });
+
+      window.addEventListener('mouseup', () => { dragging = null; lastMouse = null; });
+
+      canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        stopHint();
+        zoom(-e.deltaY * 0.5);
+      }, { passive: false });
+
+      // ---- UI wiring ----
+      const lensEl = document.getElementById('lens');
+      const lensVal = document.getElementById('lensVal');
+      const ceilEl = document.getElementById('ceil');
+      const ceilVal = document.getElementById('ceilVal');
+      const ceilSwitch = document.getElementById('ceilSwitch');
+      const wallEl = document.getElementById('wall');
+      const wallVal = document.getElementById('wallVal');
+      const wallSwitch = document.getElementById('wallSwitch');
+
+      function setLens(mm) {
+        ui.lens = mm;
+        camera.setFocalLength(mm);
+        camera.updateProjectionMatrix();
+        lensEl.value = String(mm);
+        lensVal.textContent = `${mm} mm`;
+        askRender();
+      }
+
+      lensEl.addEventListener('input', () => setLens(parseFloat(lensEl.value)));
+
+      ceilEl.addEventListener('input', () => {
+        const t = parseFloat(ceilEl.value);
+        ui.ceilingHeight = THREE.MathUtils.lerp(box.min.y, box.max.y, t);
+        ceilVal.textContent = `${ui.ceilingHeight.toFixed(1)} m`;
+        askRender();
+      });
+
+      ceilSwitch.addEventListener('click', () => {
+        ui.ceiling = !ui.ceiling;
+        ceilSwitch.classList.toggle('on', ui.ceiling);
+        ceilEl.disabled = !ui.ceiling;
+        askRender();
+      });
+
+      wallEl.addEventListener('input', () => {
+        ui.wallOffset = parseFloat(wallEl.value) * wallRange;
+        wallVal.textContent = `${parseFloat(wallEl.value).toFixed(1)} ×`;
+        askRender();
+      });
+
+      wallSwitch.addEventListener('click', () => {
+        ui.wall = !ui.wall;
+        wallSwitch.classList.toggle('on', ui.wall);
+        wallEl.disabled = !ui.wall;
+        askRender();
+      });
+
+      document.getElementById('reset').addEventListener('click', () => {
+        if (!model) return;
+        frameModel();
+        askRender();
+      });
+
+      let hintStopped = false;
+      function stopHint() {
+        if (hintStopped) return;
+        hintStopped = true;
+        hint.classList.add('fade');
+        setTimeout(() => { hint.style.display = 'none'; }, 700);
+      }
+      setTimeout(stopHint, 7000);
+
+      function showBanner(text) {
+        banner.textContent = text;
+        banner.classList.add('show');
+      }
+
+      // ---- Load model ----
+      const missing = new Set();
+      const manager = new THREE.LoadingManager();
+      manager.onError = (url) => {
+        if (/\.(jpg|jpeg|png|webp)$/i.test(url)) missing.add(url.split('/').pop());
+      };
+      manager.onLoad = () => { askRender(); };
+
+      function onLoaded(obj) {
+        model = obj;
+        const maxAniso = renderer.capabilities.getMaxAnisotropy();
+
+        obj.traverse((child) => {
+          if (!child.isMesh) return;
+          const src = child.material;
+          const map = src && src.map ? src.map : null;
+          const hasMap = !!(map && map.image);
+          if (hasMap) {
+            map.colorSpace = THREE.SRGBColorSpace;
+            map.anisotropy = maxAniso;
+          }
+          const matParams = {
+            side: THREE.DoubleSide,
+            color: hasMap ? 0xffffff : 0xb9bdc4,
+          };
+          if (hasMap) matParams.map = map;
+          if (child.geometry && !child.geometry.hasAttribute('normal')) {
+            child.geometry.computeVertexNormals();
+          }
+          child.material = new THREE.MeshBasicMaterial(matParams);
+          if (src && src.dispose) src.dispose();
+        });
+
+        scene.add(obj);
+
+        box = new THREE.Box3().setFromObject(obj);
+        box.getCenter(center);
+        const size = box.getSize(new THREE.Vector3());
+        radius = box.getBoundingSphere(new THREE.Sphere()).radius || 1;
+        wallRange = Math.max(size.x, size.z) * 0.5;
+
+        // Slider ranges now that we know the model
+        ceilEl.min = '0';
+        ceilEl.max = '1';
+        ceilEl.value = '0.8';
+        ui.ceilingHeight = THREE.MathUtils.lerp(box.min.y, box.max.y, 0.8);
+        ceilVal.textContent = `${ui.ceilingHeight.toFixed(1)} m`;
+
+        wallEl.min = '-1';
+        wallEl.max = '1';
+        wallEl.value = '0';
+        ui.wallOffset = 0;
+        wallVal.textContent = '0.0 ×';
+
+        // Initial camera: 3/4 elevated view of the whole house
+        setLens(ui.lens);
+        frameModel();
+
+        overlay.classList.add('hide');
+        setTimeout(() => { overlay.style.display = 'none'; }, 600);
+
+        if (missing.size) {
+          showBanner(`Texture non trovate: ${Array.from(missing).join(', ')}. Aggiungile nella cartella casa/.`);
+        }
+
+        askRender();
+      }
+
+      const mtlLoader = new MTLLoader(manager);
+      mtlLoader.setPath('./');
+      mtlLoader.setResourcePath('./');
+      mtlLoader.load('casa.mtl', (materials) => {
+        materials.preload();
+        const objLoader = new OBJLoader(manager);
+        objLoader.setMaterials(materials);
+        objLoader.setPath('./');
+        objLoader.load(
+          'casa.obj',
+          onLoaded,
+          (e) => {
+            if (e && e.total) {
+              const pct = Math.round((e.loaded / e.total) * 100);
+              loadMsg.textContent = `Carico la casa… ${pct}%`;
+            }
+          },
+          () => {
+            loadMsg.textContent = 'Errore nel caricamento del modello.';
+          }
+        );
+      }, undefined, () => {
+        loadMsg.textContent = 'Errore nel caricamento dei materiali.';
+      });
+
+      // ---- Render loop ----
+      function updateClipping() {
+        // Ceiling
+        ceilingPlane.constant = ui.ceiling ? ui.ceilingHeight : BIG;
+
+        // Front wall: cut the half nearest to the camera
+        if (ui.wall) {
+          const toCam = new THREE.Vector3(
+            camState.pos.x - center.x,
+            0,
+            camState.pos.z - center.z
+          );
+          if (toCam.lengthSq() < 1e-8) toCam.set(0, 0, 1);
+          toCam.normalize();
+          wallPlane.normal.copy(toCam).multiplyScalar(-1);
+          const point = new THREE.Vector3(center.x, 0, center.z)
+            .addScaledVector(toCam, ui.wallOffset);
+          wallPlane.constant = -wallPlane.normal.dot(point);
+        } else {
+          wallPlane.constant = BIG;
+        }
+      }
+
+      function resize() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.setFocalLength(ui.lens);
+        camera.updateProjectionMatrix();
+        askRender();
+      }
+      window.addEventListener('resize', resize);
+      window.addEventListener('orientationchange', () => setTimeout(resize, 250));
+
+      function animate() {
+        requestAnimationFrame(animate);
+        if (model) {
+          applyCamera();
+          updateClipping();
+        }
+        renderer.render(scene, camera);
+      }
+      animate();
+    </script>
+  </body>
+</html>
