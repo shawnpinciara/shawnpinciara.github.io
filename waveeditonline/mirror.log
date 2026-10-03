@@ -1,0 +1,62 @@
+SKIP index.html (gia presente)
+SKIP index-1.html (gia presente)
+SKIP index-2.html (gia presente)
+SKIP index-3.html (gia presente)
+OK _tmp.html 20261 (https://web.archive.org/web/20200219183102id_/http://waveeditonline.com/index-4.html)
+SAVED index-4.html
+SKIP index-5.html (gia presente)
+ERR _tmp.html: HTTP Error 404: NOT FOUND
+FAILED index-6.html (riprova piu tardi)
+ERR _tmp.html: HTTP Error 404: NOT FOUND
+FAILED index-7.html (riprova piu tardi)
+ERR _tmp.html: HTTP Error 404: NOT FOUND
+FAILED index-8.html (riprova piu tardi)
+ERR _tmp.html: HTTP Error 404: NOT FOUND
+FAILED index-9.html (riprova piu tardi)
+ERR _tmp.html: HTTP Error 404: NOT FOUND
+FAILED index-10.html (riprova piu tardi)
+ERR _tmp.html: HTTP Error 404: NOT FOUND
+FAILED index-11.html (riprova piu tardi)
+ERR _tmp.html: HTTP Error 404: NOT FOUND
+FAILED index-12.html (riprova piu tardi)
+ERR _tmp.html: <urlopen error [Errno 61] Connection refused>
+FAILED index-13.html (riprova piu tardi)
+SKIP index-14.html (gia presente)
+ERR _tmp.html: HTTP Error 404: NOT FOUND
+FAILED index-15.html (riprova piu tardi)
+SKIP index-16.html (gia presente)
+SKIP index-17.html (gia presente)
+ERR _tmp.html: <urlopen error [Errno 61] Connection refused>
+FAILED index-18.html (riprova piu tardi)
+ERR _tmp.html: <urlopen error [Errno 61] Connection refused>
+FAILED index-19.html (riprova piu tardi)
+ERR _tmp.html: HTTP Error 404: NOT FOUND
+FAILED index-20.html (riprova piu tardi)
+ERR _tmp.html: <urlopen error [Errno 61] Connection refused>
+FAILED index-21.html (riprova piu tardi)
+SKIP index-22.html (gia presente)
+ERR _tmp.html: HTTP Error 404: NOT FOUND
+FAILED index-23.html (riprova piu tardi)
+Trovati 260 json, 259 wav
+ERR files/3DShZ4a54JoXR4waUddf2g.json: <urlopen error [Errno 61] Connection refused>
+ERR files/3yJDQKzXjNJfzPNxsg8qVT.json: <urlopen error [Errno 61] Connection refused>
+OK files/4Nb3uNKJU2F9iMSKd9QfHm.json 67575 (https://web.archive.org/web/20250312142832id_/http://waveeditonline.com/files/4Nb3uNKJU2F9iMSKd9QfHm)
+OK files/4ra8Qr56zUdaGeQowjnkKU.json 65303 (https://web.archive.org/web/20250317061642id_/http://waveeditonline.com/files/4ra8Qr56zUdaGeQowjnkKU)
+ERR files/5aDPwHrpzBb7vcyVnT4AHN.json: <urlopen error [Errno 61] Connection refused>
+OK files/5mbR2FccgRKPNhpsddRBbR.json 66220 (https://web.archive.org/web/20250312142833id_/http://waveeditonline.com/files/5mbR2FccgRKPNhpsddRBbR)
+ERR files/5nKXXrBUwtDE3UZPLyKT24.json: <urlopen error [Errno 61] Connection refused>
+ERR files/5pA9NSdStSm886WZMiugy3.json: <urlopen error [Errno 61] Connection refused>
+OK files/62WVuMzjjWzuVgF2ass22B.json 63859 (https://web.archive.org/web/20250121222700id_/http://waveeditonline.com/files/62WVuMzjjWzuVgF2ass22B)
+ERR files/6ecFnoYTJqQByEF8Q7pvYU.json: <urlopen error [Errno 61] Connection refused>
+ERR files/7FDTfQUPxzxepWzLAL3xA8.json: <urlopen error [Errno 61] Connection refused>
+OK files/7ZHrqAY9JcwJdYKrFGjUmJ.json 65519 (https://web.archive.org/web/20221019145443id_/https://waveeditonline.com/files/7ZHrqAY9JcwJdYKrFGjUm)
+ERR files/8ACYLHfCpdwotHDMKAnNEo.json: <urlopen error [Errno 61] Connection refused>
+OK files/8CY9ojEfm8qMoAaE3YAMx6.json 69074 (https://web.archive.org/web/20250312142743id_/http://waveeditonline.com/files/8CY9ojEfm8qMoAaE3YAMx6)
+ERR files/8JD7HpbS8fdejmp9fCZHtS.json: <urlopen error [Errno 61] Connection refused>
+ERR files/8L5Y6naMPjzdtgYUGAU6n4.json: <urlopen error [Errno 61] Connection refused>
+ERR files/8Ndh7r6pUMopUFjfYHRoMW.json: <urlopen error [Errno 61] Connection refused>
+OK files/8ceNdysUaVU4bLphCEjjGA.json 63407 (https://web.archive.org/web/20250131165543id_/http://waveeditonline.com/files/8ceNdysUaVU4bLphCEjjGA)
+ERR files/8f3vbGksA7JuoGaUprc4VD.json: <urlopen error [Errno 61] Connection refused>
+ERR files/8qgagG4ndjYPciNL4xSJ9n.json: <urlopen error [Errno 61] Connection refused>
+OK files/8tyWkNJVfkMTowugSbtMTJ.json 68061 (https://web.archive.org/web/20250121222130id_/http://waveeditonline.com/files/8tyWkNJVfkMTowugSbtMTJ)
+ERR files/8v7RU77YX6xdquyTUiEKRV.json: <urlopen error [Errno 61] Connection refused>
